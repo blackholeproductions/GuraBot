@@ -1,5 +1,7 @@
 package net.celestialgaze.GuraBot.commands;
 
+import java.util.Random;
+
 import net.celestialgaze.GuraBot.OpenSimplexNoise;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.dv8tion.jda.api.entities.Message;
@@ -19,6 +21,7 @@ public class ShipCommand extends Command {
 	public void run(Message message, String[] args) {
 		String ship = (args[0] + args[1]).toLowerCase();
 		OpenSimplexNoise noise = new OpenSimplexNoise();
+		Random random = new Random();
 		int x = 0, y = 0;
 		for (int i = 0; i < ship.length(); i++) {
 			int value = Math.toIntExact(Math.round(toPercent(noise.eval(ship.charAt(i)*100, 10))));
@@ -28,7 +31,8 @@ public class ShipCommand extends Command {
 				y += value;
 			}
 		}
-		double shipPercent = toPercent(noise.eval(x, y));
+		random.setSeed(Math.toIntExact(Math.round((noise.eval(x, y)*Integer.MAX_VALUE))));
+		double shipPercent = random.nextDouble()*100;
 		String shipPercentString = String.format("%.2f", shipPercent);
 		
 		message.getChannel().sendMessage(format(args, shipPercentString)).queue();
@@ -40,7 +44,7 @@ public class ShipCommand extends Command {
 	
 	private String format(String[] args, String percentString) {
 		String enclosing1 = (!user(args[0]) ? "`" : "");
-		String enclosing2 = (!user(args[0]) ? "`" : "");
+		String enclosing2 = (!user(args[1]) ? "`" : "");
 		return (enclosing1 + args[0] + enclosing1 + " ❤︎ " + enclosing2 + args[1] + enclosing2 +": **" + percentString + "%**");
 	}
 	
