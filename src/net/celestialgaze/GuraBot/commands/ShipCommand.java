@@ -30,21 +30,21 @@ public class ShipCommand extends Command {
 		}
 		double shipPercent = toPercent(noise.eval(x, y));
 		String shipPercentString = String.format("%.2f", shipPercent);
-
-		for (int i = 0; i < 2; i++) {
-			if (args[i].startsWith("<@!") && args[i].endsWith(">")) {
-				args[i] = args[i].substring(3, args[i].indexOf(">")-1);
-			}
-		}
-		message.getChannel().sendMessage("`" + args[0] + "` ❤︎ `" + args[1] + "`: **" + shipPercentString + "%**").queue();
+		
+		message.getChannel().sendMessage(format(args, shipPercentString)).queue();
 	}
+	
 	private double toPercent(double noiseValue) {
 		return (noiseValue+1)*50; // starts w/ range from -1 to 1. +1 changes it to from 0 to 2, x50 changes it from 0 to 100
 	}
+	
 	private String format(String[] args, String percentString) {
-		return ("`" + args[0] + "`" + "❤︎" + "`" + args[1] + "`: **" + percentString + "%**");
+		String enclosing1 = (!user(args[0]) ? "`" : "");
+		String enclosing2 = (!user(args[0]) ? "`" : "");
+		return (enclosing1 + args[0] + enclosing1 + " ❤︎ " + enclosing2 + args[1] + enclosing2 +": **" + percentString + "%**");
 	}
-	private bool user(String str) {
+	
+	private boolean user(String str) {
 		return str.startsWith("<@!") && str.endsWith(">");
 	}
 

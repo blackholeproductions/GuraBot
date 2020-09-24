@@ -2,6 +2,8 @@
 
 import javax.security.auth.login.LoginException;
 
+import org.json.simple.JSONObject;
+
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.CommandInterpreter;
 import net.dv8tion.jda.api.JDA;
@@ -16,7 +18,8 @@ public class GuraBot extends ListenerAdapter {
 	public static void main(String[] args) {
 		System.out.println("Main function");
 		try {
-			jda = JDABuilder.createDefault("NzU4MzU1OTM1NjYzMDk1ODA4.X2twAA.1TeOBvlXwT25-TNRHX8u4pRHxug")
+			JSONObject jo = JSON.readFile(System.getProperty("user.dir") + "\\data\\bot\\settings.json");
+			jda = JDABuilder.createDefault((String) jo.get("token"))
 					.setActivity(Activity.playing("a"))
 					.build();
 			jda.addEventListener(new GuraBot());
