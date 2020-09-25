@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot;
+package net.celestialgaze.GuraBot.json;
 
 import java.io.File;
 import java.io.FileNotFoundException;

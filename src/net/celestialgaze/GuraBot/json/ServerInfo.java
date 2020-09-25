@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot;
+package net.celestialgaze.GuraBot.json;
 
 import org.json.simple.JSONObject;
 

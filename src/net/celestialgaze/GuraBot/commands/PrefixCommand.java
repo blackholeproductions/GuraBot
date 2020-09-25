@@ -1,7 +1,7 @@
 package net.celestialgaze.GuraBot.commands;
 
-import net.celestialgaze.GuraBot.ServerInfo;
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.json.ServerInfo;
 import net.dv8tion.jda.api.entities.Message;
 
 public class PrefixCommand extends Command {

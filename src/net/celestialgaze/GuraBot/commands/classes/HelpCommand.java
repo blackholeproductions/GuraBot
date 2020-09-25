@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.celestialgaze.GuraBot.GuraBot;
-import net.celestialgaze.GuraBot.ServerInfo;
 import net.celestialgaze.GuraBot.commands.Commands;
+import net.celestialgaze.GuraBot.json.ServerInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;

@@ -8,10 +8,10 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import net.celestialgaze.GuraBot.GuraBot;
-import net.celestialgaze.GuraBot.JSON;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.SimpleCommand;
 import net.celestialgaze.GuraBot.commands.scc.SimpleCmdCreatorCommand;
+import net.celestialgaze.GuraBot.json.JSON;
 
 public class Commands {
 	public static String defaultPrefix = "a!";

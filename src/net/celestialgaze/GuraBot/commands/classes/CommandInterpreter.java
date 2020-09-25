@@ -1,8 +1,8 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
-import net.celestialgaze.GuraBot.ServerInfo;
-import net.celestialgaze.GuraBot.SharkUtil;
 import net.celestialgaze.GuraBot.commands.Commands;
+import net.celestialgaze.GuraBot.json.ServerInfo;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 

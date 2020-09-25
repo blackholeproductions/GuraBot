@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.CommandInterpreter;
+import net.celestialgaze.GuraBot.json.JSON;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;

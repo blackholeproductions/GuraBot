@@ -1,8 +1,9 @@
-package net.celestialgaze.GuraBot;
+package net.celestialgaze.GuraBot.util;
 
 import java.awt.Color;
 import java.util.Random;
 
+import net.celestialgaze.GuraBot.GuraBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -23,7 +24,7 @@ public class SharkUtil {
 		
 	}
 	public static void success(Message message, String success) {
-		String[] exclamations = {"yay!", "woohoo"};
+		String[] exclamations = {"yay!", "woohoo", "i like salman"};
 		message.getChannel().sendMessage(new EmbedBuilder()
 				.setColor(new Color(152, 251, 152))
 				.setTitle(exclamations[new Random().nextInt(exclamations.length-1)])

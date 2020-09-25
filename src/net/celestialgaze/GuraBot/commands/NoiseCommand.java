@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import net.celestialgaze.GuraBot.OpenSimplexNoise;
-import net.celestialgaze.GuraBot.SharkUtil;
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.util.OpenSimplexNoise;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 

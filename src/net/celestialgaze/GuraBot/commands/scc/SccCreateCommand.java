@@ -5,11 +5,11 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import net.celestialgaze.GuraBot.GuraBot;
-import net.celestialgaze.GuraBot.JSON;
-import net.celestialgaze.GuraBot.SharkUtil;
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.Subcommand;
+import net.celestialgaze.GuraBot.json.JSON;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.Message;
 
 public class SccCreateCommand extends Subcommand {

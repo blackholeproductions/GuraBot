@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.celestialgaze.GuraBot.GuraBot;
-import net.celestialgaze.GuraBot.SharkUtil;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 
 public abstract class Command implements ICommand {
 	protected String name;
