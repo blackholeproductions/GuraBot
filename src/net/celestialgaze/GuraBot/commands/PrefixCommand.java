@@ -15,7 +15,7 @@ public class PrefixCommand extends Command {
 	public void init() {}
 
 	@Override
-	protected void run(Message message, String[] args) {
+	protected void run(Message message, String[] args, String[] modifiers) {
 		message.getChannel().sendMessage("The prefix for " + message.getGuild().getName() + " is `" +
 			ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix() + "`.").queue();
 	}

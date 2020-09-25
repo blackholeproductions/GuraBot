@@ -13,7 +13,7 @@ public class PingCommand extends Command {
 	public void init() {}
 
 	@Override
-	protected void run(Message message, String[] args) {
+	protected void run(Message message, String[] args, String[] modifiers) {
 		long time = System.currentTimeMillis();
 		message.getChannel().sendMessage("Pong!")
 		.queue(response -> {

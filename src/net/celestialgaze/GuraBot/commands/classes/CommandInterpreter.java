@@ -1,5 +1,8 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.json.ServerInfo;
 import net.celestialgaze.GuraBot.util.SharkUtil;
@@ -71,17 +74,25 @@ public class CommandInterpreter {
 				}
 			}
 			if (end) {
-				String[] newArgs = new String[args.length-(i+1)];
+				List<String> modifiersList = new ArrayList<String>();
+				for (int j = args.length-1; j >= 0; j--) {
+					if (args[j].startsWith("--")) {
+						modifiersList.add(args[j]);
+					}
+				}
+				String[] modifiers = new String[modifiersList.size()];
+				modifiersList.toArray(modifiers);
+				String[] newArgs = new String[args.length-(i+1)-modifiers.length];
 				int j = 0;
 				int k = 0;
 				for (String arg : args) {
-					if (k > i) {
+					if (k > i && j+i < newArgs.length) {
 						newArgs[j] = arg;
 						j++;
 					}
 					k++;
 				}
-				command.attempt(message, newArgs);
+				command.attempt(message, newArgs, modifiers);
 				break;
 			}
 		}

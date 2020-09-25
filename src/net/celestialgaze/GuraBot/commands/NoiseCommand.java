@@ -23,9 +23,9 @@ public class NoiseCommand extends Command {
 	public void init() {}
 
 	@Override
-	protected void run(Message message, String[] args) {
+	protected void run(Message message, String[] args, String[] modifiers) {
 		if (args.length < 3) {
-			message.getChannel().sendMessage("You must provide all 3 arguments");
+			SharkUtil.error(message, "You must provide all 3 arguments");
 			return;
 		}
 		double x = Double.parseDouble(args[0]);

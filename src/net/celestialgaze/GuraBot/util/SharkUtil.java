@@ -31,4 +31,13 @@ public class SharkUtil {
 				.setDescription(success)
 				.build()).queue();	
 	}
+	public static String toString(String[] array, String split) {
+		String str = "";
+		int i = 0;
+		for (String s : array) {
+			str += s + (i < array.length - 1 ? split : "");
+			i++;
+		}
+		return str.trim();
+	}
 }

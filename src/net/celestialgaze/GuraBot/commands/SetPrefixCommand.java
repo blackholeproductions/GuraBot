@@ -16,7 +16,7 @@ public class SetPrefixCommand extends Command {
 	public void init() {}
 
 	@Override
-	protected void run(Message message, String[] args) {
+	protected void run(Message message, String[] args, String[] modifiers) {
 		if (args.length != 1) {
 			SharkUtil.error(message, "You must specify a prefix");
 			return;

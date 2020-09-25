@@ -1,6 +1,8 @@
 	package net.celestialgaze.GuraBot;
 
 import java.awt.Color;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import javax.security.auth.login.LoginException;
 
@@ -60,8 +62,12 @@ public class GuraBot extends ListenerAdapter {
 						+ " command");
 			}
 		} catch (Exception e) {
-			String error = "Something went horribly wrong...\n" + e.getClass().getSimpleName() + ": " + e.getMessage() + "\n" +
-					"\nFull message: " + message.getContentRaw().substring(0, Integer.min(message.getContentRaw().length(), 100));
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace();
+			e.printStackTrace(pw);
+			String error = "Something went horribly wrong...\n" + sw.toString().substring(0, Integer.min(700, sw.toString().length())) + 
+			"... \nFull message: " + message.getContentRaw().substring(0, Integer.min(message.getContentRaw().length(), 100));
 			SharkUtil.error(message, error);
 			BotInfo.addLongStat(StatType.ERRORS);
 			message.getChannel().sendMessage("Reporting to cel...").queue(response -> {

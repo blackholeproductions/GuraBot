@@ -17,20 +17,21 @@ public class ShipCommand extends Command {
 	public void init() {}
 
 	@Override
-	protected void run(Message message, String[] args) {
+	protected void run(Message message, String[] args, String[] modifiers) {
 		if (args.length < 2) {
-			message.getChannel().sendMessage("Please input at least 2 arguments");
+			SharkUtil.error(message, "Please input at least 2 arguments");
 			return;
 		}
 
 		String ship = (args[0] + args[1]).toLowerCase();
 		OpenSimplexNoise noise = new OpenSimplexNoise(929465298);
 		
-		if (args.length == 3) {
-			if (args[2].startsWith("--brute-force")) { // If the user is bruteforcing
+		if (modifiers.length > 0) {
+			// Brute force modifier
+			if (modifiers[0].startsWith("--brute-force")) {
 				long time = System.currentTimeMillis();
 				message.getChannel().sendMessage("Calculating...").queue(response -> {
-					boolean lowest = args[2].endsWith("-lowest");
+					boolean lowest = modifiers[0].endsWith("-lowest");
 					Random random2 = new Random();
 					double highest = (lowest ? 100 : 0);
 					int highestSeed = 0;
@@ -58,15 +59,18 @@ public class ShipCommand extends Command {
 								highestSeed + "` (" + (System.currentTimeMillis()-time) +"ms)").queue();
 				});
 				return;
-			} else {
-				try {
-					noise = new OpenSimplexNoise(Integer.parseInt(args[2]));
-				} catch (NumberFormatException e) {
-					SharkUtil.error(message, "User Error (you did something wrong): NumberFormatException " + e.getMessage());
-					return;
-				}
 			}
 		}
+		// Set custom seed
+		if (args.length == 3) {
+			try {
+				noise = new OpenSimplexNoise(Integer.parseInt(args[2]));
+			} catch (NumberFormatException e) {
+				SharkUtil.error(message, "User Error (you did something wrong): NumberFormatException " + e.getMessage());
+				return;
+			}
+		}
+		
 		Random random = new Random();
 		int x = 0, y = 0;
 		for (int i = 0; i < ship.length(); i++) {

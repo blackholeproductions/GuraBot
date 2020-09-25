@@ -29,7 +29,7 @@ public abstract class HelpCommand extends Command {
 	public abstract void init();
 
 	@Override
-	protected void run(Message message, String[] args) {
+	protected void run(Message message, String[] args, String[] modifiers) {
 		String serverPrefix = (message.getChannelType().equals(ChannelType.TEXT) ? 
 				ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix() :
 				Commands.defaultPrefix);

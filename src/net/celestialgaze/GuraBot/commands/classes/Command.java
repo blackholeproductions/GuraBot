@@ -1,5 +1,7 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -36,31 +38,35 @@ public abstract class Command implements ICommand {
 	
 	public abstract void init();
 	@Override
-	public void attempt(Message message, String[] args) {
+	public void attempt(Message message, String[] args, String[] modifiers) {
 		if (canRun(message, false)) {
 			try {
-				run(message, args);
+				run(message, args, modifiers);
 			} catch (Exception e) {
 				String argsString = "";
 				for (String arg : args) {
 					argsString += arg + " ";
 				}
 				argsString = argsString.trim();
-				String error = "Something went horribly wrong...\n" + e.getClass().getSimpleName() + ": " + e.getMessage() + "\n" +
-						"\n" + "Command ran: " + this.getName() + "\n" + "Subcommand: " + Boolean.toString(this instanceof Subcommand) + 
-						(this instanceof Subcommand ? "\nParent: " + ((Subcommand)this).getParent().getName() : "") + "\n" +
-						"Args: " + argsString + "\nFull message: " + message.getContentRaw().substring(0, Integer.min(message.getContentRaw().length(), 100));
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace();
+				e.printStackTrace(pw);
+				String error = "Something went horribly wrong...\n" + sw.toString().substring(0, Integer.min(700, sw.toString().length())) +
+						"\n" + sw.toString().substring(Integer.min(1700, sw.toString().length())) + "Args: " + argsString +  
+						"... \nFull message: " + message.getContentRaw().substring(0, Integer.min(message.getContentRaw().length(), 100));
 				SharkUtil.error(message, error);
 				BotInfo.addLongStat(StatType.ERRORS);
-				message.getChannel().sendMessage("Reporting to cel...").queue(response -> {
-					GuraBot.jda.getUserByTag("celestialgaze", "0001").openPrivateChannel().queue(channel -> {
-						channel.sendMessage("fix ur bot").queue(crashMsg -> {
-							SharkUtil.error(crashMsg, error);
-							response.editMessage("Successfully reported to cel.").queue();
+				if (message.getAuthor().getIdLong() != Long.parseLong("218525899535024129")) {
+					message.getChannel().sendMessage("Reporting to cel...").queue(response -> {
+						GuraBot.jda.getUserByTag("celestialgaze", "0001").openPrivateChannel().queue(channel -> {
+							channel.sendMessage("fix ur bot").queue(crashMsg -> {
+								SharkUtil.error(crashMsg, error);
+								response.editMessage("Successfully reported to cel.").queue();
+							});
 						});
 					});
-				});
-				e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -85,7 +91,7 @@ public abstract class Command implements ICommand {
 	private static void error(Message message, String error, boolean silent) {
 		if (!silent) SharkUtil.error(message, error);
 	}
-	protected abstract void run(Message message, String[] args);
+	protected abstract void run(Message message, String[] args, String[] modifiers);
 	
 	public String getName() {
 		return name;

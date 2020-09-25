@@ -26,13 +26,8 @@ public class SccCreateCommand extends Subcommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void run(Message message, String[] args) {
-		String argsString = "";
-		for (String arg : args) {
-			argsString += arg + " ";
-		}
-		argsString = argsString.trim();
-		
+	protected void run(Message message, String[] args, String[] modifiers) {
+		String argsString = SharkUtil.toString(args, " ");
 		if (argsString.split("\"").length != 6) {
 			SharkUtil.error(message, "You have entered an invalid number of arguments");
 			return;

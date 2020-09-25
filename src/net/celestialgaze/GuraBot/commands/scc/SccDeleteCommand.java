@@ -23,7 +23,7 @@ public class SccDeleteCommand extends Subcommand {
 	public void init() {}
 
 	@Override
-	protected void run(Message message, String[] args) {
+	protected void run(Message message, String[] args, String[] modifiers) {
 		if (args.length != 1) {
 			SharkUtil.error(message, Integer.toString(args.length));
 			SharkUtil.error(message, "You must provide the name of the command to delete.");

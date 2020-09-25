@@ -14,7 +14,7 @@ public class SimpleCommand extends Command {
 	public void init() {}
 
 	@Override
-	protected void run(Message message, String[] args) {
+	protected void run(Message message, String[] args, String[] modifiers) {
 		message.getChannel().sendMessage(response).queue();
 	}
 	
