@@ -1,6 +1,7 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
 import net.celestialgaze.GuraBot.ServerInfo;
+import net.celestialgaze.GuraBot.SharkUtil;
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
@@ -26,9 +27,10 @@ public class CommandInterpreter {
 			return true;
 		}
 		if ((args[0].startsWith(Commands.defaultPrefix) && message.getChannelType().equals(ChannelType.PRIVATE)) ||
-				args[0].startsWith(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix())) {
+				(message.getChannelType().equals(ChannelType.TEXT) && 
+				args[0].startsWith(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix()))) {
 			for (Command command : Commands.rootCommands.values()) {
-				if (args[0].endsWith(command.getName())) return true;
+				if (args[0].toLowerCase().endsWith(command.getName())) return true;
 			}
 			return false;
 		}
@@ -54,12 +56,18 @@ public class CommandInterpreter {
 			// Check if the next argument is a subcommand of the current command
 			for (int j = 0; j < command.getSubcommands().size(); j++) {
 				if (end) break;
-				if (args.length < i+1 || !args[i+1].equalsIgnoreCase(command.getSubcommands().get(j).getName())) {
+				if (i+1 >= args.length || args[i+1].equalsIgnoreCase(command.getSubcommands().get(j).getName())) {
+					if (!(i+1 >= args.length)) {
+						command = command.getSubcommands().get(j);
+						i++;
+					}
 					end = true;
 					break;
-				} else {
-					command = command.getSubcommands().get(j);
-					break;
+				} else if (j+1 >= command.getSubcommands().size()) { 
+					if (args[i+1].equalsIgnoreCase(command.getSubcommands().get(j).getName())) 
+						command = command.getSubcommands().get(j);
+					j = 0;
+					i++;
 				}
 			}
 			if (end) {
@@ -73,7 +81,7 @@ public class CommandInterpreter {
 					}
 					k++;
 				}
-				command.run(message, newArgs);
+				command.attempt(message, newArgs);
 				break;
 			}
 		}

@@ -1,10 +1,12 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
 public abstract class Subcommand extends Command {
-	protected Subcommand(String name, String usage, String description) {
-		super(name, usage, description);
-	}
 	private Command parent;
+	protected Subcommand(String name, String usage, String description, Command parent) {
+		super(name, usage, description, false);
+		this.parent = parent;
+		init();
+	}
 	public Command getParent() {
 		return parent;
 	}

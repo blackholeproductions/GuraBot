@@ -4,5 +4,6 @@ import net.dv8tion.jda.api.entities.Message;
 
 public interface ICommand {
 	public void init();
-	public void run(Message message, String[] args);
+	void attempt(Message message, String[] args);
+	boolean canRun(Message message);
 }

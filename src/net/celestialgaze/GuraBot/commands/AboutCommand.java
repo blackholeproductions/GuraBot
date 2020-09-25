@@ -14,12 +14,10 @@ public class AboutCommand extends Command {
 	}
 
 	@Override
-	public void init() {
-		Commands.addCommand(this);
-	}
+	public void init() {}
 
 	@Override
-	public void run(Message message, String[] args) {
+	protected void run(Message message, String[] args) {
 		String selfName = GuraBot.jda.getSelfUser().getName();
 		message.getChannel().sendMessage(new EmbedBuilder()
 				.setTitle("About " + selfName)

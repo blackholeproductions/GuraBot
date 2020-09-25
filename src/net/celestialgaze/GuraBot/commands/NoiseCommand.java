@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import net.celestialgaze.GuraBot.OpenSimplexNoise;
+import net.celestialgaze.GuraBot.SharkUtil;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -15,16 +16,14 @@ public class NoiseCommand extends Command {
 
 	protected NoiseCommand(String name, String usage, String description) {
 		super(name, usage, description);
-		// TODO Auto-generated constructor stub
+		this.needBotAdmin = true;
 	}
 
 	@Override
-	public void init() {
-		Commands.addCommand(this);
-	}
+	public void init() {}
 
 	@Override
-	public void run(Message message, String[] args) {
+	protected void run(Message message, String[] args) {
 		if (args.length < 3) {
 			message.getChannel().sendMessage("You must provide all 3 arguments");
 			return;
@@ -63,7 +62,8 @@ public class NoiseCommand extends Command {
 			baos.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
-			message.getChannel().sendMessage("Something strange happened (" + e.getMessage() + ") while rendering image :(");
+			SharkUtil.error(message, "Something strange happened (" + e.getClass().getSimpleName() + " " +
+					e.getMessage() + ") while rendering image :(");
 			return;
 		}
 		message.getChannel().sendFile(baos.toByteArray(), "noise.png").embed(new EmbedBuilder()

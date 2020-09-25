@@ -17,6 +17,8 @@ public class JSON {
 	      myObj.getParentFile().mkdirs();
 	      if (myObj.createNewFile()) {
 	        System.out.println("File created: " + myObj.getName());
+		    JSONObject jo = new JSONObject();
+		    writeToFile(jo, filename);
 	      }
 	    } catch (IOException e) {
 	      System.out.println("An error occurred.");

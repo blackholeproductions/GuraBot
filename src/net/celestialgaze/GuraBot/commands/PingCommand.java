@@ -10,12 +10,10 @@ public class PingCommand extends Command {
 	}
 
 	@Override
-	public void init() {
-		Commands.addCommand(this);
-	}
+	public void init() {}
 
 	@Override
-	public void run(Message message, String[] args) {
+	protected void run(Message message, String[] args) {
 		long time = System.currentTimeMillis();
 		message.getChannel().sendMessage("Pong!")
 		.queue(response -> {

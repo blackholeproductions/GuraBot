@@ -15,6 +15,7 @@ public class ServerInfo {
 		this.id = id;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void setPrefix(String newPrefix) {
 		// creating JSONObject 
         JSONObject jo = JSON.readFile(getFilename(id));
@@ -24,6 +25,7 @@ public class ServerInfo {
         
         JSON.writeToFile(jo, getFilename(id));
 	}
+	@SuppressWarnings("unchecked")
 	public String getPrefix() {
 		JSONObject jo = JSON.readFile(getFilename(id));
 		

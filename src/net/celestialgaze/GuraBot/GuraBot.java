@@ -1,5 +1,7 @@
 	package net.celestialgaze.GuraBot;
 
+import java.awt.Color;
+
 import javax.security.auth.login.LoginException;
 
 import org.json.simple.JSONObject;
@@ -15,6 +17,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class GuraBot extends ListenerAdapter {
 	public static JDA jda;
+	public static final String DATA_FOLDER = System.getProperty("user.dir") + "\\data\\";
+	public static final Color DEFAULT_COLOR = new Color(179, 217, 255);
 	public static void main(String[] args) {
 		System.out.println("Main function");
 		try {
