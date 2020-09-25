@@ -54,6 +54,10 @@ public class Commands {
 				"scc",
 				"",
 				"Manages simple (text-only responses) commands"));
+		addCommand(new StatsCommand(
+				"stats",
+				"",
+				"Shows some miscellaneous stats"));
 		// Load commands from json
 		JSONObject jo = JSON.readFile(GuraBot.DATA_FOLDER+"bot\\commands.json");
 		jo.forEach((key, value) -> {

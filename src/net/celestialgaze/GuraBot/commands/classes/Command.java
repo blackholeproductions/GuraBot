@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.celestialgaze.GuraBot.GuraBot;
+import net.celestialgaze.GuraBot.json.BotInfo;
+import net.celestialgaze.GuraBot.json.StatType;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 
 public abstract class Command implements ICommand {
@@ -49,6 +51,7 @@ public abstract class Command implements ICommand {
 						(this instanceof Subcommand ? "\nParent: " + ((Subcommand)this).getParent().getName() : "") + "\n" +
 						"Args: " + argsString + "\nFull message: " + message.getContentRaw().substring(0, Integer.min(message.getContentRaw().length(), 100));
 				SharkUtil.error(message, error);
+				BotInfo.addLongStat(StatType.ERRORS);
 				message.getChannel().sendMessage("Reporting to cel...").queue(response -> {
 					GuraBot.jda.getUserByTag("celestialgaze", "0001").openPrivateChannel().queue(channel -> {
 						channel.sendMessage("fix ur bot").queue(crashMsg -> {

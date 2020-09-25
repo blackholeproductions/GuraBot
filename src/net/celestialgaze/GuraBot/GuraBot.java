@@ -8,11 +8,16 @@ import org.json.simple.JSONObject;
 
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.CommandInterpreter;
+import net.celestialgaze.GuraBot.commands.classes.Subcommand;
+import net.celestialgaze.GuraBot.json.BotInfo;
 import net.celestialgaze.GuraBot.json.JSON;
+import net.celestialgaze.GuraBot.json.StatType;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -32,23 +37,41 @@ public class GuraBot extends ListenerAdapter {
 			e.printStackTrace();
 		}
 		Commands.init();
+		BotInfo.addLongStat(StatType.STARTS);
 	}
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
+		Message message = event.getMessage();
 		if (event.getChannelType().equals(ChannelType.PRIVATE)) { // Handle dm logging
 			System.out.println("[DM " + event.getPrivateChannel().getUser().getAsMention() + "] " +
 					event.getAuthor().getAsTag() + ": " +
-					event.getMessage().getContentDisplay());
+					message.getContentDisplay());
 		} else {
 			System.out.println("[" + event.getGuild().getName() + " - #" + event.getChannel().getName() + "] " +
 					event.getAuthor().getAsTag() + ": " +
-					event.getMessage().getContentDisplay());
+					message.getContentDisplay());
 		}
 		// Run any commands and log when successful
-		if (CommandInterpreter.readExecute(event.getMessage())) {
-			System.out.println("Successfully executed " + 
-					event.getMessage().getContentRaw().split(" ")[0].substring(CommandInterpreter.getPrefix(event.getMessage()).length())
-					+ " command");
+		try {
+			if (CommandInterpreter.readExecute(message)) {
+				BotInfo.addLongStat(StatType.COMMANDS_RUN);
+				System.out.println("Successfully executed " + 
+						message.getContentRaw().split(" ")[0].substring(CommandInterpreter.getPrefix(message).length())
+						+ " command");
+			}
+		} catch (Exception e) {
+			String error = "Something went horribly wrong...\n" + e.getClass().getSimpleName() + ": " + e.getMessage() + "\n" +
+					"\nFull message: " + message.getContentRaw().substring(0, Integer.min(message.getContentRaw().length(), 100));
+			SharkUtil.error(message, error);
+			BotInfo.addLongStat(StatType.ERRORS);
+			message.getChannel().sendMessage("Reporting to cel...").queue(response -> {
+				GuraBot.jda.getUserByTag("celestialgaze", "0001").openPrivateChannel().queue(channel -> {
+					channel.sendMessage("fix ur bot").queue(crashMsg -> {
+						SharkUtil.error(crashMsg, error);
+						response.editMessage("Successfully reported to cel.").queue();
+					});
+				});
+			});
 		}
 	}
 }
