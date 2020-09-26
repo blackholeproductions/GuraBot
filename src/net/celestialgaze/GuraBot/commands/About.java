@@ -7,9 +7,9 @@ import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
-public class AboutCommand extends Command {
+public class About extends Command {
 
-	public AboutCommand(String name, String usage, String description) {
+	public About(String name, String usage, String description) {
 		super(name, usage, description);
 	}
 
@@ -25,7 +25,8 @@ public class AboutCommand extends Command {
 				.appendDescription("Hello! I'm " + selfName + ", a discord bot by celestialgaze#0001. I'm a re-make " +
 				"of an older bot, Uni, created with Java instead of node.js. I hope to regain all of the old " + 
 				"functionalities and more, and allow for broad access to *every* feature across *all* areas of Discord. " +
-				"A neater, more versatile redesign of Uni. The apex predator of bots.\n\na.")
+				"A neater, more versatile redesign of Uni. The apex predator of bots.\n\na. \n[**Invite me to your server!**]"+
+				"(https://discord.com/oauth2/authorize?client_id=758355935663095808&permissions=2147483647&scope=bot)")
 				.setThumbnail(GuraBot.jda.getSelfUser().getAvatarUrl()).build()).queue();
 	}
 

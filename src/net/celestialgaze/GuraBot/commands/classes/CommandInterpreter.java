@@ -1,8 +1,11 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
+import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.json.ServerInfo;
 import net.celestialgaze.GuraBot.util.SharkUtil;
@@ -12,28 +15,35 @@ import net.dv8tion.jda.api.entities.Message;
 public class CommandInterpreter {
 	public static String getPrefix(Message message) {
 		String content = message.getContentRaw();
-		String[] args = content.split(" ");
+		String[] args = content.split(GuraBot.REGEX_WHITESPACE);
+		String rootCommand = args[0].toLowerCase();
+		
 		if (message.getChannelType().equals(ChannelType.PRIVATE)) return Commands.defaultPrefix;
-		if (args[0].startsWith(Commands.defaultPrefix) && args[0].substring(Commands.defaultPrefix.length()).equalsIgnoreCase("setprefix")) {
+		if (rootCommand.startsWith(Commands.defaultPrefix) && 
+				(rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("setprefix") ||
+				rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("prefix"))) {
 			return Commands.defaultPrefix;
 		}
-		if (args[0].startsWith(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix())) {
+		if (rootCommand.startsWith(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix())) {
 			return ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix();
 		}
 		return Commands.defaultPrefix;
 	}
 	public static boolean read(Message message) {
 		String content = message.getContentRaw();
-		String[] args = content.split(" ");
-		// Check if leading argument is a valid command with the server prefix, with a prefix exception for the setprefix command
-		if (args[0].startsWith(Commands.defaultPrefix) && args[0].substring(Commands.defaultPrefix.length()).equalsIgnoreCase("setprefix")) {
+		String[] args = content.split(GuraBot.REGEX_WHITESPACE);
+		String rootCommand = args[0].toLowerCase();
+		// Check if leading argument is a valid command with the server prefix, with a prefix exception for the setprefix/prefix command
+		if (rootCommand.startsWith(Commands.defaultPrefix) && 
+				(rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("setprefix") ||
+				rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("prefix"))) {
 			return true;
 		}
-		if ((args[0].startsWith(Commands.defaultPrefix) && message.getChannelType().equals(ChannelType.PRIVATE)) ||
+		if ((rootCommand.startsWith(Commands.defaultPrefix) && message.getChannelType().equals(ChannelType.PRIVATE)) ||
 				(message.getChannelType().equals(ChannelType.TEXT) && 
-				args[0].startsWith(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix()))) {
+				rootCommand.startsWith(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix()))) {
 			for (Command command : Commands.rootCommands.values()) {
-				if (args[0].toLowerCase().endsWith(command.getName())) return true;
+				if (rootCommand.endsWith(command.getName())) return true;
 			}
 			return false;
 		}
@@ -50,7 +60,11 @@ public class CommandInterpreter {
 	
 	public static void execute(Message message) {
 		String content = message.getContentRaw();
-		String[] args = content.split(" ");
+		String[] args = content.split(GuraBot.REGEX_WHITESPACE);
+		// Remove redundant spaces
+		List<String> argsList = Arrays.asList(args);
+		argsList.removeIf(item -> item.isEmpty() || item == null);
+		argsList.toArray(args);
 		Command command = Commands.rootCommands.get(args[0].toLowerCase().substring(getPrefix(message).length()));
 		// Loop through each argument. We will check where commands end and arguments begin, as well as which command to run.
 		for (int i = 0; i < args.length; i++) {

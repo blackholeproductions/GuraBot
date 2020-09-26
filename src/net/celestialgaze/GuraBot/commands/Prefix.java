@@ -2,11 +2,12 @@ package net.celestialgaze.GuraBot.commands;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.json.ServerInfo;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.Message;
 
-public class PrefixCommand extends Command {
+public class Prefix extends Command {
 
-	public PrefixCommand(String name, String usage, String description) {
+	public Prefix(String name, String usage, String description) {
 		super(name, usage, description);
 		this.usablePrivately = false;
 	}
@@ -16,8 +17,8 @@ public class PrefixCommand extends Command {
 
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
-		message.getChannel().sendMessage("The prefix for " + message.getGuild().getName() + " is `" +
-			ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix() + "`.").queue();
+		SharkUtil.info(message, "The prefix for **" + message.getGuild().getName() + "** is `" +
+			ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix() + "`.");
 	}
 
 }

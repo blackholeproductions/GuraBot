@@ -12,9 +12,9 @@ import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
-public class NoiseCommand extends Command {
+public class Noise extends Command {
 
-	protected NoiseCommand(String name, String usage, String description) {
+	protected Noise(String name, String usage, String description) {
 		super(name, usage, description);
 		this.needBotAdmin = true;
 	}

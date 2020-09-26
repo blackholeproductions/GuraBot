@@ -4,9 +4,9 @@ import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
 
-public class SimpleCmdCreatorCommand extends HelpCommand {
+public class SimpleCmdCreator extends HelpCommand {
 
-	public SimpleCmdCreatorCommand(String name, String usage, String description) {
+	public SimpleCmdCreator(String name, String usage, String description) {
 		super(name, usage, description, null, "Simple Command Creator");
 		for (Command cmd : subcommands) {
 			commands.add(cmd);
@@ -18,8 +18,8 @@ public class SimpleCmdCreatorCommand extends HelpCommand {
 	@Override
 	public void init() {
 		Commands.addCommand(this);
-		subcommands.add(new SccCreateCommand(this));
-		subcommands.add(new SccDeleteCommand(this));
+		subcommands.add(new SccCreate(this));
+		subcommands.add(new SccDelete(this));
 		for (Command cmd : commands) {
 			System.out.println(cmd.getName());
 		}

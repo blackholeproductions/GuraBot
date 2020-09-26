@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
 public class SharkUtil {
+	public static final int DEFAULT_RANDOM_SEED = 403126880;
 	public static void error(Message message, String error) {
 		String[] failures = {"uh oh...", "is this a land thing that i'm not aware of?", "0% hydrodynamic"};
 		message.getChannel().sendMessage(new EmbedBuilder()
@@ -39,5 +40,20 @@ public class SharkUtil {
 			i++;
 		}
 		return str.trim();
+	}
+	public static double randomSeeded(String input) {
+		return randomSeeded(input, DEFAULT_RANDOM_SEED);
+	}
+	public static double randomSeeded(String input, long seed) {
+		OpenSimplexNoise noise = new OpenSimplexNoise(seed);
+		Random random = new Random();
+		int x = 0, y = 0;
+		for (int i = 0; i < input.length(); i++) {
+			int value = Math.toIntExact(Math.round((noise.eval(input.charAt(i)*100, 10)+1)*50));
+			x += value;
+			y += value;
+		}
+		random.setSeed(Math.toIntExact(Math.round((noise.eval(x, y)*Integer.MAX_VALUE))));
+		return random.nextDouble();
 	}
 }

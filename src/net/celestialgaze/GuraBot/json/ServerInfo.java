@@ -28,7 +28,7 @@ public class ServerInfo {
 	@SuppressWarnings("unchecked")
 	public String getPrefix() {
 		JSONObject jo = JSON.readFile(getFilename(id));
-		
-		return (String) jo.getOrDefault("prefix", "a!	");
+		String prefix = (String)jo.getOrDefault("prefix", "a!");
+		return prefix.toLowerCase();
 	}
 }

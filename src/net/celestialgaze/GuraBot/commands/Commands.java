@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.SimpleCommand;
-import net.celestialgaze.GuraBot.commands.scc.SimpleCmdCreatorCommand;
+import net.celestialgaze.GuraBot.commands.scc.SimpleCmdCreator;
 import net.celestialgaze.GuraBot.json.JSON;
 
 public class Commands {
@@ -26,35 +26,35 @@ public class Commands {
 	public static void init() {
 		commands.clear();
 		rootCommands.clear();
-		addCommand(new PingCommand(
+		addCommand(new Ping(
 				"ping",
 				"",
 				"Pings the bot and gives you the latency."));
-		addCommand(new SetPrefixCommand(
+		addCommand(new SetPrefix(
 				"setprefix",
 				"<prefix>",
 				"Sets the prefix of your server"));
-		addCommand(new PrefixCommand(
+		addCommand(new Prefix(
 				"prefix",
 				"",
 				"Gets the current prefix of the server. Usable with the default prefix universally."));
-		addCommand(new AboutCommand(
+		addCommand(new About(
 				"about",
 				"",
 				"Information about me, " + GuraBot.jda.getSelfUser().getName()+ "~"));
-		addCommand(new NoiseCommand(
+		addCommand(new Noise(
 				"noise",
 				"<x> <y> <z>",
 				"Gets OpenSimplex noise value at <x>, <y>, <z>."));
-		addCommand(new ShipCommand(
+		addCommand(new Ship(
 				"ship",
 				"<thing1> <thing2> Optional: (<seed> | --brute-force | --brute-force-lowest)",
 				"Tells you how much they're destined for true love (or you can rig it)"));
-		addCommand(new SimpleCmdCreatorCommand(
+		addCommand(new SimpleCmdCreator(
 				"scc",
 				"",
 				"Manages simple (text-only responses) commands"));
-		addCommand(new StatsCommand(
+		addCommand(new Stats(
 				"stats",
 				"",
 				"Shows some miscellaneous stats"));
@@ -66,7 +66,7 @@ public class Commands {
 			addCommand(new SimpleCommand(title, m.get("description"), m.get("response")));
 		});
 		// Help command last as it accesses the commands list
-		addCommand(new MainHelpCommand(
+		addCommand(new MainHelp(
 				"help",
 				"",
 				"Shows a list of available commands and any information about them."));

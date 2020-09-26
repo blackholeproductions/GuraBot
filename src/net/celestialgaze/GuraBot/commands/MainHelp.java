@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
 
-public class MainHelpCommand extends HelpCommand {
+public class MainHelp extends HelpCommand {
 
-	public MainHelpCommand(String name, String usage, String description) {
+	public MainHelp(String name, String usage, String description) {
 		super(name, usage, description, null, "GuraBot");
 	}
 

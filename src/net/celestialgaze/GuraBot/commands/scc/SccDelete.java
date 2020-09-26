@@ -13,9 +13,9 @@ import net.celestialgaze.GuraBot.json.JSON;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.Message;
 
-public class SccDeleteCommand extends Subcommand {
+public class SccDelete extends Subcommand {
 
-	protected SccDeleteCommand(Command parent) {
+	protected SccDelete(Command parent) {
 		super("delete", "<name>", "Removes a command", parent);
 	}
 

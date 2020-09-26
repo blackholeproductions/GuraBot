@@ -5,9 +5,9 @@ import net.celestialgaze.GuraBot.json.ServerInfo;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.Message;
 
-public class SetPrefixCommand extends Command {
+public class SetPrefix extends Command {
 
-	public SetPrefixCommand(String name, String usage, String description) {
+	public SetPrefix(String name, String usage, String description) {
 		super(name, usage, description);
 		this.usablePrivately = false;
 	}

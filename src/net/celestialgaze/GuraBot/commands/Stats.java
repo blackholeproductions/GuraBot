@@ -7,9 +7,9 @@ import net.celestialgaze.GuraBot.json.StatType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
-public class StatsCommand extends Command {
+public class Stats extends Command {
 
-	public StatsCommand(String name, String usage, String description) {
+	public Stats(String name, String usage, String description) {
 		super(name, usage, description);
 		// TODO Auto-generated constructor stub
 	}

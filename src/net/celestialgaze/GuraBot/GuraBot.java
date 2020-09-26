@@ -27,6 +27,7 @@ public class GuraBot extends ListenerAdapter {
 	public static JDA jda;
 	public static final String DATA_FOLDER = System.getProperty("user.dir") + "\\data\\";
 	public static final Color DEFAULT_COLOR = new Color(179, 217, 255);
+	public static final String REGEX_WHITESPACE = "\\s+";
 	public static void main(String[] args) {
 		System.out.println("Main function");
 		try {
@@ -43,6 +44,7 @@ public class GuraBot extends ListenerAdapter {
 	}
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
+		if (event.getAuthor().isBot()) return;
 		Message message = event.getMessage();
 		if (event.getChannelType().equals(ChannelType.PRIVATE)) { // Handle dm logging
 			System.out.println("[DM " + event.getPrivateChannel().getUser().getAsMention() + "] " +

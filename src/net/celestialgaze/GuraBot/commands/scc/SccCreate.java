@@ -12,9 +12,9 @@ import net.celestialgaze.GuraBot.json.JSON;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.Message;
 
-public class SccCreateCommand extends Subcommand {
+public class SccCreate extends Subcommand {
 
-	protected SccCreateCommand(Command parent) {
+	protected SccCreate(Command parent) {
 		super("create", //title
 			  "\"title\" \"description\" \"response\"", //usage
 			  "Creates simple (text-only responses) commands", //description

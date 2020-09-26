@@ -7,8 +7,8 @@ import net.celestialgaze.GuraBot.util.OpenSimplexNoise;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.Message;
 
-public class ShipCommand extends Command {
-	public ShipCommand(String name, String usage, String description) {
+public class Ship extends Command {
+	public Ship(String name, String usage, String description) {
 		super(name, usage, description);
 		// TODO Auto-generated constructor stub
 	}
@@ -24,11 +24,12 @@ public class ShipCommand extends Command {
 		}
 
 		String ship = (args[0] + args[1]).toLowerCase();
-		OpenSimplexNoise noise = new OpenSimplexNoise(929465298);
+		int seed = SharkUtil.DEFAULT_RANDOM_SEED;
 		
 		if (modifiers.length > 0) {
 			// Brute force modifier
 			if (modifiers[0].startsWith("--brute-force")) {
+				this.cooldownDuration = 2;
 				long time = System.currentTimeMillis();
 				message.getChannel().sendMessage("Calculating...").queue(response -> {
 					boolean lowest = modifiers[0].endsWith("-lowest");
@@ -36,23 +37,14 @@ public class ShipCommand extends Command {
 					double highest = (lowest ? 100 : 0);
 					int highestSeed = 0;
 					for (int i = 0; i < 9999; i++) {
-						int seed = random2.nextInt(Integer.MAX_VALUE);
-						OpenSimplexNoise _noise = new OpenSimplexNoise(seed);
-						Random random = new Random();
-						int x = 0, y = 0;
-						for (int j = 0; j < ship.length(); j++) {
-							int value = Math.toIntExact(Math.round(toPercent(_noise.eval(ship.charAt(j)*100, 10))));
-							x += value;
-							y += value;
-						}
-						random.setSeed(Math.toIntExact(Math.round((_noise.eval(x, y)*Integer.MAX_VALUE))));
-						double shipPercent = random.nextDouble()*100;
+						int seed2 = random2.nextInt(Integer.MAX_VALUE);
+						double shipPercent = SharkUtil.randomSeeded(ship, seed2)*100;
 						if (!lowest && shipPercent > highest) {
 							highest = shipPercent;
-							highestSeed = seed;
+							highestSeed = seed2;
 						} else if (lowest && shipPercent < highest) {
 							highest = shipPercent;
-							highestSeed = seed;
+							highestSeed = seed2;
 						}
 					}
 					response.editMessage("Brute-force revealed a result of **" + String.format("%.2f", highest) + "%** with seed `" + 
@@ -64,22 +56,14 @@ public class ShipCommand extends Command {
 		// Set custom seed
 		if (args.length == 3) {
 			try {
-				noise = new OpenSimplexNoise(Integer.parseInt(args[2]));
+				seed = Integer.parseInt(args[2]);
 			} catch (NumberFormatException e) {
 				SharkUtil.error(message, "User Error (you did something wrong): NumberFormatException " + e.getMessage());
 				return;
 			}
 		}
 		
-		Random random = new Random();
-		int x = 0, y = 0;
-		for (int i = 0; i < ship.length(); i++) {
-			int value = Math.toIntExact(Math.round(toPercent(noise.eval(ship.charAt(i)*100, 10))));
-			x += value;
-			y += value;
-		}
-		random.setSeed(Math.toIntExact(Math.round((noise.eval(x, y)*Integer.MAX_VALUE))));
-		double shipPercent = random.nextDouble()*100;
+		double shipPercent = SharkUtil.randomSeeded(ship, seed)*100;
 		String shipPercentString = String.format("%.2f", shipPercent);
 		
 		message.getChannel().sendMessage(format(args, shipPercentString)).queue();
