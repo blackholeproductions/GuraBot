@@ -1,15 +1,20 @@
 package net.celestialgaze.GuraBot.commands;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.json.ServerInfo;
+import net.celestialgaze.GuraBot.json.ServerProperty;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.Message;
 
 public class SetPrefix extends Command {
-
-	public SetPrefix(String name, String usage, String description) {
-		super(name, usage, description);
-		this.usablePrivately = false;
+	public SetPrefix() {
+		super(new CommandOptions()
+				.setName("setprefix")
+				.setDescription("Sets the prefix of your server")
+				.setUsage("<prefix>")
+				.setCategory("Server")
+				.verify());
 	}
 
 	@Override
@@ -21,8 +26,9 @@ public class SetPrefix extends Command {
 			SharkUtil.error(message, "You must specify a prefix");
 			return;
 		}
-		ServerInfo.getServerInfo(message.getGuild().getIdLong()).setPrefix(args[0]);
-		SharkUtil.success(message, ("Set server prefix to `" + args[0] + "`!"));
+		String prefix = args[0].toLowerCase();
+		ServerInfo.getServerInfo(message.getGuild().getIdLong()).setProperty(ServerProperty.PREFIX, prefix);
+		SharkUtil.success(message, ("Set server prefix to `" + prefix + "`!"));
 	}
 
 }

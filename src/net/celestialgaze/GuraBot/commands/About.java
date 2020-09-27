@@ -4,13 +4,18 @@ import java.awt.Color;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
 public class About extends Command {
 
-	public About(String name, String usage, String description) {
-		super(name, usage, description);
+	public About() {
+		super(new CommandOptions()
+				.setName("about")
+				.setDescription("Information about me, " + GuraBot.jda.getSelfUser().getName()+ "~")
+				.setCategory("Bot Info")
+				.verify());
 	}
 
 	@Override

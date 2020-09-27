@@ -63,4 +63,36 @@ public class JSON {
 		}
 		return null;
 	}
+	@SuppressWarnings("unchecked")
+	public static JSONObject write(String filename, String name, Object value) {
+		JSONObject jo = readFile(filename);
+		jo.put(name, value);
+		writeToFile(jo, filename);
+		return jo;
+	}
+	@SuppressWarnings("unchecked")
+	public static <T> T read(String filename, String name) {
+		JSONObject jo = readFile(filename);
+		return (T) jo.get(name);
+	}
+	@SuppressWarnings("unchecked")
+	public static <T> T read(String filename, String name, T def) {
+		JSONObject jo = readFile(filename);
+		return (T) jo.getOrDefault(name, def);
+	}
+	public static JSONObjectBuilder getBuilder(String filename) {
+		JSONObject jo = readFile(filename);
+		return new JSONObjectBuilder(jo);
+	}
+	public static JSONObjectBuilder getBuilder(JSONObject jo) {
+		return new JSONObjectBuilder(jo);
+	}
+	@SuppressWarnings("unchecked")
+	public static <T> T get(JSONObject jo, String value) {
+		return (T) jo.get(value);
+	}
+	@SuppressWarnings("unchecked")
+	public static <T> T getOrDefault(JSONObject jo, String value, T def) {
+		return (T) jo.getOrDefault(value, def);
+	}
 }

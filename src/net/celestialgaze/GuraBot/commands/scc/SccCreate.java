@@ -2,23 +2,32 @@ package net.celestialgaze.GuraBot.commands.scc;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.Subcommand;
 import net.celestialgaze.GuraBot.json.JSON;
+import net.celestialgaze.GuraBot.json.ServerInfo;
+import net.celestialgaze.GuraBot.json.ServerProperty;
 import net.celestialgaze.GuraBot.util.SharkUtil;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 
 public class SccCreate extends Subcommand {
 
-	protected SccCreate(Command parent) {
-		super("create", //title
-			  "\"title\" \"description\" \"response\"", //usage
-			  "Creates simple (text-only responses) commands", //description
-			  parent);
+	public SccCreate(Command parent) {
+		super(new CommandOptions()
+				.setName("create")
+				.setDescription("Creates simple (text-only responses) commands")
+				.setUsage("\"title\" \"description\" \"response\"")
+				.setPermission(Permission.MANAGE_SERVER)
+				.verify(),
+				parent);
 	}
 
 	@Override
@@ -27,16 +36,18 @@ public class SccCreate extends Subcommand {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
-		String argsString = SharkUtil.toString(args, " ");
-		if (argsString.split("\"").length != 6) {
+		String argsString = message.getContentRaw();
+		String[] quoteSplit = argsString.split("\"");
+		if (quoteSplit.length < 6 || quoteSplit.length > 9) {
 			SharkUtil.error(message, "You have entered an invalid number of arguments");
 			return;
 		}
-		String title = argsString.split("\"")[1].replaceAll("\\s", "");
-		title = title.replaceAll("\\s", ""); // remove all whitespace
-		String description = argsString.split("\"")[3];
-		String response = argsString.split("\"")[5];
 		
+		String title = quoteSplit[1].replaceAll("\\s", "").toLowerCase();
+		title = title.replaceAll(GuraBot.REGEX_WHITESPACE, ""); // remove all whitespace
+		String description = quoteSplit[3];
+		String response = quoteSplit[5];
+		String category = Command.DEFAULT_CATEGORY;
 		if (title.length() >= 100) {
 			SharkUtil.error(message, "The title cannot be longer than 100 characters. Current: " + title.length());
 			return;
@@ -44,18 +55,36 @@ public class SccCreate extends Subcommand {
 			SharkUtil.error(message, "The description cannot be longer than 512 characters. Current: " + description.length());
 			return;
 		}
+		// Prevent command overriding
+		if (Commands.rootCommands.containsKey(title)) {
+			SharkUtil.error(message, "Looks like there's already a global command with the name **" + title + "**. Please choose another");
+			return;
+		}
 		
-		String filename = GuraBot.DATA_FOLDER+"bot\\commands.json";
-		JSONObject jo = JSON.readFile(filename);
+		Map<String, String> command = new LinkedHashMap<String, String>(3);
+		command.put("description", description);
+		command.put("response", response);
 		
-		Map<String, String> m = new LinkedHashMap<String, String>(2);
-		m.put("description", description);
-		m.put("response", response);
-		jo.put(title, m);
+		if (modifiers.length > 0 && modifiers[0].equalsIgnoreCase("global")) {
+			String filename = GuraBot.DATA_FOLDER+"bot\\commands.json";
+			JSONObject jo = JSON.readFile(filename);
+			if (quoteSplit.length == 9) category = quoteSplit[7];
+			command.put("category", category);
+
+			jo.put(title, command);
+			
+			JSON.writeToFile(jo, filename);
+			
+			Commands.init(); // Initialize again to include the newly-created command
+			SharkUtil.success(message, "Successfully created **" + title + "** command");
+			return;
+		}
+		ServerInfo si = ServerInfo.getServerInfo(message.getGuild().getIdLong());
+		Map<String, Map<String, String>> m = si.getProperty(ServerProperty.COMMANDS, new LinkedHashMap<String, Map<String, String>>());
+		m.put(title, command);
+		si.setProperty(ServerProperty.COMMANDS, m);
 		
-		JSON.writeToFile(jo, filename);
-		Commands.init(); // Initialize again to include the newly-created command
-		
+		Commands.updateGuildCommands(message.getGuild().getIdLong());
 		SharkUtil.success(message, "Successfully created **" + title + "** command");
 	}
 

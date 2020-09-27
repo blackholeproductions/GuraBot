@@ -6,44 +6,52 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.json.BotInfo;
-import net.celestialgaze.GuraBot.json.StatType;
+import net.celestialgaze.GuraBot.json.BotStat;
 import net.celestialgaze.GuraBot.util.DelayedRunnable;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 
 public abstract class Command implements ICommand {
-	protected String name;
-	protected String usage;
-	protected String description;
-	protected List<Command> subcommands = new ArrayList<Command>();
-	Permission permission = null;
-	protected boolean usablePrivately = true;
-	protected boolean needBotAdmin = false;
-	protected double cooldownDuration = 0.5;
-	protected Map<Long, DelayedRunnable> userCooldowns = new HashMap<Long, DelayedRunnable>();
+	public static final String DEFAULT_CATEGORY = "Uncategorized";
+	protected String name; // The name of the command
+	protected String usage; // Usage that appears in the help menu
+	protected String description; // Description that appears in the help menu
+	protected String category = DEFAULT_CATEGORY; // Category that the command belongs to
+	protected Map<String, Command> subcommands = new HashMap<String, Command>(); // Maps command name to the command in question
+	Permission permission = null; // The required permission for this command. null is none needed
+	protected boolean usablePrivately = true; // Whether this command is usable within DMs
+	protected boolean needBotAdmin = false; // Whether the user requires bot admin to run this command
+	protected double cooldownDuration = 0.5; // The cooldown that this command will have for each user.
+	protected Map<Long, DelayedRunnable> userCooldowns = new HashMap<Long, DelayedRunnable>(); // Current users that have a cooldown
 	
-	protected Command(String name, String usage, String description) {
-		setValues(name, usage, description, false);
+	public Command(Pair<CommandOptions, Boolean> pair) {
+		preInit(pair, false);
 	}
-	protected Command(String name, String usage, String description, boolean initialize) {
-		setValues(name, usage, description, initialize);
+	public Command(Pair<CommandOptions, Boolean> pair, boolean initialize) {
+		preInit(pair, initialize);
 	}
-	
-	private void setValues(String name, String usage, String description, boolean initialize) {
-		this.name = name;
-		this.usage = usage;
-		this.description = description;
-		System.out.println("Initializing " + name + " command");
+	private void preInit(Pair<CommandOptions, Boolean> pair, boolean initialize) {
+		if (!pair.getRight()) {
+			System.err.println(name + " command was initialized incorrectly");
+			return;
+		}
+		CommandOptions options = pair.getLeft();
+		this.name = options.name;
+		this.usage = options.usage;
+		this.description = options.description;
+		this.category = options.category;
+		this.permission = options.permission;
+		this.usablePrivately = options.usablePrivately;
+		this.needBotAdmin = options.needBotAdmin;
+		this.cooldownDuration = options.cooldownDuration;
+		System.out.println("Sucessfully initialized " + name + " command");
 		if (initialize) init();
 	}
-	
 	public abstract void init();
 	
 	@Override
@@ -71,7 +79,7 @@ public abstract class Command implements ICommand {
 						"Args: " + argsString + "... \nFull message: " + 
 						message.getContentRaw().substring(0, Integer.min(message.getContentRaw().length(), 100));
 				SharkUtil.error(message, error);
-				BotInfo.addLongStat(StatType.ERRORS);
+				BotInfo.addLongStat(BotStat.ERRORS);
 				if (message.getAuthor().getIdLong() != Long.parseLong("218525899535024129")) {
 					message.getChannel().sendMessage("Reporting to cel...").queue(response -> {
 						GuraBot.jda.getUserByTag("celestialgaze", "0001").openPrivateChannel().queue(channel -> {
@@ -133,8 +141,11 @@ public abstract class Command implements ICommand {
 	public Permission getPermission() {
 		return permission;
 	}
+	public String getCategory() {
+		return category;
+	}
 	
-	public List<Command> getSubcommands() {
+	public Map<String, Command> getSubcommands() {
 		return subcommands;
 	}
 }

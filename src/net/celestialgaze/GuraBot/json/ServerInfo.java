@@ -1,8 +1,7 @@
 package net.celestialgaze.GuraBot.json;
 
-import org.json.simple.JSONObject;
-
 public class ServerInfo {
+	public final String filename;
 	public static ServerInfo getServerInfo(long id) {
 		return new ServerInfo(id);
 	}
@@ -13,22 +12,17 @@ public class ServerInfo {
 	
 	public ServerInfo(long id) {
 		this.id = id;
+		filename = getFilename(id);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public void setPrefix(String newPrefix) {
-		// creating JSONObject 
-        JSONObject jo = JSON.readFile(getFilename(id));
-          
-        // putting data to JSONObject 
-        jo.put("prefix", newPrefix);
-        
-        JSON.writeToFile(jo, getFilename(id));
+	public void setProperty(ServerProperty property, Object value) {
+		JSON.write(filename, property.toString().toLowerCase(), value);
 	}
 	@SuppressWarnings("unchecked")
-	public String getPrefix() {
-		JSONObject jo = JSON.readFile(getFilename(id));
-		String prefix = (String)jo.getOrDefault("prefix", "a!");
-		return prefix.toLowerCase();
+	public <T> T getProperty(ServerProperty property) {
+		return (T) JSON.read(filename, property.toString().toLowerCase());
+	}
+	public <T> T getProperty(ServerProperty property, T def) {
+		return (T) JSON.read(filename, property.toString().toLowerCase(), def);
 	}
 }

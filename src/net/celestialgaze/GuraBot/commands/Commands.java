@@ -9,13 +9,18 @@ import org.json.simple.JSONObject;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.SimpleCommand;
 import net.celestialgaze.GuraBot.commands.scc.SimpleCmdCreator;
 import net.celestialgaze.GuraBot.json.JSON;
+import net.celestialgaze.GuraBot.json.ServerInfo;
+import net.celestialgaze.GuraBot.json.ServerProperty;
+import net.dv8tion.jda.api.entities.Guild;
 
 public class Commands {
 	public static String defaultPrefix = "a!";
 	public static Map<String, Command> rootCommands = new HashMap<String, Command>();
+	public static Map<Long, HashMap<String, Command>> guildCommands = new HashMap<Long, HashMap<String, Command>>();
 	private static List<Command> commands = new ArrayList<Command>();
 	
 	public static void addCommand(Command command) {
@@ -24,54 +29,56 @@ public class Commands {
 	}
 	@SuppressWarnings("unchecked")
 	public static void init() {
+		// Clear any existing commands
 		commands.clear();
 		rootCommands.clear();
-		addCommand(new Ping(
-				"ping",
-				"",
-				"Pings the bot and gives you the latency."));
-		addCommand(new SetPrefix(
-				"setprefix",
-				"<prefix>",
-				"Sets the prefix of your server"));
-		addCommand(new Prefix(
-				"prefix",
-				"",
-				"Gets the current prefix of the server. Usable with the default prefix universally."));
-		addCommand(new About(
-				"about",
-				"",
-				"Information about me, " + GuraBot.jda.getSelfUser().getName()+ "~"));
-		addCommand(new Noise(
-				"noise",
-				"<x> <y> <z>",
-				"Gets OpenSimplex noise value at <x>, <y>, <z>."));
-		addCommand(new Ship(
-				"ship",
-				"<thing1> <thing2> Optional: (<seed> | --brute-force | --brute-force-lowest)",
-				"Tells you how much they're destined for true love (or you can rig it)"));
-		addCommand(new SimpleCmdCreator(
-				"scc",
-				"",
-				"Manages simple (text-only responses) commands"));
-		addCommand(new Stats(
-				"stats",
-				"",
-				"Shows some miscellaneous stats"));
-		// Load commands from json
+		
+		// Add root commands
+		addCommand(new Ping());
+		addCommand(new SetPrefix());
+		addCommand(new Prefix());
+		addCommand(new About());
+		addCommand(new Noise());
+		addCommand(new Ship());
+		addCommand(new SimpleCmdCreator());
+		addCommand(new Stats());
+		
+		// Load commands from global commands json
 		JSONObject jo = JSON.readFile(GuraBot.DATA_FOLDER+"bot\\commands.json");
 		jo.forEach((key, value) -> {
 			String title = (String)key;
 			Map<String, String> m = (Map<String, String>)value;
-			addCommand(new SimpleCommand(title, m.get("description"), m.get("response")));
+			addCommand(new SimpleCommand(new CommandOptions()
+					.setName(title)
+					.setDescription(m.get("description"))
+					.setCategory(m.get("category"))
+					.verify(),
+					m.get("response")));
 		});
+		
 		// Help command last as it accesses the commands list
-		addCommand(new MainHelp(
-				"help",
-				"",
-				"Shows a list of available commands and any information about them."));
+		addCommand(new MainHelp());
 		
-		
+		// Populate guild commands
+		for (int i = 0; i < GuraBot.jda.getGuilds().size(); i++) {
+			System.out.printf("Updating guild commands... (%s/%s)\n", i+1, GuraBot.jda.getGuilds().size());
+			updateGuildCommands(GuraBot.jda.getGuilds().get(i).getIdLong());
+		}
+	}
+	
+	public static void updateGuildCommands(long id) {
+		guildCommands.put(id, new HashMap<String, Command>());
+		Map<String, Command> guildMap = guildCommands.get(id);
+		guildMap.clear();
+		ServerInfo si = ServerInfo.getServerInfo(id);
+		Map<String, HashMap<String, String>> m = si.getProperty(ServerProperty.COMMANDS, new HashMap<String, HashMap<String, String>>());
+		m.forEach((commandName, properties) -> {
+			guildMap.put(commandName, new SimpleCommand(new CommandOptions()
+					.setName(commandName)
+					.setDescription(properties.get("description"))
+					.verify(),
+					properties.get("response")));
+		});
 	}
 	
 }

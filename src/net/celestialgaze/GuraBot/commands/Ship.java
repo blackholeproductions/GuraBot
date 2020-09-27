@@ -3,14 +3,19 @@ package net.celestialgaze.GuraBot.commands;
 import java.util.Random;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
-import net.celestialgaze.GuraBot.util.OpenSimplexNoise;
+import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.Message;
 
 public class Ship extends Command {
-	public Ship(String name, String usage, String description) {
-		super(name, usage, description);
-		// TODO Auto-generated constructor stub
+
+	public Ship() {
+		super(new CommandOptions()
+				.setName("ship")
+				.setDescription("Tells you how much they're destined for true love (or you can rig it)")
+				.setUsage("<thing1> <thing2> Optional: (<seed> | --brute-force | --brute-force-lowest)")
+				.setCategory("Fun")
+				.verify());
 	}
 
 	@Override
@@ -28,7 +33,7 @@ public class Ship extends Command {
 		
 		if (modifiers.length > 0) {
 			// Brute force modifier
-			if (modifiers[0].startsWith("--brute-force")) {
+			if (modifiers[0].startsWith("brute-force")) {
 				this.cooldownDuration = 2;
 				long time = System.currentTimeMillis();
 				message.getChannel().sendMessage("Calculating...").queue(response -> {
@@ -67,10 +72,6 @@ public class Ship extends Command {
 		String shipPercentString = String.format("%.2f", shipPercent);
 		
 		message.getChannel().sendMessage(format(args, shipPercentString)).queue();
-	}
-	
-	private double toPercent(double noiseValue) {
-		return (noiseValue+1)*50; // starts w/ range from -1 to 1. +1 changes it to from 0 to 2, x50 changes it from 0 to 100
 	}
 	
 	private String format(String[] args, String percentString) {

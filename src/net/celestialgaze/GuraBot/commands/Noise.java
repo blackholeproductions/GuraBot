@@ -7,16 +7,21 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.util.OpenSimplexNoise;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
 public class Noise extends Command {
-
-	protected Noise(String name, String usage, String description) {
-		super(name, usage, description);
-		this.needBotAdmin = true;
+	
+	public Noise() {
+		super(new CommandOptions()
+				.setName("noise")
+				.setDescription("Gets OpenSimplex noise value at <x>, <y>, <z>.")
+				.setUsage("<x> <y> <z>")
+				.setCategory("Debug")
+				.verify());
 	}
 
 	@Override

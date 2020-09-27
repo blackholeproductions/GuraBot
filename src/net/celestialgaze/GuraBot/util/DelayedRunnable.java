@@ -7,7 +7,7 @@ public class DelayedRunnable {
 	Timer timer;
 	long endTime = 0;
 	Runnable runnable;
-	private boolean isDone;
+	private boolean isDone = false;
 	public DelayedRunnable(Runnable runnable) {
 		this.runnable = runnable;
 		timer = new Timer();
@@ -20,6 +20,7 @@ public class DelayedRunnable {
 			public void run() {
 				runnable.run();
 				timer.cancel();
+				isDone = true;
 			}
 			
 		}, time-System.currentTimeMillis());

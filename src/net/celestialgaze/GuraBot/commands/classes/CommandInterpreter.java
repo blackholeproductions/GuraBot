@@ -2,12 +2,12 @@ package net.celestialgaze.GuraBot.commands.classes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.json.ServerInfo;
+import net.celestialgaze.GuraBot.json.ServerProperty;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
@@ -19,33 +19,42 @@ public class CommandInterpreter {
 		String rootCommand = args[0].toLowerCase();
 		
 		if (message.getChannelType().equals(ChannelType.PRIVATE)) return Commands.defaultPrefix;
+		String prefix = ServerInfo.getServerInfo(message.getGuild().getIdLong()).getProperty(ServerProperty.PREFIX, Commands.defaultPrefix);
 		if (rootCommand.startsWith(Commands.defaultPrefix) && 
 				(rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("setprefix") ||
 				rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("prefix"))) {
 			return Commands.defaultPrefix;
 		}
-		if (rootCommand.startsWith(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix())) {
-			return ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix();
+		if (rootCommand.startsWith(prefix)) {
+			return prefix;
 		}
-		return Commands.defaultPrefix;
+		return null;
 	}
 	public static boolean read(Message message) {
 		String content = message.getContentRaw();
 		String[] args = content.split(GuraBot.REGEX_WHITESPACE);
 		String rootCommand = args[0].toLowerCase();
+		String commandName = (getPrefix(message) != null ? rootCommand.substring(getPrefix(message).length()) : "");
+		
 		// Check if leading argument is a valid command with the server prefix, with a prefix exception for the setprefix/prefix command
-		if (rootCommand.startsWith(Commands.defaultPrefix) && 
-				(rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("setprefix") ||
-				rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("prefix"))) {
+		if (commandName == "") return false; 
+		if (commandName.equalsIgnoreCase("setprefix") || commandName.equalsIgnoreCase("prefix")) {
 			return true;
 		}
-		if ((rootCommand.startsWith(Commands.defaultPrefix) && message.getChannelType().equals(ChannelType.PRIVATE)) ||
-				(message.getChannelType().equals(ChannelType.TEXT) && 
-				rootCommand.startsWith(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix()))) {
-			for (Command command : Commands.rootCommands.values()) {
-				if (rootCommand.endsWith(command.getName())) return true;
+		// if in a private channel and using the default prefix
+		if (message.getChannelType().equals(ChannelType.PRIVATE) && getPrefix(message).equalsIgnoreCase(Commands.defaultPrefix)) {
+			// if valid command
+			if (Commands.rootCommands.containsKey(commandName)) {
+				return true;
 			}
-			return false;
+		}
+		// if in a text channel and using the server prefix
+		if (message.getChannelType().equals(ChannelType.TEXT) && 
+				getPrefix(message).equalsIgnoreCase(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getProperty(ServerProperty.PREFIX, Commands.defaultPrefix))) {
+			// if valid command or guild command
+			if (Commands.rootCommands.containsKey(commandName) || Commands.guildCommands.get(message.getGuild().getIdLong()).containsKey(commandName)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -61,53 +70,63 @@ public class CommandInterpreter {
 	public static void execute(Message message) {
 		String content = message.getContentRaw();
 		String[] args = content.split(GuraBot.REGEX_WHITESPACE);
-		// Remove redundant spaces
-		List<String> argsList = Arrays.asList(args);
-		argsList.removeIf(item -> item.isEmpty() || item == null);
-		argsList.toArray(args);
-		Command command = Commands.rootCommands.get(args[0].toLowerCase().substring(getPrefix(message).length()));
-		// Loop through each argument. We will check where commands end and arguments begin, as well as which command to run.
-		for (int i = 0; i < args.length; i++) {
-			boolean end = false;
-			if (command == null || command.getSubcommands().size() == 0) end = true; // Skip the following if there are no subcommands
-			// Check if the next argument is a subcommand of the current command
-			for (int j = 0; j < command.getSubcommands().size(); j++) {
-				if (end) break;
-				if (i+1 >= args.length || args[i+1].equalsIgnoreCase(command.getSubcommands().get(j).getName())) {
-					if (!(i+1 >= args.length)) {
-						command = command.getSubcommands().get(j);
-						i++;
-					}
-					end = true;
-					break;
-				} else if (j+1 >= command.getSubcommands().size()) { 
-					if (args[i+1].equalsIgnoreCase(command.getSubcommands().get(j).getName())) 
-						command = command.getSubcommands().get(j);
-					j = 0;
-					i++;
+		String prefix = getPrefix(message);
+		String rootCommandName = args[0].toLowerCase().substring(prefix.length());
+		
+		int indexCommandsEnd = 0; // The index where commands end. indexCommandsEnd+1 would be the index of the first argument.
+		Command commandToRun = null;
+		// First check if this command is a guild command.
+		if (Commands.guildCommands.get(message.getGuild().getIdLong()).containsKey(rootCommandName)) {
+			Commands.guildCommands.get(message.getGuild().getIdLong()).get(rootCommandName)
+				.run(message, new String[0], new String[0]); // We can run this right away as there are no args and no modifiers that could affect anything
+		} else { // Not a guild command
+			// Set the command to run to the first argument. We can assume this is valid as it is checked in read()
+			commandToRun = Commands.rootCommands.get(rootCommandName);
+			// Loop through each argument to find indexCommandsEnd, and the command to run
+			for (int i = 0; i < args.length; i++) {
+				// Look ahead one argument and check if it is a valid subcommand of the current command.
+				if (i+1 >= args.length) break; // If there is no next argument, exit the loop now
+				if (commandToRun.getSubcommands().containsKey(args[i+1])) { // Is subcommand
+					commandToRun = commandToRun.getSubcommands().get(args[i+1]); // Set command to run to subcommand
+				} else { // Next argument is not a subcommand
+					indexCommandsEnd = i; // Set the index
+					break; // Exit loop
 				}
 			}
-			if (end) {
+			
+			if (commandToRun != null) {
+				// Strip args of all commands
+				String[] argsCopy = args;
+				args = new String[args.length-(indexCommandsEnd+1)];
+				for (int i = 0; i < args.length; i++) {
+					args[i] = argsCopy[i+(indexCommandsEnd+1)];
+				}
+				
+				// Extract all modifiers from args into modifiers array
 				List<String> modifiersList = new ArrayList<String>();
-				for (int j = args.length-1; j >= 0; j--) {
-					if (args[j].startsWith("--")) {
-						modifiersList.add(args[j]);
+				for (int i = args.length-1; i >= 0; i--) {
+					if (args[i].startsWith("--")) {
+						modifiersList.add(args[i].substring(2));
 					}
 				}
+				
+				// Convert modifiers list to array
 				String[] modifiers = new String[modifiersList.size()];
 				modifiersList.toArray(modifiers);
-				String[] newArgs = new String[args.length-(i+1)-modifiers.length];
-				int j = 0;
-				int k = 0;
-				for (String arg : args) {
-					if (k > i && j+i < newArgs.length) {
-						newArgs[j] = arg;
-						j++;
-					}
-					k++;
+				
+				// Remove from args
+				argsCopy = args;
+				args = new String[args.length-modifiersList.size()];
+				for (int i = 0; i < args.length; i++) {
+					args[i] = argsCopy[i];
 				}
-				command.attempt(message, newArgs, modifiers);
-				break;
+				
+				// Run command
+				commandToRun.attempt(message, args, modifiers);
+			} else {
+				SharkUtil.error(message, "Something has gone wrong in my command interpreter, as the command to run " + 
+						"was not identified. Either cel's bad at coding or the command you tried to run has been " +
+						"set up improperly.");
 			}
 		}
 	}

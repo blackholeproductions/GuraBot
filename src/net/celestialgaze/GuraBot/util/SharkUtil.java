@@ -13,7 +13,7 @@ public class SharkUtil {
 		String[] failures = {"uh oh...", "is this a land thing that i'm not aware of?", "0% hydrodynamic"};
 		message.getChannel().sendMessage(new EmbedBuilder()
 				.setColor(new Color(242, 80, 80))
-				.setTitle(failures[new Random().nextInt(failures.length-1)])
+				.setTitle(failures[new Random().nextInt(failures.length)])
 				.setDescription(error)
 				.build()).queue();
 	}
@@ -28,7 +28,7 @@ public class SharkUtil {
 		String[] exclamations = {"yay!", "woohoo", "i like salman"};
 		message.getChannel().sendMessage(new EmbedBuilder()
 				.setColor(new Color(152, 251, 152))
-				.setTitle(exclamations[new Random().nextInt(exclamations.length-1)])
+				.setTitle(exclamations[new Random().nextInt(exclamations.length)])
 				.setDescription(success)
 				.build()).queue();	
 	}
@@ -55,5 +55,15 @@ public class SharkUtil {
 		}
 		random.setSeed(Math.toIntExact(Math.round((noise.eval(x, y)*Integer.MAX_VALUE))));
 		return random.nextDouble();
+	}
+	public static String formatDuration(long milliseconds) {
+		long seconds = milliseconds / 1000;
+	    String positive = String.format(
+	        "%dd%02dh%02dm%02ds",
+	        seconds / 86400,
+	        (seconds % 86400) / 3600,
+	        (seconds % 3600) / 60,
+	        seconds % 60);
+	    return seconds < 0 ? "-" + positive : positive;
 	}
 }

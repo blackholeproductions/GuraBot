@@ -1,12 +1,18 @@
 package net.celestialgaze.GuraBot.commands;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.dv8tion.jda.api.entities.Message;
 
 public class RateWaifu extends Command {
 
-	protected RateWaifu(String name, String usage, String description) {
-		super(name, usage, description);
+	public RateWaifu() {
+		super(new CommandOptions()
+				.setName("ratewaifu")
+				.setDescription("I'll rate your waifu out of ten")
+				.setUsage("<waifu>")
+				.setCategory("Fun")
+				.verify());
 	}
 
 	@Override
