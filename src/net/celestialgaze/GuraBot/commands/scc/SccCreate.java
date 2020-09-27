@@ -3,7 +3,6 @@ package net.celestialgaze.GuraBot.commands.scc;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.celestialgaze.GuraBot.GuraBot;

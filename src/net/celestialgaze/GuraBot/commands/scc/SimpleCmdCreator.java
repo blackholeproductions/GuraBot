@@ -4,8 +4,6 @@ import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 
 public class SimpleCmdCreator extends HelpCommand {
 	

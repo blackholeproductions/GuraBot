@@ -15,16 +15,20 @@ import net.celestialgaze.GuraBot.commands.scc.SimpleCmdCreator;
 import net.celestialgaze.GuraBot.json.JSON;
 import net.celestialgaze.GuraBot.json.ServerInfo;
 import net.celestialgaze.GuraBot.json.ServerProperty;
-import net.dv8tion.jda.api.entities.Guild;
 
 public class Commands {
 	public static String defaultPrefix = "a!";
+	public static Map<String, HashMap<String, Command>> rootCommandsCategorized = new HashMap<String, HashMap<String, Command>>();
 	public static Map<String, Command> rootCommands = new HashMap<String, Command>();
 	public static Map<Long, HashMap<String, Command>> guildCommands = new HashMap<Long, HashMap<String, Command>>();
 	private static List<Command> commands = new ArrayList<Command>();
 	
 	public static void addCommand(Command command) {
 		commands.add(command);
+		if (!rootCommandsCategorized.containsKey(command.getCategory()))
+			rootCommandsCategorized.put(command.getCategory(), new HashMap<String, Command>());
+		rootCommandsCategorized.get(command.getCategory()).put(command.getName(), command);
+		System.out.println(command.getCategory());
 		rootCommands.put(command.getName(), command);
 	}
 	@SuppressWarnings("unchecked")
@@ -42,6 +46,7 @@ public class Commands {
 		addCommand(new Ship());
 		addCommand(new SimpleCmdCreator());
 		addCommand(new Stats());
+		addCommand(new Say());
 		
 		// Load commands from global commands json
 		JSONObject jo = JSON.readFile(GuraBot.DATA_FOLDER+"bot\\commands.json");
@@ -76,6 +81,7 @@ public class Commands {
 			guildMap.put(commandName, new SimpleCommand(new CommandOptions()
 					.setName(commandName)
 					.setDescription(properties.get("description"))
+					.setCategory("Server Commands")
 					.verify(),
 					properties.get("response")));
 		});

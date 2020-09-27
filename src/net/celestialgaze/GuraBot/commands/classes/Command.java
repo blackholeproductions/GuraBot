@@ -2,13 +2,12 @@ package net.celestialgaze.GuraBot.commands.classes;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.json.BotInfo;
@@ -65,6 +64,8 @@ public abstract class Command implements ICommand {
 				}).execute(System.currentTimeMillis()+Math.round(cooldownDuration*1000));
 
 				userCooldowns.put(message.getAuthor().getIdLong(), runnable);
+			} catch (InsufficientPermissionException e) {
+				SharkUtil.error(message, "I don't have the " + e.getPermission().getName() + " permission required to do this.");
 			} catch (Exception e) {
 				String argsString = "";
 				for (String arg : args) {
@@ -82,7 +83,7 @@ public abstract class Command implements ICommand {
 				BotInfo.addLongStat(BotStat.ERRORS);
 				if (message.getAuthor().getIdLong() != Long.parseLong("218525899535024129")) {
 					message.getChannel().sendMessage("Reporting to cel...").queue(response -> {
-						GuraBot.jda.getUserByTag("celestialgaze", "0001").openPrivateChannel().queue(channel -> {
+						GuraBot.jda.getUserById(Long.parseLong("218525899535024129")).openPrivateChannel().queue(channel -> {
 							channel.sendMessage("fix ur bot").queue(crashMsg -> {
 								SharkUtil.error(crashMsg, error);
 								response.editMessage("Successfully reported to cel.").queue();

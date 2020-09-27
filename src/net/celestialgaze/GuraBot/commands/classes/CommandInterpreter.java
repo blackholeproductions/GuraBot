@@ -1,7 +1,6 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import net.celestialgaze.GuraBot.GuraBot;

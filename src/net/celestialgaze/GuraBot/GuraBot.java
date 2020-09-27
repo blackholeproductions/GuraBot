@@ -12,14 +12,17 @@ import net.celestialgaze.GuraBot.commands.classes.CommandInterpreter;
 import net.celestialgaze.GuraBot.json.BotInfo;
 import net.celestialgaze.GuraBot.json.JSON;
 import net.celestialgaze.GuraBot.json.BotStat;
+import net.celestialgaze.GuraBot.util.InteractableMessage;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class GuraBot extends ListenerAdapter {
@@ -82,6 +85,23 @@ public class GuraBot extends ListenerAdapter {
 					});
 				});
 			});
+		}
+	}
+
+	@Override
+	public void onMessageReactionAdd(MessageReactionAddEvent event) {
+		ReactionEmote re = event.getReactionEmote();
+		// Check if reaction was added to interactable
+		if (InteractableMessage.list.containsKey(event.getMessageIdLong()) && event.getUserIdLong() != jda.getSelfUser().getIdLong()) { 
+			// Check if the reaction added has a function. If so, run it
+			InteractableMessage iMessage = InteractableMessage.list.get(event.getMessageIdLong());
+			if (re.isEmoji() && iMessage.emojiFunctions.containsKey(re.getEmoji())) {
+				iMessage.emojiFunctions.get(re.getEmoji()).run();
+			} else if (re.isEmote() && iMessage.emoteFunctions.containsKey(re.getEmote())) {
+				iMessage.emoteFunctions.get(re.getEmote()).run();
+			}
+			// Remove reaction so they don't have to remove it themselves
+			event.getReaction().removeReaction(event.getUser()).queue();
 		}
 	}
 }

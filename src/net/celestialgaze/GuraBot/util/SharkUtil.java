@@ -6,6 +6,7 @@ import java.util.Random;
 import net.celestialgaze.GuraBot.GuraBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 public class SharkUtil {
 	public static final int DEFAULT_RANDOM_SEED = 403126880;
@@ -18,11 +19,13 @@ public class SharkUtil {
 				.build()).queue();
 	}
 	public static void info(Message message, String info) {
-		message.getChannel().sendMessage(new EmbedBuilder()
+		info(message.getChannel(), info);
+	}
+	public static void info(MessageChannel channel, String info) {
+		channel.sendMessage(new EmbedBuilder()
 				.setColor(GuraBot.DEFAULT_COLOR)
 				.setDescription(info)
 				.build()).queue();
-		
 	}
 	public static void success(Message message, String success) {
 		String[] exclamations = {"yay!", "woohoo", "i like salman"};
