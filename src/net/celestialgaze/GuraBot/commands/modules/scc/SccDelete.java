@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot.commands.scc;
+package net.celestialgaze.GuraBot.commands.modules.scc;
 
 import java.util.Map;
 

@@ -21,6 +21,7 @@ public abstract class Command implements ICommand {
 	protected String usage; // Usage that appears in the help menu
 	protected String description; // Description that appears in the help menu
 	protected String category = DEFAULT_CATEGORY; // Category that the command belongs to
+	protected CommandModule module = null;
 	protected Map<String, Command> subcommands = new HashMap<String, Command>(); // Maps command name to the command in question
 	Permission permission = null; // The required permission for this command. null is none needed
 	protected boolean usablePrivately = true; // Whether this command is usable within DMs
@@ -115,6 +116,12 @@ public abstract class Command implements ICommand {
 					String.format("%.2f", userCooldowns.get(message.getAuthor().getIdLong()).getTimeRemaining()/1000.0) + " seconds", silent);
 			return false;
 		}
+		if (module != null && message.getChannelType().equals(ChannelType.TEXT) && !module.isEnabled(message.getGuild().getIdLong())) {
+			return false;
+		}
+		if (module != null && !message.getChannelType().equals(ChannelType.TEXT)) {
+			return false;
+		}
 		return true;
 	}
 	
@@ -144,6 +151,9 @@ public abstract class Command implements ICommand {
 	}
 	public String getCategory() {
 		return category;
+	}
+	public void setModule(CommandModule module) {
+		this.module = module;
 	}
 	
 	public Map<String, Command> getSubcommands() {

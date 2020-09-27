@@ -18,8 +18,7 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
-public abstract class HelpCommand extends Command {
-	public static final int PAGE_SIZE = 10;
+public abstract class HelpCommand extends Command implements IPageCommand {
 	
 	public HelpCommand(Pair<CommandOptions, Boolean> pair, String helpMenuName) {
 		super(pair, false);
@@ -46,12 +45,23 @@ public abstract class HelpCommand extends Command {
 		String serverPrefix = (userMessage.getChannelType().equals(ChannelType.TEXT) ? 
 				ServerInfo.getServerInfo(userMessage.getGuild().getIdLong()).getProperty(ServerProperty.PREFIX, Commands.defaultPrefix) :
 				Commands.defaultPrefix);
-
+		
+		// Add the stuff in extra, if any
 		if (extra != null) {
 			for (Command command : extra) {
 				commands.put(command.getName(), command);
 			}
 		}
+		
+		// Remove all commands that can't be run
+		Map<String, Command> newCommands = new HashMap<String, Command>(commands); // copy so we don't get ConcurrentModificationException
+		for (Command command : commands.values()) {
+			if (!command.canRun(userMessage)) {
+				newCommands.remove(command.getName());
+			}
+		}
+		commands = newCommands;
+		
 		int maxPageSize = Math.toIntExact(Math.round(Math.ceil((commands.size()+0.0)/(PAGE_SIZE+0.0))));
 		PageMessage pm = (PageMessage) InteractableMessage.list.get(messageToEdit.getIdLong());
 		pm.setMaxSize(maxPageSize);
@@ -61,12 +71,15 @@ public abstract class HelpCommand extends Command {
 				.setColor(GuraBot.DEFAULT_COLOR);
 
 		List<Command> commandsToDisplay = new ArrayList<Command>();
+		
 		// Construct a list of commands to process of size pageSize starting at startPosition
 		for (int i = 0; i < commands.size(); i++) {
 			if (i < startPosition) continue;
 			if (i > startPosition+pageSize-1) break;
 			commandsToDisplay.add(new ArrayList<Command>(commands.values()).get(i));
 		}
+		
+		// Sort the commands into their categories
 		Map<String, ArrayList<Command>> categories = new HashMap<String, ArrayList<Command>>();
 		for (Command command : commandsToDisplay) {
 			if (!categories.containsKey(command.getCategory())) {
@@ -75,15 +88,16 @@ public abstract class HelpCommand extends Command {
 			categories.get(command.getCategory()).add(command);
 		}
 		
+		// Populate the embed
 		for (int i = 0; i < categories.size(); i++) {
 			BulletListBuilder blb = new BulletListBuilder();
 			String categoryName = new ArrayList<>(categories.keySet()).get(i);
 			for (Command command : categories.get(categoryName)) {
-				if (command.canRun(userMessage))
-					blb.add("**"+serverPrefix+(commands.equals(subcommands) ? ((Subcommand)command).getParent().getName() + " " : "")
-							+command.getName(), (!command.getUsage().isEmpty() ? " " + command.getUsage() + "**\n " : ":** ")
-							+ command.getDescription(), "");
+				blb.add("**"+serverPrefix+(commands.equals(subcommands) ? ((Subcommand)command).getParent().getName() + " " : "")
+						+command.getName(), (!command.getUsage().isEmpty() ? " " + command.getUsage() + "**\n " : ":** ")
+						+ command.getDescription(), "");
 			}
+			String str = blb.build();
 			eb.addField(categoryName, blb.build(), false);
 		}
 		return eb;

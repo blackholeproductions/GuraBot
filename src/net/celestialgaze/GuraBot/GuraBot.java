@@ -16,6 +16,7 @@ import net.celestialgaze.GuraBot.util.InteractableMessage;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class GuraBot extends ListenerAdapter {
@@ -68,6 +70,8 @@ public class GuraBot extends ListenerAdapter {
 				BotInfo.addLongStat(BotStat.COMMANDS_RUN);
 				System.out.println("Successfully executed " + message.getContentRaw().split(" ")[0] + " command");
 			}
+		} catch (InsufficientPermissionException e) {
+			SharkUtil.error(event.getChannel(), "Insufficient permission, need " + e.getPermission().getName());
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
@@ -90,18 +94,32 @@ public class GuraBot extends ListenerAdapter {
 
 	@Override
 	public void onMessageReactionAdd(MessageReactionAddEvent event) {
-		ReactionEmote re = event.getReactionEmote();
-		// Check if reaction was added to interactable
-		if (InteractableMessage.list.containsKey(event.getMessageIdLong()) && event.getUserIdLong() != jda.getSelfUser().getIdLong()) { 
-			// Check if the reaction added has a function. If so, run it
-			InteractableMessage iMessage = InteractableMessage.list.get(event.getMessageIdLong());
-			if (re.isEmoji() && iMessage.emojiFunctions.containsKey(re.getEmoji())) {
-				iMessage.emojiFunctions.get(re.getEmoji()).run();
-			} else if (re.isEmote() && iMessage.emoteFunctions.containsKey(re.getEmote())) {
-				iMessage.emoteFunctions.get(re.getEmote()).run();
+		try {
+			ReactionEmote re = event.getReactionEmote();
+			// Check if reaction was added to interactable
+			if (InteractableMessage.list.containsKey(event.getMessageIdLong()) && event.getUserIdLong() != jda.getSelfUser().getIdLong()) { 
+				// Check if the reaction added has a function. If so, run it
+				InteractableMessage iMessage = InteractableMessage.list.get(event.getMessageIdLong());
+				if (re.isEmoji() && iMessage.emojiFunctions.containsKey(re.getEmoji())) {
+					iMessage.emojiFunctions.get(re.getEmoji()).run();
+				} else if (re.isEmote() && iMessage.emoteFunctions.containsKey(re.getEmote())) {
+					iMessage.emoteFunctions.get(re.getEmote()).run();
+				}
+				// Remove reaction so they don't have to remove it themselves
+				if (event.getChannelType().equals(ChannelType.TEXT) &&
+						event.getGuild().getMemberById(jda.getSelfUser().getIdLong()).hasPermission(Permission.MESSAGE_MANAGE)) 
+					event.getReaction().removeReaction(event.getUser()).queue();
 			}
-			// Remove reaction so they don't have to remove it themselves
-			event.getReaction().removeReaction(event.getUser()).queue();
+		} catch (InsufficientPermissionException e) {
+			SharkUtil.error(event.getChannel(), "Insufficient permission, need " + e.getPermission().getName());
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace();
+			e.printStackTrace(pw);
+			String error = "Something went horribly wrong...\n" + sw.toString().substring(0, Integer.min(700, sw.toString().length()));
+			SharkUtil.error(event.getChannel(), error);
+			BotInfo.addLongStat(BotStat.ERRORS);
 		}
 	}
 }

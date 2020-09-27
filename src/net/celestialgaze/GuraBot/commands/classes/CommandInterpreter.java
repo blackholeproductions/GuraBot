@@ -17,15 +17,19 @@ public class CommandInterpreter {
 		String[] args = content.split(GuraBot.REGEX_WHITESPACE);
 		String rootCommand = args[0].toLowerCase();
 		
-		if (message.getChannelType().equals(ChannelType.PRIVATE)) return Commands.defaultPrefix;
-		String prefix = ServerInfo.getServerInfo(message.getGuild().getIdLong()).getProperty(ServerProperty.PREFIX, Commands.defaultPrefix);
-		if (rootCommand.startsWith(Commands.defaultPrefix) && 
-				(rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("setprefix") ||
-				rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("prefix"))) {
+		if (message.getChannelType().equals(ChannelType.PRIVATE) && rootCommand.startsWith(Commands.defaultPrefix)) {
 			return Commands.defaultPrefix;
 		}
-		if (rootCommand.startsWith(prefix)) {
-			return prefix;
+		if (message.getChannelType().equals(ChannelType.TEXT)) {
+			String prefix = ServerInfo.getServerInfo(message.getGuild().getIdLong()).getProperty(ServerProperty.PREFIX, Commands.defaultPrefix);
+			if (rootCommand.startsWith(Commands.defaultPrefix) && 
+					(rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("setprefix") ||
+					rootCommand.substring(Commands.defaultPrefix.length()).equalsIgnoreCase("prefix"))) {
+				return Commands.defaultPrefix;
+			}
+			if (rootCommand.startsWith(prefix)) {
+				return prefix;
+			}	
 		}
 		return null;
 	}
@@ -50,8 +54,10 @@ public class CommandInterpreter {
 		// if in a text channel and using the server prefix
 		if (message.getChannelType().equals(ChannelType.TEXT) && 
 				getPrefix(message).equalsIgnoreCase(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getProperty(ServerProperty.PREFIX, Commands.defaultPrefix))) {
-			// if valid command or guild command
-			if (Commands.rootCommands.containsKey(commandName) || Commands.guildCommands.get(message.getGuild().getIdLong()).containsKey(commandName)) {
+			// if valid command or guild command or enabled module command
+			if (Commands.rootCommands.containsKey(commandName) ||
+					Commands.guildCommands.get(message.getGuild().getIdLong()).containsKey(commandName) ||
+					(Commands.moduleCommands.containsKey(commandName) && Commands.moduleCommands.get(commandName).canRun(message))) {
 				return true;
 			}
 		}
@@ -75,12 +81,21 @@ public class CommandInterpreter {
 		int indexCommandsEnd = 0; // The index where commands end. indexCommandsEnd+1 would be the index of the first argument.
 		Command commandToRun = null;
 		// First check if this command is a guild command.
-		if (Commands.guildCommands.get(message.getGuild().getIdLong()).containsKey(rootCommandName)) {
+		if (message.getChannelType().equals(ChannelType.TEXT) && 
+				Commands.guildCommands.get(message.getGuild().getIdLong()).containsKey(rootCommandName)) {
+			
 			Commands.guildCommands.get(message.getGuild().getIdLong()).get(rootCommandName)
 				.run(message, new String[0], new String[0]); // We can run this right away as there are no args and no modifiers that could affect anything
+			return;
 		} else { // Not a guild command
-			// Set the command to run to the first argument. We can assume this is valid as it is checked in read()
-			commandToRun = Commands.rootCommands.get(rootCommandName);
+			// Check if the command is from an enabled module
+			if (Commands.moduleCommands.containsKey(rootCommandName) && Commands.moduleCommands.get(rootCommandName).canRun(message)) {
+				commandToRun = Commands.moduleCommands.get(rootCommandName);
+			} else { // Not an enabled module command
+				// Set the command to run to the first argument. We can assume this is valid as it is checked in read()
+				commandToRun = Commands.rootCommands.get(rootCommandName);
+			}
+			if (commandToRun != null)
 			// Loop through each argument to find indexCommandsEnd, and the command to run
 			for (int i = 0; i < args.length; i++) {
 				// Look ahead one argument and check if it is a valid subcommand of the current command.
@@ -92,41 +107,40 @@ public class CommandInterpreter {
 					break; // Exit loop
 				}
 			}
-			
-			if (commandToRun != null) {
-				// Strip args of all commands
-				String[] argsCopy = args;
-				args = new String[args.length-(indexCommandsEnd+1)];
-				for (int i = 0; i < args.length; i++) {
-					args[i] = argsCopy[i+(indexCommandsEnd+1)];
-				}
-				
-				// Extract all modifiers from args into modifiers array
-				List<String> modifiersList = new ArrayList<String>();
-				for (int i = args.length-1; i >= 0; i--) {
-					if (args[i].startsWith("--")) {
-						modifiersList.add(args[i].substring(2));
-					}
-				}
-				
-				// Convert modifiers list to array
-				String[] modifiers = new String[modifiersList.size()];
-				modifiersList.toArray(modifiers);
-				
-				// Remove from args
-				argsCopy = args;
-				args = new String[args.length-modifiersList.size()];
-				for (int i = 0; i < args.length; i++) {
-					args[i] = argsCopy[i];
-				}
-				
-				// Run command
-				commandToRun.attempt(message, args, modifiers);
-			} else {
-				SharkUtil.error(message, "Something has gone wrong in my command interpreter, as the command to run " + 
-						"was not identified. Either cel's bad at coding or the command you tried to run has been " +
-						"set up improperly.");
+		}
+		if (commandToRun != null) {
+			// Strip args of all commands
+			String[] argsCopy = args;
+			args = new String[args.length-(indexCommandsEnd+1)];
+			for (int i = 0; i < args.length; i++) {
+				args[i] = argsCopy[i+(indexCommandsEnd+1)];
 			}
+			
+			// Extract all modifiers from args into modifiers array
+			List<String> modifiersList = new ArrayList<String>();
+			for (int i = args.length-1; i >= 0; i--) {
+				if (args[i].startsWith("--")) {
+					modifiersList.add(args[i].substring(2));
+				}
+			}
+			
+			// Convert modifiers list to array
+			String[] modifiers = new String[modifiersList.size()];
+			modifiersList.toArray(modifiers);
+			
+			// Remove from args
+			argsCopy = args;
+			args = new String[args.length-modifiersList.size()];
+			for (int i = 0; i < args.length; i++) {
+				args[i] = argsCopy[i];
+			}
+			
+			// Run command
+			commandToRun.attempt(message, args, modifiers);
+		} else {
+			SharkUtil.error(message, "Something has gone wrong in my command interpreter, as the command to run " + 
+					"was not identified. Either cel's bad at coding or the command you tried to run has been " +
+					"set up improperly.");
 		}
 	}
 }

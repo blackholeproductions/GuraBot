@@ -28,6 +28,7 @@ public class Stats extends Command {
 		String botInfoList = new BulletListBuilder(true)
 				.add("Servers", Integer.toString(GuraBot.jda.getGuilds().size()))
 				.add("Uptime", "Online for " + SharkUtil.formatDuration(System.currentTimeMillis() - GuraBot.startDate.getTime()))
+				.add("Memory Usage", (Runtime.getRuntime().freeMemory()/10241024) + " / " + (Runtime.getRuntime().maxMemory()/10241024) + " MB")
 				.add("Current Version", GuraBot.version)
 				.build();
 		String statsList = new BulletListBuilder(true)

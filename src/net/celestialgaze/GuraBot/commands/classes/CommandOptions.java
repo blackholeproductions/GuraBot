@@ -8,6 +8,7 @@ public class CommandOptions {
 	protected String description;
 	protected String usage = "";
 	protected String category = "Default";
+	protected CommandModule module = null;
 	Permission permission = null;
 	protected boolean usablePrivately = true;
 	protected boolean needBotAdmin = false;
@@ -47,6 +48,10 @@ public class CommandOptions {
 	}
 	public CommandOptions setCategory(String category) {
 		this.category = category;
+		return this;
+	}
+	public CommandOptions setModule(CommandModule module) {
+		this.module = module;
 		return this;
 	}
 	public Pair<CommandOptions, Boolean> verify() {

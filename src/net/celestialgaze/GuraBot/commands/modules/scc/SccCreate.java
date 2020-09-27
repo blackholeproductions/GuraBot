@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot.commands.scc;
+package net.celestialgaze.GuraBot.commands.modules.scc;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class SccCreate extends Subcommand {
 			return;
 		}
 		// Prevent command overriding
-		if (Commands.rootCommands.containsKey(title)) {
+		if (Commands.rootCommands.containsKey(title) || Commands.moduleCommands.containsKey(title)) {
 			SharkUtil.error(message, "Looks like there's already a global command with the name **" + title + "**. Please choose another");
 			return;
 		}

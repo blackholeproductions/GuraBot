@@ -14,6 +14,7 @@ public class SetPrefix extends Command {
 				.setDescription("Sets the prefix of your server")
 				.setUsage("<prefix>")
 				.setCategory("Server")
+				.setUsablePrivate(false)
 				.verify());
 	}
 
@@ -26,9 +27,13 @@ public class SetPrefix extends Command {
 			SharkUtil.error(message, "You must specify a prefix");
 			return;
 		}
+		if (args[0].length() > 10) {
+			SharkUtil.error(message, "Prefix must be under 10 characters");
+			return;
+		}
 		String prefix = args[0].toLowerCase();
 		ServerInfo.getServerInfo(message.getGuild().getIdLong()).setProperty(ServerProperty.PREFIX, prefix);
-		SharkUtil.success(message, ("Set server prefix to `" + prefix + "`!"));
+		SharkUtil.success(message, ("Set server prefix to `" + args[0] + "`!"));
 	}
 
 }

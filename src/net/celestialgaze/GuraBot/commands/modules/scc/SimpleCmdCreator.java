@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot.commands.scc;
+package net.celestialgaze.GuraBot.commands.modules.scc;
 
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.Command;
@@ -22,8 +22,6 @@ public class SimpleCmdCreator extends HelpCommand {
 
 	@Override
 	public void init() {
-		Commands.addCommand(this);
-		
 		// Add subcommands
 		SccCreate create = new SccCreate(this);
 		SccDelete delete = new SccDelete(this);

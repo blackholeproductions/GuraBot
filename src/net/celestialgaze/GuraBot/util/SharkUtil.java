@@ -11,8 +11,11 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 public class SharkUtil {
 	public static final int DEFAULT_RANDOM_SEED = 403126880;
 	public static void error(Message message, String error) {
+		error(message.getChannel(), error);
+	}
+	public static void error(MessageChannel channel, String error) {
 		String[] failures = {"uh oh...", "is this a land thing that i'm not aware of?", "0% hydrodynamic"};
-		message.getChannel().sendMessage(new EmbedBuilder()
+		channel.sendMessage(new EmbedBuilder()
 				.setColor(new Color(242, 80, 80))
 				.setTitle(failures[new Random().nextInt(failures.length)])
 				.setDescription(error)

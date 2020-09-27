@@ -3,6 +3,7 @@ package net.celestialgaze.GuraBot.commands;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.util.SharkUtil;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 
 public class Say extends Command {
@@ -23,7 +24,7 @@ public class Say extends Command {
 
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
-		message.delete().queue();
+		if (message.getChannelType().equals(ChannelType.TEXT)) message.delete().queue();
 		message.getChannel().sendMessage(SharkUtil.toString(args, " ")).queue();
 	}
 

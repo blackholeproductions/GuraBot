@@ -9,9 +9,12 @@ import org.json.simple.JSONObject;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.commands.classes.CommandModule;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
+import net.celestialgaze.GuraBot.commands.classes.ModuleType;
 import net.celestialgaze.GuraBot.commands.classes.SimpleCommand;
-import net.celestialgaze.GuraBot.commands.scc.SimpleCmdCreator;
+import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
+import net.celestialgaze.GuraBot.commands.modules.scc.SimpleCmdCreator;
 import net.celestialgaze.GuraBot.json.JSON;
 import net.celestialgaze.GuraBot.json.ServerInfo;
 import net.celestialgaze.GuraBot.json.ServerProperty;
@@ -21,6 +24,8 @@ public class Commands {
 	public static Map<String, HashMap<String, Command>> rootCommandsCategorized = new HashMap<String, HashMap<String, Command>>();
 	public static Map<String, Command> rootCommands = new HashMap<String, Command>();
 	public static Map<Long, HashMap<String, Command>> guildCommands = new HashMap<Long, HashMap<String, Command>>();
+	public static Map<ModuleType, CommandModule> modules = new HashMap<ModuleType, CommandModule>();
+	public static Map<String, Command> moduleCommands = new HashMap<String, Command>();
 	private static List<Command> commands = new ArrayList<Command>();
 	
 	public static void addCommand(Command command) {
@@ -31,6 +36,14 @@ public class Commands {
 		System.out.println(command.getCategory());
 		rootCommands.put(command.getName(), command);
 	}
+	
+	public static void addModule(CommandModule module) {
+		modules.put(module.getType(), module);
+		for (Command command : module.getCommandsList()) {
+			moduleCommands.put(command.getName(), command);
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void init() {
 		// Clear any existing commands
@@ -44,10 +57,14 @@ public class Commands {
 		addCommand(new About());
 		addCommand(new Noise());
 		addCommand(new Ship());
-		addCommand(new SimpleCmdCreator());
 		addCommand(new Stats());
 		addCommand(new Say());
+		addCommand(new ModuleCmd());
 		
+		// Modules
+		addModule(new CommandModule(ModuleType.CUSTOM_COMMANDS,
+			new SimpleCmdCreator()
+		));
 		// Load commands from global commands json
 		JSONObject jo = JSON.readFile(GuraBot.DATA_FOLDER+"bot\\commands.json");
 		jo.forEach((key, value) -> {
