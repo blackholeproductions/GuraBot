@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.json.simple.JSONObject;
 
@@ -15,9 +16,15 @@ import net.celestialgaze.GuraBot.commands.classes.ModuleType;
 import net.celestialgaze.GuraBot.commands.classes.SimpleCommand;
 import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
 import net.celestialgaze.GuraBot.commands.modules.scc.SimpleCmdCreator;
+import net.celestialgaze.GuraBot.commands.modules.xp.Xp;
+import net.celestialgaze.GuraBot.commands.modules.xp.XpLeaderboard;
 import net.celestialgaze.GuraBot.json.JSON;
 import net.celestialgaze.GuraBot.json.ServerInfo;
 import net.celestialgaze.GuraBot.json.ServerProperty;
+import net.celestialgaze.GuraBot.util.DelayedRunnable;
+import net.celestialgaze.GuraBot.util.RunnableListener;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Commands {
 	public static String defaultPrefix = "a!";
@@ -52,6 +59,7 @@ public class Commands {
 		
 		// Add root commands
 		addCommand(new Ping());
+		addCommand(new Info());
 		addCommand(new SetPrefix());
 		addCommand(new Prefix());
 		addCommand(new About());
@@ -59,11 +67,41 @@ public class Commands {
 		addCommand(new Ship());
 		addCommand(new Stats());
 		addCommand(new Say());
+		addCommand(new Avatar());
 		addCommand(new ModuleCmd());
 		
 		// Modules
 		addModule(new CommandModule(ModuleType.CUSTOM_COMMANDS,
 			new SimpleCmdCreator()
+		));
+		addModule(new CommandModule(ModuleType.XP,
+			new RunnableListener() {
+				List<Long> cooldowns = new ArrayList<Long>(); // Users that currently have a cooldown for XP
+				@Override
+				public void run() {
+					if (currentEvent instanceof MessageReceivedEvent) {
+						MessageReceivedEvent event = (MessageReceivedEvent) currentEvent;
+						if (event.getChannelType().equals(ChannelType.TEXT) && 
+								!CommandModule.isEnabled(ModuleType.XP, event.getGuild().getIdLong())) return; // If not enabled or not in guild, don't run 
+						Long userId = event.getAuthor().getIdLong();
+						if (!cooldowns.contains(userId)) { // If user isn't on cooldown
+							ServerInfo si = ServerInfo.getServerInfo(event.getGuild().getIdLong());
+							si.addXP(userId, 20+new Random().nextInt(5)); // Add xp
+							cooldowns.add(userId);
+							new DelayedRunnable(new Runnable() {
+
+								@Override
+								public void run() {
+									cooldowns.remove(userId);
+								}
+								
+							}).execute(System.currentTimeMillis()+(30*1000)); // Remove after 30 seconds
+						}
+					}
+				}
+			},
+			new Xp(),
+			new XpLeaderboard()
 		));
 		// Load commands from global commands json
 		JSONObject jo = JSON.readFile(GuraBot.DATA_FOLDER+"bot\\commands.json");

@@ -12,7 +12,7 @@ public class ModuleCmd extends HelpCommand {
 				.setDescription("Manage your server's modules")
 				.setUsablePrivate(false)
 				.setCategory("Server")
-				.verify(), 
+				.verify(),
 				"Module");
 		for (Command cmd : subcommands.values()) {
 			commands.put(cmd.getName(), cmd);

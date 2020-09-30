@@ -8,7 +8,7 @@ public abstract class Subcommand extends Command implements ISubcommand {
 		this.parent = parent;
 	}
 
-	private Command parent;
+	protected Command parent;
 
 	public Command getParent() {
 		return parent;

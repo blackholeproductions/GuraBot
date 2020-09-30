@@ -1,7 +1,8 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
 public enum ModuleType {
-	CUSTOM_COMMANDS("Custom Commands", "Server", "Allows you to add custom commands to your server");
+	CUSTOM_COMMANDS("Custom Commands", "Server", "Allows you to add custom commands"),
+	XP("XP", "Server", "Adds an XP system");
 	
 	String name;
 	String category;

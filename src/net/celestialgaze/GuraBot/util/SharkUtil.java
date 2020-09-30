@@ -1,10 +1,16 @@
 package net.celestialgaze.GuraBot.util;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.celestialgaze.GuraBot.GuraBot;
+import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
+import net.celestialgaze.GuraBot.commands.classes.IPageCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 
@@ -71,5 +77,48 @@ public class SharkUtil {
 	        (seconds % 3600) / 60,
 	        seconds % 60);
 	    return seconds < 0 ? "-" + positive : positive;
+	}
+	public static Member getMember(Message message, String[] args, int start) {
+		Guild guild = message.getGuild();
+		Member member = null;
+		String input = "";
+		if (args.length > start) {
+			input = SharkUtil.toString(args, " ");
+		}
+		// Try to get by ID
+		try {
+			member = guild.getMemberById(Long.parseLong(input));
+		} catch (Exception e) {
+			// Try to get by mention
+			if (input.startsWith("<@!") && input.endsWith(">")) {
+				Long id = Long.parseLong(input.split("<@!")[1].split(">")[0]);
+				if (guild.getMemberById(id) != null) {
+					return guild.getMemberById(id);
+				}
+			}
+		}
+		try {
+			// Try to get by user#discrim
+			if (guild.getMemberByTag(input) != null) {
+				return guild.getMemberByTag(input);
+			}
+		} catch (Exception e) {}
+		return member;
+	}
+	public static void sendHelpMenu(Message message, IPageCommand helpCmd) {
+		sendHelpMenu(message, helpCmd, null);
+	}
+	public static void sendHelpMenu(Message message, IPageCommand helpCmd, ArrayList<Command> extra) {
+		message.getChannel().sendMessage(new EmbedBuilder().setTitle("Waiting...").build()).queue(response -> {
+			PageMessage pm = new PageMessage(response, message.getAuthor().getIdLong(), new ArgRunnable<Integer>() {
+
+				@Override
+				public void run() {
+					response.editMessage(helpCmd.createEmbed(message, response, getArg(), extra).build()).queue();
+				}
+				
+			});
+			pm.update();
+		});
 	}
 }

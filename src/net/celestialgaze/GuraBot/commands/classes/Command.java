@@ -52,7 +52,7 @@ public abstract class Command implements ICommand {
 		System.out.println("Sucessfully initialized " + name + " command");
 		if (initialize) init();
 	}
-	public abstract void init();
+	public void init() {}
 	
 	@Override
 	public void attempt(Message message, String[] args, String[] modifiers) {
@@ -99,6 +99,9 @@ public abstract class Command implements ICommand {
 		return canRun(message, true);
 	}
 	public boolean canRun(Message message, boolean silent) {
+		return canRun(message, silent, false);
+	}
+	public boolean canRun(Message message, boolean silent, boolean cooldown) {
 		if (!usablePrivately && message.getChannelType().equals(ChannelType.PRIVATE)) {
 			error(message, "Sorry, this command is not available in DMs.", silent);
 			return false;
@@ -111,7 +114,7 @@ public abstract class Command implements ICommand {
 			error(message, "You're not celestialgaze#0001!", silent);
 			return false;
 		}
-		if (cooldownDuration > 0.0 && userCooldowns.containsKey(message.getAuthor().getIdLong())) {
+		if (cooldown && cooldownDuration > 0.0 && userCooldowns.containsKey(message.getAuthor().getIdLong())) {
 			error(message, "You must wait " + 
 					String.format("%.2f", userCooldowns.get(message.getAuthor().getIdLong()).getTimeRemaining()/1000.0) + " seconds", silent);
 			return false;

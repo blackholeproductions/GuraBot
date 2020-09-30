@@ -2,8 +2,10 @@ package net.celestialgaze.GuraBot.commands.classes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
@@ -13,6 +15,7 @@ import net.celestialgaze.GuraBot.util.ArgRunnable;
 import net.celestialgaze.GuraBot.util.BulletListBuilder;
 import net.celestialgaze.GuraBot.util.InteractableMessage;
 import net.celestialgaze.GuraBot.util.PageMessage;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
@@ -56,13 +59,13 @@ public abstract class HelpCommand extends Command implements IPageCommand {
 		// Remove all commands that can't be run
 		Map<String, Command> newCommands = new HashMap<String, Command>(commands); // copy so we don't get ConcurrentModificationException
 		for (Command command : commands.values()) {
-			if (!command.canRun(userMessage)) {
+			if (!command.canRun(userMessage, true, false)) {
 				newCommands.remove(command.getName());
 			}
 		}
 		commands = newCommands;
 		
-		int maxPageSize = Math.toIntExact(Math.round(Math.ceil((commands.size()+0.0)/(PAGE_SIZE+0.0))));
+		int maxPageSize = Math.toIntExact(Math.round(Math.ceil((commands.size()+0.0)/(pageSize+0.0))));
 		PageMessage pm = (PageMessage) InteractableMessage.list.get(messageToEdit.getIdLong());
 		pm.setMaxSize(maxPageSize);
 		
@@ -70,52 +73,47 @@ public abstract class HelpCommand extends Command implements IPageCommand {
 				.setTitle(helpMenuName + " Help Menu - Page (" + page + "/" + maxPageSize + ")")
 				.setColor(GuraBot.DEFAULT_COLOR);
 
-		List<Command> commandsToDisplay = new ArrayList<Command>();
+		// Sort the commands into their categories
+		Map<String, Command> commandsSorted = new LinkedHashMap<String, Command>();
+		commands
+		  .entrySet()
+		  .stream()
+		  .sorted((e1, e2) -> e1.getValue().getCategory().compareTo(e2.getValue().getCategory()))
+		  .forEach(entry -> commandsSorted.put(entry.getKey(), entry.getValue()));
 		
-		// Construct a list of commands to process of size pageSize starting at startPosition
-		for (int i = 0; i < commands.size(); i++) {
+		List<Command> commandValues = new ArrayList<>(commandsSorted.values());
+
+		// Make bullet lists for each categories
+		Map<String, BulletListBuilder> categoryStrings = new LinkedHashMap<String, BulletListBuilder>();
+		for (int i = 0; i < commandsSorted.size(); i++) {
 			if (i < startPosition) continue;
 			if (i > startPosition+pageSize-1) break;
-			commandsToDisplay.add(new ArrayList<Command>(commands.values()).get(i));
+			Command command = commandValues.get(i);
+			if (!categoryStrings.containsKey(command.getCategory())) {
+				categoryStrings.put(command.getCategory(), new BulletListBuilder());
+			}
+			categoryStrings.get(command.getCategory()).add("**"+serverPrefix+(commands.equals(subcommands) ? 
+					((Subcommand)command).getParent().getName() + " " : "") +command.getName(), 
+					(!command.getUsage().isEmpty() ? " " + command.getUsage() + "**\n " : ":** ")
+					+ command.getDescription(), "");
 		}
 		
-		// Sort the commands into their categories
-		Map<String, ArrayList<Command>> categories = new HashMap<String, ArrayList<Command>>();
-		for (Command command : commandsToDisplay) {
-			if (!categories.containsKey(command.getCategory())) {
-				categories.put(command.getCategory(), new ArrayList<Command>());
+		// Load them into the embed
+		if (categoryStrings.size() == 1) {
+			eb.setDescription(((BulletListBuilder) categoryStrings.values().toArray()[0]).build());
+		} else if (categoryStrings.size() > 1) {
+			for (Entry<String, BulletListBuilder> entry : categoryStrings.entrySet()) {
+				eb.addField(entry.getKey(), entry.getValue().build(), false); // 
 			}
-			categories.get(command.getCategory()).add(command);
-		}
-		
-		// Populate the embed
-		for (int i = 0; i < categories.size(); i++) {
-			BulletListBuilder blb = new BulletListBuilder();
-			String categoryName = new ArrayList<>(categories.keySet()).get(i);
-			for (Command command : categories.get(categoryName)) {
-				blb.add("**"+serverPrefix+(commands.equals(subcommands) ? ((Subcommand)command).getParent().getName() + " " : "")
-						+command.getName(), (!command.getUsage().isEmpty() ? " " + command.getUsage() + "**\n " : ":** ")
-						+ command.getDescription(), "");
-			}
-			String str = blb.build();
-			eb.addField(categoryName, blb.build(), false);
+		} else {
+			eb.setDescription("Sorry, no commands were found.");
 		}
 		return eb;
 	}
 	
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
-		message.getChannel().sendMessage(new EmbedBuilder().setTitle("Waiting...").build()).queue(response -> {
-			PageMessage pm = new PageMessage(response, new ArgRunnable<Integer>() {
-
-				@Override
-				public void run() {
-					response.editMessage(createEmbed(message, response, getArg()).build()).queue();;
-				}
-				
-			});
-			pm.update();
-		});
+		SharkUtil.sendHelpMenu(message, this);
 	}
 	
 }

@@ -11,6 +11,7 @@ import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
 import net.celestialgaze.GuraBot.util.ArgRunnable;
 import net.celestialgaze.GuraBot.util.PageMessage;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
@@ -51,18 +52,6 @@ public class MainHelp extends HelpCommand {
 				}
 			}
 		}
-
-		message.getChannel().sendMessage(new EmbedBuilder().setTitle("Waiting...").build()).queue(response -> {
-			PageMessage pm = new PageMessage(response, new ArgRunnable<Integer>() {
-
-				@Override
-				public void run() {
-					response.editMessage(createEmbed(message, response, getArg(), new ArrayList<Command>(guildCommands.values())).build()).queue();;
-				}
-				
-			});
-			pm.update();
-		});
+		SharkUtil.sendHelpMenu(message, this, new ArrayList<Command>(guildCommands.values()));
 	}
-
 }

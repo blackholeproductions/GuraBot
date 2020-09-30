@@ -16,6 +16,7 @@ import net.celestialgaze.GuraBot.util.ArgRunnable;
 import net.celestialgaze.GuraBot.util.BulletListBuilder;
 import net.celestialgaze.GuraBot.util.InteractableMessage;
 import net.celestialgaze.GuraBot.util.PageMessage;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -72,17 +73,7 @@ public class ModuleList extends Subcommand implements IPageCommand {
 	
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
-		message.getChannel().sendMessage(new EmbedBuilder().setTitle("Waiting...").build()).queue(response -> {
-			PageMessage pm = new PageMessage(response, new ArgRunnable<Integer>() {
-
-				@Override
-				public void run() {
-					response.editMessage(createEmbed(message, response, getArg()).build()).queue();
-				}
-				
-			});
-			pm.update();
-		});
+		SharkUtil.sendHelpMenu(message, this);
 	}
 
 

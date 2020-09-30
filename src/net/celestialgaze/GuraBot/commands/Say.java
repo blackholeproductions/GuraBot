@@ -11,7 +11,7 @@ public class Say extends Command {
 	public Say() {
 		super(new CommandOptions()
 				.setName("say")
-				.setDescription("Make the bot say something")
+				.setDescription("Make me say something")
 				.setCooldown(0.0)
 				.setCategory("Fun")
 				.setUsage("<string>")

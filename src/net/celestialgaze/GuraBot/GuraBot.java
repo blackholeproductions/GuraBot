@@ -26,6 +26,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class GuraBot extends ListenerAdapter {
 	public static JDA jda;
@@ -39,6 +42,9 @@ public class GuraBot extends ListenerAdapter {
 		System.out.println("Main function");
 		try {
 			jda = JDABuilder.createDefault(JSON.read(SETTINGS, "token"))
+					.setChunkingFilter(ChunkingFilter.ALL)
+					.setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS)
 					.setActivity(Activity.playing("a"))
 					.build();
 			jda.addEventListener(new GuraBot());
@@ -97,9 +103,10 @@ public class GuraBot extends ListenerAdapter {
 		try {
 			ReactionEmote re = event.getReactionEmote();
 			// Check if reaction was added to interactable
-			if (InteractableMessage.list.containsKey(event.getMessageIdLong()) && event.getUserIdLong() != jda.getSelfUser().getIdLong()) { 
+			if (InteractableMessage.list.containsKey(event.getMessageIdLong())) { 
 				// Check if the reaction added has a function. If so, run it
 				InteractableMessage iMessage = InteractableMessage.list.get(event.getMessageIdLong());
+				if (iMessage.getOwnerId() != event.getUserIdLong()) return;
 				if (re.isEmoji() && iMessage.emojiFunctions.containsKey(re.getEmoji())) {
 					iMessage.emojiFunctions.get(re.getEmoji()).run();
 				} else if (re.isEmote() && iMessage.emoteFunctions.containsKey(re.getEmote())) {

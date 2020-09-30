@@ -15,9 +15,11 @@ public class InteractableMessage {
 	public Map<Emote, Runnable> emoteFunctions = new HashMap<Emote, Runnable>();
 	public Map<String, Runnable> emojiFunctions = new HashMap<String, Runnable>();
 	
-	Message message;
-	public InteractableMessage(Message message) {
+	private Message message;
+	private long ownerId;
+	public InteractableMessage(Message message, long ownerId) {
 		this.message = message;
+		this.ownerId = ownerId;
 		list.put(message.getIdLong(), this);
 	}
 	public InteractableMessage addButton(Emote emote, Runnable runnable) {
@@ -39,5 +41,7 @@ public class InteractableMessage {
 	public Message getMessage() {
 		return message;
 	}
-	
+	public long getOwnerId() {
+		return ownerId;
+	}
 }

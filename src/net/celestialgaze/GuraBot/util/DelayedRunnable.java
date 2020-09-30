@@ -12,6 +12,10 @@ public class DelayedRunnable {
 		this.runnable = runnable;
 		timer = new Timer();
 	}
+	/**
+	* {@summary} Executes the runnable at the given time.
+	* @param time  the at which to execute.
+	*/
 	public DelayedRunnable execute(long time) {
 		endTime = time;
 		timer.schedule(new TimerTask() {

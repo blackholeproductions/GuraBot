@@ -7,13 +7,13 @@ public class PageMessage extends InteractableMessage {
 	private int maxPage = Integer.MAX_VALUE;
 	private ArgRunnable<Integer> update;
 	
-	public PageMessage(Message message, ArgRunnable<Integer> runnable) {
-		super(message);
+	public PageMessage(Message message, long ownerId, ArgRunnable<Integer> runnable) {
+		super(message, ownerId);
 		this.update = runnable;
 		init();
 	}
-	public PageMessage(Message message, ArgRunnable<Integer> runnable, int page, int maxPage) {
-		super(message);
+	public PageMessage(Message message, long ownerId, ArgRunnable<Integer> runnable, int page, int maxPage) {
+		super(message, ownerId);
 		this.page = page;
 		this.update = runnable;
 		this.maxPage = maxPage;

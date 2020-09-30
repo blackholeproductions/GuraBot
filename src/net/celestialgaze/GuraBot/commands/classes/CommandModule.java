@@ -3,19 +3,34 @@ package net.celestialgaze.GuraBot.commands.classes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.json.ServerInfo;
 import net.celestialgaze.GuraBot.json.ServerProperty;
+import net.celestialgaze.GuraBot.util.RunnableListener;
 
 public class CommandModule {
 	private ModuleType type;
+	private RunnableListener listener;
 	private Map<String, Command> commands = new HashMap<String, Command>();
-	
 	public CommandModule(ModuleType type, Command... commands) {
 		this.type = type;
+		for (Command command : commands) {
+			command.setModule(this);
+			this.commands.put(command.getName(), command);
+		}
+	}
+	public static boolean isEnabled(ModuleType type, long guild) {
+		ServerInfo si = ServerInfo.getServerInfo(guild);
+		Map<String, Boolean> m = si.getProperty(ServerProperty.MODULES, new LinkedHashMap<String, Boolean>());
+		return m.getOrDefault(type.getModName(), false);
+	}
+	public CommandModule(ModuleType type, RunnableListener listener, Command... commands) {
+		this.type = type;
+		this.listener = listener;
+		GuraBot.jda.addEventListener(this.listener);
 		for(Command command : commands) {
 			command.setModule(this);
 			this.commands.put(command.getName(), command);
@@ -41,9 +56,7 @@ public class CommandModule {
 		return type.getCategory();
 	}
 	public boolean isEnabled(long guild) {
-		ServerInfo si = ServerInfo.getServerInfo(guild);
-		Map<String, Boolean> m = si.getProperty(ServerProperty.MODULES, new LinkedHashMap<String, Boolean>());
-		return m.getOrDefault(getName(), false);
+		return CommandModule.isEnabled(type, guild);
 	}
 	public void setDisabled(long guild) {
 		ServerInfo si = ServerInfo.getServerInfo(guild);

@@ -9,7 +9,7 @@ public class Ping extends Command {
 	public Ping() {
 		super(new CommandOptions()
 				.setName("ping")
-				.setDescription("Pings the bot and gives you the latency")
+				.setDescription("Pings me and gives you the latency")
 				.setCategory("Bot Info")
 				.verify());
 	}
