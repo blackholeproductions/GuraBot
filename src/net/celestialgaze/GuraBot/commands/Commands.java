@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.json.simple.JSONObject;
+import org.bson.Document;
+import com.mongodb.client.model.Filters;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
@@ -18,9 +19,8 @@ import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
 import net.celestialgaze.GuraBot.commands.modules.scc.SimpleCmdCreator;
 import net.celestialgaze.GuraBot.commands.modules.xp.Xp;
 import net.celestialgaze.GuraBot.commands.modules.xp.XpLeaderboard;
-import net.celestialgaze.GuraBot.json.JSON;
-import net.celestialgaze.GuraBot.json.ServerInfo;
-import net.celestialgaze.GuraBot.json.ServerProperty;
+import net.celestialgaze.GuraBot.db.ServerInfo;
+import net.celestialgaze.GuraBot.db.ServerProperty;
 import net.celestialgaze.GuraBot.util.DelayedRunnable;
 import net.celestialgaze.GuraBot.util.RunnableListener;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -51,7 +51,6 @@ public class Commands {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static void init() {
 		// Clear any existing commands
 		commands.clear();
@@ -103,17 +102,19 @@ public class Commands {
 			new Xp(),
 			new XpLeaderboard()
 		));
-		// Load commands from global commands json
-		JSONObject jo = JSON.readFile(GuraBot.DATA_FOLDER+"bot\\commands.json");
-		jo.forEach((key, value) -> {
-			String title = (String)key;
-			Map<String, String> m = (Map<String, String>)value;
-			addCommand(new SimpleCommand(new CommandOptions()
-					.setName(title)
-					.setDescription(m.get("description"))
-					.setCategory(m.get("category"))
-					.verify(),
-					m.get("response")));
+		// Load commands from global commands document
+		Document cmdsDoc = GuraBot.bot.find(Filters.eq("name", "commands")).first();
+		cmdsDoc.forEach((key, value) -> {
+			if (value instanceof Document) {
+				String title = (String)key;
+				Document cmdDoc = (Document)value;
+				addCommand(new SimpleCommand(new CommandOptions()
+						.setName(title)
+						.setDescription(cmdDoc.getString("description"))
+						.setCategory(cmdDoc.getString("category"))
+						.verify(),
+						cmdDoc.getString("response")));
+			}
 		});
 		
 		// Help command last as it accesses the commands list
@@ -131,14 +132,15 @@ public class Commands {
 		Map<String, Command> guildMap = guildCommands.get(id);
 		guildMap.clear();
 		ServerInfo si = ServerInfo.getServerInfo(id);
-		Map<String, HashMap<String, String>> m = si.getProperty(ServerProperty.COMMANDS, new HashMap<String, HashMap<String, String>>());
-		m.forEach((commandName, properties) -> {
+		Document doc = si.getProperty(ServerProperty.COMMANDS, new Document());
+		doc.forEach((commandName, properties) -> {
+			Document propertiesDoc = (Document) properties;
 			guildMap.put(commandName, new SimpleCommand(new CommandOptions()
 					.setName(commandName)
-					.setDescription(properties.get("description"))
+					.setDescription((String) propertiesDoc.get("description"))
 					.setCategory("Server Commands")
 					.verify(),
-					properties.get("response")));
+					(String) propertiesDoc.get("response")));
 		});
 	}
 	

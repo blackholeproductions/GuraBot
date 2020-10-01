@@ -2,16 +2,16 @@ package net.celestialgaze.GuraBot.commands.modules.scc;
 
 import java.util.Map;
 
-import org.json.simple.JSONObject;
+import org.bson.Document;
+import com.mongodb.client.model.Filters;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.Subcommand;
-import net.celestialgaze.GuraBot.json.JSON;
-import net.celestialgaze.GuraBot.json.ServerInfo;
-import net.celestialgaze.GuraBot.json.ServerProperty;
+import net.celestialgaze.GuraBot.db.ServerInfo;
+import net.celestialgaze.GuraBot.db.ServerProperty;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -41,15 +41,14 @@ public class SccDelete extends Subcommand {
 		
 		String title = args[0];
 		if (modifiers.length > 0 && modifiers[0].equalsIgnoreCase("global")) {
-			String filename = GuraBot.DATA_FOLDER+"bot\\commands.json";
-			JSONObject jo = JSON.readFile(filename);
-			if (jo.containsKey(title)) {
-				jo.remove(title);
+			Document document = GuraBot.bot.find(Filters.eq("name", "commands")).first();
+			
+			if (document.containsKey(title)) {
+				document.remove(title);
 			} else {
-				SharkUtil.info(message, "No such command **" + title + "** exists");
-				return;
+				SharkUtil.error(message, "No such command **" + title + "** exists.");
 			}
-			JSON.writeToFile(jo, filename);
+			GuraBot.bot.replaceOne(Filters.eq("name", "commands"), document);
 			
 			Commands.init(); // Initialize again to update the list of commands
 			SharkUtil.success(message, "Successfully removed the **" + title + "** command");

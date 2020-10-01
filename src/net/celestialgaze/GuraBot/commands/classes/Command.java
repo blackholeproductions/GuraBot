@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import net.celestialgaze.GuraBot.GuraBot;
-import net.celestialgaze.GuraBot.json.BotInfo;
-import net.celestialgaze.GuraBot.json.BotStat;
+import net.celestialgaze.GuraBot.db.BotInfo;
+import net.celestialgaze.GuraBot.db.BotStat;
 import net.celestialgaze.GuraBot.util.DelayedRunnable;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 
@@ -81,7 +81,7 @@ public abstract class Command implements ICommand {
 						"Args: " + argsString + "... \nFull message: " + 
 						message.getContentRaw().substring(0, Integer.min(message.getContentRaw().length(), 100));
 				SharkUtil.error(message, error);
-				BotInfo.addLongStat(BotStat.ERRORS);
+				BotInfo.addIntStat(BotStat.ERRORS);
 				if (message.getAuthor().getIdLong() != Long.parseLong("218525899535024129")) {
 					message.getChannel().sendMessage("Reporting to cel...").queue(response -> {
 						GuraBot.jda.getUserById(Long.parseLong("218525899535024129")).openPrivateChannel().queue(channel -> {

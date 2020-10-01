@@ -9,10 +9,7 @@ import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandModule;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
-import net.celestialgaze.GuraBot.util.ArgRunnable;
-import net.celestialgaze.GuraBot.util.PageMessage;
 import net.celestialgaze.GuraBot.util.SharkUtil;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 

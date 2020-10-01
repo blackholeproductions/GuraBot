@@ -2,7 +2,7 @@ package net.celestialgaze.GuraBot.commands.modules.xp;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
-import net.celestialgaze.GuraBot.json.ServerInfo;
+import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.util.ArgRunnable;
 import net.celestialgaze.GuraBot.util.PageMessage;
 import net.celestialgaze.GuraBot.util.SharkUtil;

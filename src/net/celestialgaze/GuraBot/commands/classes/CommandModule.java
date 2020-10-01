@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.celestialgaze.GuraBot.GuraBot;
-import net.celestialgaze.GuraBot.json.ServerInfo;
-import net.celestialgaze.GuraBot.json.ServerProperty;
+import net.celestialgaze.GuraBot.db.ServerInfo;
+import net.celestialgaze.GuraBot.db.ServerProperty;
 import net.celestialgaze.GuraBot.util.RunnableListener;
 
 public class CommandModule {

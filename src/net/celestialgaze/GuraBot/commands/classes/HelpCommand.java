@@ -9,9 +9,8 @@ import java.util.Map.Entry;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
-import net.celestialgaze.GuraBot.json.ServerInfo;
-import net.celestialgaze.GuraBot.json.ServerProperty;
-import net.celestialgaze.GuraBot.util.ArgRunnable;
+import net.celestialgaze.GuraBot.db.ServerInfo;
+import net.celestialgaze.GuraBot.db.ServerProperty;
 import net.celestialgaze.GuraBot.util.BulletListBuilder;
 import net.celestialgaze.GuraBot.util.InteractableMessage;
 import net.celestialgaze.GuraBot.util.PageMessage;

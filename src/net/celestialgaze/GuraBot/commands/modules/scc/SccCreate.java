@@ -3,16 +3,17 @@ package net.celestialgaze.GuraBot.commands.modules.scc;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
+import org.bson.Document;
+
+import com.mongodb.client.model.Filters;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.Subcommand;
-import net.celestialgaze.GuraBot.json.JSON;
-import net.celestialgaze.GuraBot.json.ServerInfo;
-import net.celestialgaze.GuraBot.json.ServerProperty;
+import net.celestialgaze.GuraBot.db.ServerInfo;
+import net.celestialgaze.GuraBot.db.ServerProperty;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -32,7 +33,6 @@ public class SccCreate extends Subcommand {
 	@Override
 	public void init() {}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
 		String argsString = message.getContentRaw();
@@ -65,14 +65,13 @@ public class SccCreate extends Subcommand {
 		command.put("response", response);
 		
 		if (modifiers.length > 0 && modifiers[0].equalsIgnoreCase("global")) {
-			String filename = GuraBot.DATA_FOLDER+"bot\\commands.json";
-			JSONObject jo = JSON.readFile(filename);
+			Document document = GuraBot.bot.find(Filters.eq("name", "commands")).first();
+			
 			if (quoteSplit.length == 9) category = quoteSplit[7];
 			command.put("category", category);
-
-			jo.put(title, command);
 			
-			JSON.writeToFile(jo, filename);
+			document.put(title, command);
+			GuraBot.bot.replaceOne(Filters.eq("name", "commands"), document);
 			
 			Commands.init(); // Initialize again to include the newly-created command
 			SharkUtil.success(message, "Successfully created **" + title + "** command");

@@ -1,13 +1,16 @@
-package net.celestialgaze.GuraBot.json;
+package net.celestialgaze.GuraBot.db;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.util.XPUtil;
@@ -16,46 +19,83 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 
 public class ServerInfo {
-	public final String filename;
 	public final Guild guild;
 	public static ServerInfo getServerInfo(long id) {
 		return new ServerInfo(id);
 	}
-	public static String getFilename(long id) {
-		return GuraBot.DATA_FOLDER + "server\\" + id + ".json";
+	public Document getDocument() {
+		Document result = GuraBot.servers.find(documentFilter).first();
+		if (result == null) {
+			GuraBot.servers.insertOne(new Document().append("id", id));
+			result = new Document().append("id", id);
+		}
+		return result;
 	}
 	long id;
+	Bson documentFilter;
 	
 	public ServerInfo(long id) {
 		this.id = id;
+		this.documentFilter = Filters.eq("id", id);
 		this.guild = GuraBot.jda.getGuildById(id);
-		filename = getFilename(id);
 	}
 	
 	public void setProperty(ServerProperty property, Object value) {
-		JSON.write(filename, property.toString().toLowerCase(), value);
+        Bson updateOperation = Updates.set(property.toString().toLowerCase(), value);
+        GuraBot.servers.updateOne(documentFilter, updateOperation);
+	}
+	public Document getModuleDocument(String moduleName) {
+		Document moduleDoc = getProperty(ServerProperty.MODULE, new Document());
+		if (moduleDoc.get(moduleName) == null) {
+			moduleDoc.append(moduleName, new Document());
+		}
+		setProperty(ServerProperty.MODULE, moduleDoc);
+		return (Document) moduleDoc.get(moduleName);
+	}
+	public void updateModuleDocument(String moduleName, Document newDoc) {
+		Document moduleDoc = getProperty(ServerProperty.MODULE, new Document());
+		moduleDoc.put(moduleName, newDoc);
+		setProperty(ServerProperty.MODULE, moduleDoc);
 	}
 	@SuppressWarnings("unchecked")
 	public <T> T getProperty(ServerProperty property) {
-		return (T) JSON.read(filename, property.toString().toLowerCase());
+		return (T) getDocument().get(property.toString().toLowerCase());
 	}
+	@SuppressWarnings("unchecked")
 	public <T> T getProperty(ServerProperty property, T def) {
-		return (T) JSON.read(filename, property.toString().toLowerCase(), def);
+		T result = (T) getDocument().get(property.toString().toLowerCase());
+		return (result != null ? result : def);
 	}
 	public String getPrefix() {
 		return getProperty(ServerProperty.PREFIX, Commands.defaultPrefix);
 	}
 	public void setXP(long userId, long value) {
-		XPUtil.setXP(id, userId, value);
+		Document xpDoc = getModuleDocument("xp");
+		if (xpDoc.get("experience") == null) xpDoc.put("experience", new Document());
+		Document expDoc = (Document) xpDoc.get("experience");
+		expDoc.append(Long.toString(userId), value);
+		updateModuleDocument("xp", xpDoc);
 	}
 	public void addXP(long userId, long value) {
-		XPUtil.addXP(id, userId, value);
+		setXP(userId, getXP(userId)+value);
 	}
 	public long getXP(long userId) {
-		return XPUtil.getXP(id, userId);
+		Document xpDoc = getModuleDocument("xp");
+		if (xpDoc.get("experience") == null) xpDoc.put("experience", new Document());
+		Document expDoc = (Document) xpDoc.get("experience");
+		Object result = expDoc.get(Long.toString(userId));
+		if (result == null) result = Long.parseLong("0");
+		return (long) result;
 	}
 	public Map<String, Long> getXpMap() {
-		return XPUtil.getXpMap(id);
+		Map<String, Long> result = new HashMap<>();
+		Document xpDoc = getModuleDocument("xp");
+		if (xpDoc.get("experience") == null) xpDoc.put("experience", new Document());
+		Document expDoc = (Document) xpDoc.get("experience");
+		expDoc.forEach((key, value) -> {
+			result.put((String)key, (Long)value);
+		});
+		return result;
 	}
 	public EmbedBuilder getLeaderboard(int page) {
 		return getLeaderboard(page, false);

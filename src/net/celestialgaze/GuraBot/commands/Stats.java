@@ -3,8 +3,8 @@ package net.celestialgaze.GuraBot.commands;
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
-import net.celestialgaze.GuraBot.json.BotInfo;
-import net.celestialgaze.GuraBot.json.BotStat;
+import net.celestialgaze.GuraBot.db.BotInfo;
+import net.celestialgaze.GuraBot.db.BotStat;
 import net.celestialgaze.GuraBot.util.BulletListBuilder;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -32,9 +32,9 @@ public class Stats extends Command {
 				.add("Current Version", GuraBot.version)
 				.build();
 		String statsList = new BulletListBuilder(true)
-				.add("Commands Run", Long.toString(BotInfo.getStat(BotStat.COMMANDS_RUN)))
-				.add("Errors", Long.toString(BotInfo.getStat(BotStat.ERRORS)))
-				.add("Times Started", Long.toString(BotInfo.getStat(BotStat.STARTS)))
+				.add("Commands Run", Integer.toString(BotInfo.getIntStat(BotStat.COMMANDS_RUN)))
+				.add("Errors", Integer.toString(BotInfo.getIntStat(BotStat.ERRORS)))
+				.add("Times Started", Integer.toString(BotInfo.getIntStat(BotStat.STARTS)))
 				.build();
 		
 		message.getChannel().sendMessage(new EmbedBuilder()

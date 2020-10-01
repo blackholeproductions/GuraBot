@@ -7,11 +7,18 @@ import java.util.Date;
 
 import javax.security.auth.login.LoginException;
 
+import org.bson.Document;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.CommandInterpreter;
-import net.celestialgaze.GuraBot.json.BotInfo;
+import net.celestialgaze.GuraBot.db.BotInfo;
+import net.celestialgaze.GuraBot.db.BotStat;
 import net.celestialgaze.GuraBot.json.JSON;
-import net.celestialgaze.GuraBot.json.BotStat;
 import net.celestialgaze.GuraBot.util.InteractableMessage;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.JDA;
@@ -32,6 +39,11 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class GuraBot extends ListenerAdapter {
 	public static JDA jda;
+	private static MongoClient mongoClient;
+	public static MongoDatabase db;
+	public static MongoCollection<Document> servers;
+	public static MongoCollection<Document> users;
+	public static MongoCollection<Document> bot;
 	public static final String DATA_FOLDER = System.getProperty("user.dir") + "\\data\\";
 	public static final String SETTINGS = DATA_FOLDER + "bot\\settings.json";
 	public static final Color DEFAULT_COLOR = new Color(179, 217, 255);
@@ -40,6 +52,16 @@ public class GuraBot extends ListenerAdapter {
 	public static Date startDate;
 	public static void main(String[] args) {
 		System.out.println("Main function");
+		try {
+			mongoClient = MongoClients.create("mongodb://localhost:27017");
+			db = mongoClient.getDatabase("gura");
+			servers = db.getCollection("servers");
+			users = db.getCollection("users");
+			bot = db.getCollection("bot");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		try {
 			jda = JDABuilder.createDefault(JSON.read(SETTINGS, "token"))
 					.setChunkingFilter(ChunkingFilter.ALL)
@@ -56,6 +78,7 @@ public class GuraBot extends ListenerAdapter {
 	}
 	public void onReady(ReadyEvent event) {
 		Commands.init();
+		BotInfo.addIntStat(BotStat.STARTS);
 	}
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
@@ -73,7 +96,7 @@ public class GuraBot extends ListenerAdapter {
 		// Run any commands and log when successful
 		try {
 			if (CommandInterpreter.readExecute(message)) {
-				BotInfo.addLongStat(BotStat.COMMANDS_RUN);
+				BotInfo.addIntStat(BotStat.COMMANDS_RUN);
 				System.out.println("Successfully executed " + message.getContentRaw().split(" ")[0] + " command");
 			}
 		} catch (InsufficientPermissionException e) {
@@ -86,7 +109,7 @@ public class GuraBot extends ListenerAdapter {
 			String error = "Something went horribly wrong...\n" + sw.toString().substring(0, Integer.min(700, sw.toString().length())) + 
 			"... \nFull message: " + message.getContentRaw().substring(0, Integer.min(message.getContentRaw().length(), 100));
 			SharkUtil.error(message, error);
-			BotInfo.addLongStat(BotStat.ERRORS);
+			BotInfo.addIntStat(BotStat.ERRORS);
 			message.getChannel().sendMessage("Reporting to cel...").queue(response -> {
 				GuraBot.jda.getUserById(Long.parseLong("218525899535024129")).openPrivateChannel().queue(channel -> {
 					channel.sendMessage("fix ur bot").queue(crashMsg -> {
@@ -126,7 +149,7 @@ public class GuraBot extends ListenerAdapter {
 			e.printStackTrace(pw);
 			String error = "Something went horribly wrong...\n" + sw.toString().substring(0, Integer.min(700, sw.toString().length()));
 			SharkUtil.error(event.getChannel(), error);
-			BotInfo.addLongStat(BotStat.ERRORS);
+			BotInfo.addIntStat(BotStat.ERRORS);
 		}
 	}
 }

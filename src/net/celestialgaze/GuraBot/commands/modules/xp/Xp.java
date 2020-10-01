@@ -4,7 +4,7 @@ import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
-import net.celestialgaze.GuraBot.json.ServerInfo;
+import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.celestialgaze.GuraBot.util.XPUtil;
 import net.dv8tion.jda.api.EmbedBuilder;

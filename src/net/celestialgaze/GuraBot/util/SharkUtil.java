@@ -6,7 +6,6 @@ import java.util.Random;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
-import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
 import net.celestialgaze.GuraBot.commands.classes.IPageCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;

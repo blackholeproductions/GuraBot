@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot.json;
+package net.celestialgaze.GuraBot.db;
 
 public enum BotStat {
 	ERRORS,
