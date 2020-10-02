@@ -13,6 +13,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.CommandInterpreter;
@@ -53,7 +54,7 @@ public class GuraBot extends ListenerAdapter {
 	public static void main(String[] args) {
 		System.out.println("Main function");
 		try {
-			mongoClient = MongoClients.create("mongodb://localhost:27017");
+			mongoClient = MongoClients.create("mongodb://192.168.0.4:27017");
 			db = mongoClient.getDatabase("gura");
 			servers = db.getCollection("servers");
 			users = db.getCollection("users");
@@ -63,7 +64,7 @@ public class GuraBot extends ListenerAdapter {
 		}
 		
 		try {
-			jda = JDABuilder.createDefault(JSON.read(SETTINGS, "token"))
+			jda = JDABuilder.createDefault(bot.find(Filters.eq("name", "settings")).first().getString("token"))
 					.setChunkingFilter(ChunkingFilter.ALL)
 					.setMemberCachePolicy(MemberCachePolicy.ALL)
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
