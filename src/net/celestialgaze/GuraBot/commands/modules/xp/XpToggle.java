@@ -29,10 +29,11 @@ public class XpToggle extends SubHelpCommand {
 		XpToggleAdd add = new XpToggleAdd(this);
 		XpToggleRemove remove = new XpToggleRemove(this);
 		XpToggleList list = new XpToggleList(this);
+		XpToggleClear clear = new XpToggleClear(this);
 		subcommands.put(mode.getName(), mode);
 		subcommands.put(add.getName(), add);
 		subcommands.put(remove.getName(), remove);
 		subcommands.put(list.getName(), list);
-		
+		subcommands.put(clear.getName(), clear);
 	}
 }

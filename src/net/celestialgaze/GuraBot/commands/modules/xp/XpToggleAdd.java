@@ -11,6 +11,7 @@ import net.celestialgaze.GuraBot.commands.classes.Subcommand;
 import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.SubDocBuilder;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -36,6 +37,7 @@ public class XpToggleAdd extends Subcommand {
 		List<String> greylist = sdb.get("list", new ArrayList<String>());
 		greylist.add(Long.toString(message.getChannel().getIdLong()));
 		si.updateModuleDocument("xp", sdb.put("list", greylist).build());
+		SharkUtil.info(message, "Added <#"+message.getChannel().getIdLong()+"> to list");
 	}
 
 }
