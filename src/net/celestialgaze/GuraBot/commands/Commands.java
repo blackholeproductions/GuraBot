@@ -1,5 +1,6 @@
 package net.celestialgaze.GuraBot.commands;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,16 +19,21 @@ import net.celestialgaze.GuraBot.commands.classes.SimpleCommand;
 import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
 import net.celestialgaze.GuraBot.commands.modules.scc.SimpleCmdCreator;
 import net.celestialgaze.GuraBot.commands.modules.xp.Xp;
-import net.celestialgaze.GuraBot.commands.modules.xp.XpLeaderboard;
+import net.celestialgaze.GuraBot.commands.modules.xp.Leaderboard;
 import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.ServerProperty;
 import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.celestialgaze.GuraBot.util.DelayedRunnable;
 import net.celestialgaze.GuraBot.util.RunnableListener;
+import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 
 public class Commands {
 	public static String defaultPrefix = "a!";
@@ -79,6 +85,7 @@ public class Commands {
 		addModule(new CommandModule(ModuleType.XP,
 			new RunnableListener() {
 				List<Long> cooldowns = new ArrayList<Long>(); // Users that currently have a cooldown for XP
+				List<Long> leaderboardCooldowns = new ArrayList<Long>(); // Servers currently on a cooldown for leaderboard updates
 				@Override
 				public void run() {
 					if (currentEvent instanceof MessageReceivedEvent) {
@@ -90,9 +97,11 @@ public class Commands {
 							ServerInfo si = ServerInfo.getServerInfo(event.getGuild().getIdLong());
 							
 							// Return if channel has disabled xp
-							SubDocBuilder sdb = new DocBuilder(si.getModuleDocument("xp")).getSubDoc("settings").getSubDoc("toggle");
-							String type = sdb.get("mode", "blacklist");
-							List<String> greylist = sdb.get("list", new ArrayList<String>());
+							SubDocBuilder sdbSettings = new DocBuilder(si.getModuleDocument("xp")).getSubDoc("settings");
+							SubDocBuilder sdbToggle = sdbSettings.getSubDoc("toggle");
+							
+							String type = sdbToggle.get("mode", "blacklist");
+							List<String> greylist = sdbToggle.get("list", new ArrayList<String>());
 							if (greylist.size() > 0) {
 								if (greylist.contains(Long.toString(event.getChannel().getIdLong()))) {
 									if (type.equalsIgnoreCase("blacklist")) return;
@@ -112,6 +121,48 @@ public class Commands {
 								}
 								
 							}).execute(System.currentTimeMillis()+(30*1000)); // Remove after 30 seconds
+							
+							// If the server has a leaderboard message, update it if it is not on cooldown
+							SubDocBuilder sdbLeaderboard = sdbSettings.getSubDoc("leaderboard");
+							if (sdbLeaderboard.has("message") && sdbLeaderboard.has("channel")
+									&& !leaderboardCooldowns.contains(event.getGuild().getIdLong())) {
+								event.getGuild()
+									.getTextChannelById(sdbLeaderboard.get("channel", (long)0))
+									.retrieveMessageById(sdbLeaderboard.get("message", (long)0))
+									.queue(message -> {
+										long guildId = message.getGuild().getIdLong();
+										message.editMessage(si.getLeaderboard(1).setTimestamp(Instant.now()).build()).queue();
+										leaderboardCooldowns.add(guildId);
+										new DelayedRunnable(new Runnable() {
+
+											@Override
+											public void run() {
+												leaderboardCooldowns.remove(guildId);
+											}
+											
+										}).execute(System.currentTimeMillis()+(30*1000)); // Remove after 30 seconds
+									}, failure -> {
+										if (failure instanceof ErrorResponseException) {
+									        ErrorResponseException ex = (ErrorResponseException) failure;
+								        	si.updateModuleDocument("xp", sdbLeaderboard.remove("message").remove("channel").build());
+									        if (ex.getErrorResponse() == ErrorResponse.UNKNOWN_MESSAGE) {
+									        	SharkUtil.sendOwner(event.getGuild(), 
+									        			"Hey! I wasn't able to find the leaderboard message, so I've reset it. " + 
+									        			"Make sure to set it again if this wasn't intentional.");
+									        } else if (ex.getErrorResponse() == ErrorResponse.MISSING_PERMISSIONS ||
+									        		ex.getErrorResponse() == ErrorResponse.MISSING_ACCESS) {
+									        	SharkUtil.sendOwner(event.getGuild(), 
+									        			"Hey! I don't have permission to edit the leaderboard message, so I've reset it. " + 
+									        			"Make sure to set it again if this wasn't intentional, and that I get " +
+									        			"permission this time.");
+									        } else if (ex.getErrorResponse() == ErrorResponse.UNKNOWN_CHANNEL) {
+									        	SharkUtil.sendOwner(event.getGuild(), 
+									        			"Hey! I wasn't able to find the leaderboard message's channel, so I've reset it. " + 
+									        			"Make sure to set it again if this wasn't intentional.");
+									        }
+									    }
+									});
+							}
 						}
 					} else if (currentEvent instanceof TextChannelDeleteEvent) {
 						TextChannelDeleteEvent event = (TextChannelDeleteEvent)currentEvent;
@@ -119,20 +170,19 @@ public class Commands {
 						SubDocBuilder sdb = new DocBuilder(si.getModuleDocument("xp"))
 								.getSubDoc("settings")
 								.getSubDoc("toggle");
-						// Get list
+						
+						// Remove deleted channel from xp greylist
 						List<String> greylist = sdb.get("list", new ArrayList<String>());
-						// Add current channel
 						String channelStrID = Long.toString(event.getChannel().getIdLong());
 						if (greylist.contains(channelStrID)) {
-							greylist.remove(channelStrID);
-							// Update
+							greylist.remove(channelStrID); // Remove deleted channel
 							si.updateModuleDocument("xp", sdb.put("list", greylist).build());
 						}
 					}
 				}
 			},
 			new Xp(),
-			new XpLeaderboard()
+			new Leaderboard()
 		));
 		// Load commands from global commands document
 		Document cmdsDoc = GuraBot.bot.find(Filters.eq("name", "commands")).first();

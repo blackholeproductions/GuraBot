@@ -1,12 +1,9 @@
-package net.celestialgaze.GuraBot.commands.modules.xp;
+package net.celestialgaze.GuraBot.commands.modules.xp.toggle;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
-import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
-import net.celestialgaze.GuraBot.commands.classes.ISubcommand;
 import net.celestialgaze.GuraBot.commands.classes.SubHelpCommand;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
 
 public class XpToggle extends SubHelpCommand {
 	public XpToggle(Command parent) {

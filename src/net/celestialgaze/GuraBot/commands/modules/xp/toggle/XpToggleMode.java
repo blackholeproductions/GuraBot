@@ -1,6 +1,4 @@
-package net.celestialgaze.GuraBot.commands.modules.xp;
-
-import org.bson.Document;
+package net.celestialgaze.GuraBot.commands.modules.xp.toggle;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;

@@ -9,9 +9,9 @@ import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
-public class XpLeaderboard extends Command {
+public class Leaderboard extends Command {
 
-	public XpLeaderboard() {
+	public Leaderboard() {
 		super(new CommandOptions()
 				.setName("leaderboard")
 				.setDescription("Gets the XP leaderboard for this server")

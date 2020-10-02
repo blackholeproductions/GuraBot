@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot.commands.modules.xp;
+package net.celestialgaze.GuraBot.commands.modules.xp.toggle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,6 @@ import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 
 public class XpToggleList extends Subcommand {

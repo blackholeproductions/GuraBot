@@ -49,7 +49,6 @@ public class ServerInfo {
 		if (moduleDoc.get(moduleName) == null) {
 			moduleDoc.append(moduleName, new Document());
 		}
-		setProperty(ServerProperty.MODULE, moduleDoc);
 		return (Document) moduleDoc.get(moduleName);
 	}
 	public void updateModuleDocument(String moduleName, Document newDoc) {

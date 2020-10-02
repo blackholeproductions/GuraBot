@@ -4,6 +4,8 @@ import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
+import net.celestialgaze.GuraBot.commands.modules.xp.leaderboard.XpLeaderboard;
+import net.celestialgaze.GuraBot.commands.modules.xp.toggle.XpToggle;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.celestialgaze.GuraBot.util.XPUtil;
@@ -29,8 +31,10 @@ public class Xp extends HelpCommand {
 	public void init() {
 		XpHelp help = new XpHelp(this);
 		XpToggle toggle = new XpToggle(this);
+		XpLeaderboard leaderboard = new XpLeaderboard(this);
 		subcommands.put(help.getName(), help);
 		subcommands.put(toggle.getName(), toggle);
+		subcommands.put(leaderboard.getName(), leaderboard);
 		for (Command cmd : subcommands.values()) {
 			commands.put(cmd.getName(), cmd);
 		}

@@ -15,6 +15,10 @@ public class SubDocBuilder extends DocBuilder {
 		return (SubDocBuilder) super.put(key, value);
 	}
 	@Override
+	public SubDocBuilder remove(String key) {
+		return (SubDocBuilder) super.remove(key);
+	}
+	@Override
 	public Document build() {
 		parent.document.put(parentDocName, document);
 		return parent.build();

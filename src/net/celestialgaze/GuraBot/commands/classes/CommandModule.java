@@ -23,7 +23,7 @@ public class CommandModule {
 		}
 	}
 	public static boolean isEnabled(ModuleType type, long guild) {
-		ServerInfo si = ServerInfo.getServerInfo(guild);
+		ServerInfo si = ServerInfo.getServerInfo(guild); // Maybe cache whether modules are enabled or not in the future in ServerInfo
 		Map<String, Boolean> m = si.getProperty(ServerProperty.MODULES, new LinkedHashMap<String, Boolean>());
 		return m.getOrDefault(type.getModName(), false);
 	}

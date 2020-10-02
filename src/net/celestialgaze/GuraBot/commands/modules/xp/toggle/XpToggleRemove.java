@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot.commands.modules.xp;
+package net.celestialgaze.GuraBot.commands.modules.xp.toggle;
 
 import java.util.ArrayList;
 import java.util.List;

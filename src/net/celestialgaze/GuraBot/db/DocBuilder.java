@@ -26,6 +26,9 @@ public class DocBuilder {
 		document.remove(key);
 		return this;
 	}
+	public boolean has(String key) {
+		return document.containsKey(key);
+	}
 	@SuppressWarnings("unchecked")
 	public <T> T get(String key, T defaultValue) {
 		if (document.get(key) == null) return defaultValue;

@@ -12,9 +12,13 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class SharkUtil {
 	public static final int DEFAULT_RANDOM_SEED = 403126880;
+	public static final MessageEmbed WAITING_EMBED = new EmbedBuilder()
+			.setTitle("Waiting")
+			.setColor(new Color(127, 127, 127)).build();
 	public static void error(Message message, String error) {
 		error(message.getChannel(), error);
 	}
@@ -42,6 +46,11 @@ public class SharkUtil {
 				.setTitle(exclamations[new Random().nextInt(exclamations.length)])
 				.setDescription(success)
 				.build()).queue();	
+	}
+	public static void sendOwner(Guild guild, String info) {
+		guild.getOwner().getUser().openPrivateChannel().queue(channel -> {
+			SharkUtil.info(channel, info);
+		}, failure -> {});
 	}
 	public static String toString(String[] array, String split) {
 		String str = "";
