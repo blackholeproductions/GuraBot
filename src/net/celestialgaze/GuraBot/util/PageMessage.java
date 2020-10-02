@@ -39,8 +39,7 @@ public class PageMessage extends InteractableMessage {
 			}
 			
 		});
-		new DelayedRunnable(new ArgRunnable<InteractableMessage>(this) {
-			@SuppressWarnings("unlikely-arg-type")
+		new DelayedRunnable(new ArgRunnable<Long>(getMessage().getIdLong()) {
 			@Override
 			public void run() {
 				list.remove(getArg());
