@@ -26,6 +26,7 @@ import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.celestialgaze.GuraBot.util.DelayedRunnable;
 import net.celestialgaze.GuraBot.util.RunnableListener;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Commands {
@@ -111,6 +112,21 @@ public class Commands {
 								}
 								
 							}).execute(System.currentTimeMillis()+(30*1000)); // Remove after 30 seconds
+						}
+					} else if (currentEvent instanceof TextChannelDeleteEvent) {
+						TextChannelDeleteEvent event = (TextChannelDeleteEvent)currentEvent;
+						ServerInfo si = ServerInfo.getServerInfo(event.getGuild().getIdLong());
+						SubDocBuilder sdb = new DocBuilder(si.getModuleDocument("xp"))
+								.getSubDoc("settings")
+								.getSubDoc("toggle");
+						// Get list
+						List<String> greylist = sdb.get("list", new ArrayList<String>());
+						// Add current channel
+						String channelStrID = Long.toString(event.getChannel().getIdLong());
+						if (greylist.contains(channelStrID)) {
+							greylist.remove(channelStrID);
+							// Update
+							si.updateModuleDocument("xp", sdb.put("list", greylist).build());
 						}
 					}
 				}

@@ -44,7 +44,7 @@ public class XpToggleList extends Subcommand {
 				description += "<#"+channelID+">\n";
 			}
 		}
-		
+
 		if (description.isEmpty()) description = "No channels found\n";
 		description += "Current state: **" + (greylist.size() == 0 ? "Disabled" : 
 			(sdb.get("mode", "whitelist").equalsIgnoreCase("whitelist") ? "Whitelisted" : "Blacklisted"))+"**";

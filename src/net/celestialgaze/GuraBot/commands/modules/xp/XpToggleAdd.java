@@ -35,9 +35,14 @@ public class XpToggleAdd extends Subcommand {
 				.getSubDoc("toggle");
 		
 		List<String> greylist = sdb.get("list", new ArrayList<String>());
-		greylist.add(Long.toString(message.getChannel().getIdLong()));
-		si.updateModuleDocument("xp", sdb.put("list", greylist).build());
-		SharkUtil.info(message, "Added <#"+message.getChannel().getIdLong()+"> to list");
+		String channelStrID = Long.toString(message.getChannel().getIdLong());
+		if (!greylist.contains(channelStrID)) {
+			greylist.add(channelStrID);
+			si.updateModuleDocument("xp", sdb.put("list", greylist).build());
+			SharkUtil.info(message, "Added <#"+message.getChannel().getIdLong()+"> to list");
+			return;
+		}
+		SharkUtil.info(message, "<#"+message.getChannel().getIdLong()+"> was already in the list");
 	}
 
 }

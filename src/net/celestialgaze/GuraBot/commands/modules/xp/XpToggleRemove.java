@@ -39,10 +39,12 @@ public class XpToggleRemove extends Subcommand {
 		String channelStrID = Long.toString(message.getChannel().getIdLong());
 		if (greylist.contains(channelStrID)) {
 			greylist.remove(channelStrID);
+			// Update
+			si.updateModuleDocument("xp", sdb.put("list", greylist).build());
+			SharkUtil.info(message, "Removed <#"+message.getChannel().getIdLong()+"> from list");
+			return;
 		}
-		// Update
-		si.updateModuleDocument("xp", sdb.put("list", greylist).build());
-		SharkUtil.info(message, "Removed <#"+message.getChannel().getIdLong()+"> from list");
+		SharkUtil.info(message, "<#"+message.getChannel().getIdLong()+"> wasn't in the list");
 	}
 
 }
