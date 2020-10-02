@@ -70,28 +70,25 @@ public class ServerInfo {
 		return getProperty(ServerProperty.PREFIX, Commands.defaultPrefix);
 	}
 	public void setXP(long userId, long value) {
-		Document xpDoc = getModuleDocument("xp");
-		if (xpDoc.get("experience") == null) xpDoc.put("experience", new Document());
-		Document expDoc = (Document) xpDoc.get("experience");
-		expDoc.append(Long.toString(userId), value);
-		updateModuleDocument("xp", xpDoc);
+		updateModuleDocument("xp",
+			new DocBuilder(getModuleDocument("xp"))
+				.getSubDoc("experience")
+				.put(Long.toString(userId), value)
+				.build());
 	}
 	public void addXP(long userId, long value) {
 		setXP(userId, getXP(userId)+value);
 	}
 	public long getXP(long userId) {
-		Document xpDoc = getModuleDocument("xp");
-		if (xpDoc.get("experience") == null) xpDoc.put("experience", new Document());
-		Document expDoc = (Document) xpDoc.get("experience");
-		Object result = expDoc.get(Long.toString(userId));
-		if (result == null) result = Long.parseLong("0");
-		return (long) result;
+		return new DocBuilder(getModuleDocument("xp"))
+				.getSubDoc("experience")
+				.get(Long.toString(userId), Long.parseLong("0"));
 	}
 	public Map<String, Long> getXpMap() {
 		Map<String, Long> result = new HashMap<>();
-		Document xpDoc = getModuleDocument("xp");
-		if (xpDoc.get("experience") == null) xpDoc.put("experience", new Document());
-		Document expDoc = (Document) xpDoc.get("experience");
+		Document expDoc = new DocBuilder(getModuleDocument("xp"))
+				.getSubDoc("experience")
+				.buildThis();
 		expDoc.forEach((key, value) -> {
 			result.put((String)key, (Long)value);
 		});

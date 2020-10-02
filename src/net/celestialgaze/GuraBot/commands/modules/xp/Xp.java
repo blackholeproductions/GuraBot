@@ -28,7 +28,9 @@ public class Xp extends HelpCommand {
 	@Override
 	public void init() {
 		XpHelp help = new XpHelp(this);
+		XpToggle toggle = new XpToggle(this);
 		subcommands.put(help.getName(), help);
+		subcommands.put(toggle.getName(), toggle);
 		for (Command cmd : subcommands.values()) {
 			commands.put(cmd.getName(), cmd);
 		}

@@ -91,8 +91,8 @@ public abstract class HelpCommand extends Command implements IPageCommand {
 			if (!categoryStrings.containsKey(command.getCategory())) {
 				categoryStrings.put(command.getCategory(), new BulletListBuilder());
 			}
-			categoryStrings.get(command.getCategory()).add("**"+serverPrefix+(commands.equals(subcommands) ? 
-					((Subcommand)command).getParent().getName() + " " : "") +command.getName(), 
+			categoryStrings.get(command.getCategory()).add("**"+serverPrefix+(command instanceof ISubcommand ? 
+					((ISubcommand)command).getParentName() + " " : "")+command.getName(), 
 					(!command.getUsage().isEmpty() ? " " + command.getUsage() + "**\n " : ":** ")
 					+ command.getDescription(), "");
 		}

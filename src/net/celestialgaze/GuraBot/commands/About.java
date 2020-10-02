@@ -28,7 +28,7 @@ public class About extends Command {
 				.setTitle("About " + selfName)
 				.setColor(new Color(179, 217, 255))
 				.appendDescription("Hello! I'm " + selfName + ", a discord bot by celestialgaze#0001. I'm a re-make " +
-				"of an older bot, Uni, created with Java instead of node.js. I hope to regain all of the old " + 
+				"of an older bot, Uni, created with JDA instead of discord.js. I hope to regain all of the old " + 
 				"functionalities and more, and allow for broad access to *every* feature across *all* areas of Discord. " +
 				"A neater, more versatile redesign of Uni. The apex predator of bots.\n\na. \n[**Invite me to your server!**]"+
 				"(https://discord.com/oauth2/authorize?client_id=758355935663095808&permissions=2147483647&scope=bot)")

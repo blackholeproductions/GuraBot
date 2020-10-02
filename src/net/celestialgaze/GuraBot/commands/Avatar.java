@@ -18,6 +18,7 @@ public class Avatar extends Command {
 				.setName("avatar")
 				.setDescription("Gets the avatar of a user")
 				.setUsage("<user>")
+				.setCategory("Utility")
 				.setUsablePrivate(false)
 				.verify());
 	}

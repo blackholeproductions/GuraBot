@@ -19,8 +19,10 @@ import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
 import net.celestialgaze.GuraBot.commands.modules.scc.SimpleCmdCreator;
 import net.celestialgaze.GuraBot.commands.modules.xp.Xp;
 import net.celestialgaze.GuraBot.commands.modules.xp.XpLeaderboard;
+import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.ServerProperty;
+import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.celestialgaze.GuraBot.util.DelayedRunnable;
 import net.celestialgaze.GuraBot.util.RunnableListener;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -85,6 +87,20 @@ public class Commands {
 						Long userId = event.getAuthor().getIdLong();
 						if (!cooldowns.contains(userId)) { // If user isn't on cooldown
 							ServerInfo si = ServerInfo.getServerInfo(event.getGuild().getIdLong());
+							
+							// Return if channel has disabled xp
+							SubDocBuilder sdb = new DocBuilder(si.getModuleDocument("xp")).getSubDoc("settings").getSubDoc("toggle");
+							String type = sdb.get("mode", "blacklist");
+							List<String> greylist = sdb.get("list", new ArrayList<String>());
+							if (greylist.size() > 0) {
+								if (greylist.contains(Long.toString(event.getChannel().getIdLong()))) {
+									if (type.equalsIgnoreCase("blacklist")) return;
+								} else {
+									if (type.equalsIgnoreCase("whitelist")) return;
+								}
+							}
+							
+							// Add XP and cooldown
 							si.addXP(userId, 20+new Random().nextInt(5)); // Add xp
 							cooldowns.add(userId);
 							new DelayedRunnable(new Runnable() {
