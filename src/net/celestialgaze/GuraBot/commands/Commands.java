@@ -49,7 +49,6 @@ public class Commands {
 		if (!rootCommandsCategorized.containsKey(command.getCategory()))
 			rootCommandsCategorized.put(command.getCategory(), new HashMap<String, Command>());
 		rootCommandsCategorized.get(command.getCategory()).put(command.getName(), command);
-		System.out.println(command.getCategory());
 		rootCommands.put(command.getName(), command);
 	}
 	

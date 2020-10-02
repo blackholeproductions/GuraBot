@@ -115,7 +115,6 @@ public class ServerInfo {
 			  int i = mKeys.indexOf(entry.getKey());
 			  if (i >= startPosition && i <= page*pageSize) {
 				  Member member = guild.getMemberById(entry.getKey());
-				  if (member != null) System.out.println(!member.getUser().isBot());
 				  if (member != null && !member.getUser().isBot()) {
 					  return true;
 				  }
