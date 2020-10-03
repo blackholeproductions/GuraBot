@@ -41,7 +41,7 @@ public class XpRolesList extends Subcommand {
 		for (int i = 0; i < roles.size(); i++) {
 			String level = rolesKeys.get(i);
 			String roleId = roles.getString(level);
-			description += "**Level " + level + "**: <@&" + roleId + ">";
+			description += "**Level " + level + "**: <@&" + roleId + ">\n";
 		}
 		if (description.isEmpty()) description = "No roles  found\n";
 
