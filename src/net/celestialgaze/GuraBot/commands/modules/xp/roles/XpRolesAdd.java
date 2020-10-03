@@ -40,7 +40,7 @@ public class XpRolesAdd extends Subcommand {
 			try {
 				level = Integer.parseInt(args[0]);
 			} catch (Exception e) {
-				SharkUtil.error(message, "Invalid level");
+				SharkUtil.error(message, "Invalid level");	
 				return;
 			}
 		}

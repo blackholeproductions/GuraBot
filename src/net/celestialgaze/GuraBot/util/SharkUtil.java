@@ -131,7 +131,6 @@ public class SharkUtil {
 			input += args[i] + " ";
 		}
 		input = input.strip();
-		SharkUtil.info(message, input);
 		// Try to get by ID
 		try {
 			role = guild.getRoleById(input);
@@ -150,7 +149,6 @@ public class SharkUtil {
 				}
 			} catch (Exception e2) {}
 		}
-		message.getChannel().sendMessage(Boolean.toString(role == null)).queue();
 		return role;
 	}
 	
