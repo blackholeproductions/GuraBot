@@ -56,8 +56,9 @@ public class Leaderboard extends Command {
 			}
 		}
 		Document xpDoc = ServerInfo.getServerInfo(message.getGuild().getIdLong()).getModuleDocument("xp");
-		final boolean botsFinal = bots;
-		final int pageFinal = Integer.valueOf(page); // workaround
+		// workaround
+		final boolean botsFinal = Boolean.valueOf(bots);
+		final int pageFinal = Integer.valueOf(page);
 		message.getChannel().sendMessage(new EmbedBuilder().setTitle("Waiting...").build()).queue(response -> {
 			PageMessage pm = new PageMessage(response, message.getAuthor().getIdLong(), new ArgRunnable<Integer>(pageFinal) {
 

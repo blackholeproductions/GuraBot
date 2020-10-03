@@ -49,7 +49,7 @@ public class XPUtil {
 		rolesDoc.forEach((currentLevel, roleId) -> {
 			if (Integer.parseInt(currentLevel) <= level) {
 				if (guild.getRoleById((String) roleId) != null) {
-					sb.append(roleId);
+					sb.append(roleId+",");
 				} else {
 					SharkUtil.sendOwner(guild, "Hello! I was unable to find a role " +
 							"with role ID " + roleId + " that you set for level " + level + ". I'm " +
@@ -65,7 +65,9 @@ public class XPUtil {
 			});
 			ServerInfo.getServerInfo(guild.getIdLong()).updateModuleDocument("xp", sdb.put("roles", rolesDoc).build());
 		}
-		return sb.toString();
+		if (sb.toString().isEmpty()) return "";
+		String[] roles = sb.toString().split(",");
+		return roles[roles.length-1];
 	}
 
 	public static EmbedBuilder getLeaderboard(Guild guild, int page, Document xpDoc) {
@@ -86,27 +88,25 @@ public class XPUtil {
 		m.entrySet()
 		  .stream()
 		  .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-		  .filter(entry -> {
-			  int i = mKeys.indexOf(entry.getKey());
-			  if (i >= startPosition && i <= page*pageSize) {
-				  Member member = guild.getMemberById(entry.getKey());
-				  if (member != null && (!member.getUser().isBot() || bots)) {
-					  return true;
-				  }
-			  }
-			  return false;
-		  }).forEach(entry -> {
+		  .forEach(entry -> {
 			 sorted.put(guild.getMemberById(entry.getKey()), entry.getValue()); 
 		  });
 		List<Entry<Member, Long>> entries = new ArrayList<>(sorted.entrySet());
 		String description = "";
-		for (int i = 0; i < sorted.size(); i++) {
-			int level = XPUtil.getLevel(entries.get(i).getValue());
-			String roleId = XPUtil.getHighestRole(guild, level, xpDoc);
-			if (i == 0 && entries.get(i) != null) eb.setThumbnail(entries.get(i).getKey().getUser().getEffectiveAvatarUrl());
-			description += (i == 0 ? "**" : "") + (i+1) + ". " + entries.get(i).getKey().getAsMention() + " - " +
-			entries.get(i).getValue() + " xp (Level " + level + ")" + (i == 0 ? "**" : "") +
-			" " + (!roleId.isEmpty() ? "<@&" + roleId + ">" : "") + "\n";
+		int position = startPosition;
+		for (int i = startPosition; i < sorted.size(); i++) {
+			Member member = entries.get(i).getKey();
+			  if (position >= startPosition && position < page*pageSize) {
+				  if (member != null && (!member.getUser().isBot() || bots)) {
+					  position++;
+					  int level = XPUtil.getLevel(entries.get(i).getValue());
+						String roleId = XPUtil.getHighestRole(guild, level, xpDoc);
+						if (position == 1 && entries.get(i) != null) eb.setThumbnail(entries.get(i).getKey().getUser().getEffectiveAvatarUrl());
+						description += (position == 1 ? "**" : "") + (position) + ". " + entries.get(i).getKey().getAsMention() + " - " +
+								entries.get(i).getValue() + " xp (Level " + level + ")" + (position == 1 ? "**" : "") +
+						" " + (!roleId.isEmpty() ? "<@&" + roleId + ">" : "") + "\n";
+				  }
+			  }
 		}
 		eb.setDescription(description);
 		return eb;
