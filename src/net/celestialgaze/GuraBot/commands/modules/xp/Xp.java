@@ -59,7 +59,7 @@ public class Xp extends HelpCommand {
 		Document xpDoc = si.getModuleDocument("xp");
 		long experience = si.getXP(user.getIdLong(), xpDoc);
 		int level = XPUtil.getLevel(experience);
-		String roleId = si.getHighestRole(message.getGuild(), level, xpDoc);
+		String roleId = XPUtil.getHighestRole(message.getGuild(), level, xpDoc);
 		EmbedBuilder eb = new EmbedBuilder()
 				.setAuthor(message.getGuild().getName(), null, message.getGuild().getIconUrl())
 				.setTitle(user.getName())

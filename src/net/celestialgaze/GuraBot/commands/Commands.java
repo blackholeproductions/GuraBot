@@ -164,7 +164,7 @@ public class Commands {
 									.retrieveMessageById(sdbLeaderboard.get("message", (long)0))
 									.queue(message -> {
 										long guildId = message.getGuild().getIdLong();
-										message.editMessage(si.getLeaderboard(1).setTimestamp(Instant.now()).build()).queue();
+										message.editMessage(XPUtil.getLeaderboard(message.getGuild(), 1, xpDoc).setTimestamp(Instant.now()).build()).queue();
 										leaderboardCooldowns.add(guildId);
 										new DelayedRunnable(new Runnable() {
 

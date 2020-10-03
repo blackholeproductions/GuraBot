@@ -11,6 +11,7 @@ import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.celestialgaze.GuraBot.util.SharkUtil;
+import net.celestialgaze.GuraBot.util.XPUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -36,7 +37,7 @@ public class XpLeaderboardCreate extends Subcommand {
 			sdb.put("channel", response.getChannel().getIdLong());
 			sdb.put("message", response.getIdLong());
 			si.updateModuleDocument("xp", sdb.build());
-			response.editMessage(si.getLeaderboard(1).setTimestamp(Instant.now()).build()).queue();
+			response.editMessage(XPUtil.getLeaderboard(message.getGuild(), 0, xpDoc).setTimestamp(Instant.now()).build()).queue();
 		});
 	}
 
