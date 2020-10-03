@@ -1,7 +1,4 @@
-package net.celestialgaze.GuraBot.commands.modules.xp.toggle;
-
-import java.util.ArrayList;
-import java.util.List;
+package net.celestialgaze.GuraBot.commands.modules.xp.roles;
 
 import org.bson.Document;
 
@@ -14,13 +11,15 @@ import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 
-public class XpToggleAdd extends Subcommand {
+public class XpRolesAdd extends Subcommand {
 
-	public XpToggleAdd(Command parent) {
+	public XpRolesAdd(Command parent) {
 		super(new CommandOptions()
 				.setName("add")
-				.setDescription("Adds the channel you run this command in to the list of channels black/whitelisted")
+				.setDescription("Adds role at level")
+				.setUsage("<level> <role>")
 				.setUsablePrivate(false)
 				.setPermission(Permission.MANAGE_SERVER)
 				.verify(), parent);
@@ -32,17 +31,26 @@ public class XpToggleAdd extends Subcommand {
 		Document xpDoc = si.getModuleDocument("xp");
 		SubDocBuilder sdb = new DocBuilder(xpDoc)
 				.getSubDoc("settings")
-				.getSubDoc("toggle");
-		
-		List<String> greylist = sdb.get("list", new ArrayList<String>());
-		String channelStrID = Long.toString(message.getChannel().getIdLong());
-		if (!greylist.contains(channelStrID)) {
-			greylist.add(channelStrID);
-			si.updateModuleDocument("xp", sdb.put("list", greylist).build());
-			SharkUtil.success(message, "Added <#"+message.getChannel().getIdLong()+"> to list");
+				.getSubDoc("roles");
+		int level = 0;
+		if (args.length < 2) {
+			SharkUtil.error(message, this.usage);
+			return;
+		} else {
+			try {
+				level = Integer.parseInt(args[0]);
+			} catch (Exception e) {
+				SharkUtil.error(message, "Invalid level");
+				return;
+			}
+		}
+		Role role = SharkUtil.getRole(message, args, 1);
+		if (role != null) {
+			si.updateModuleDocument("xp", sdb.put(args[0], role.getId()).build());
+			SharkUtil.success(message, "Will add **" + role.getName() + "** when a user reaches level " + Integer.toString(level));
 			return;
 		}
-		SharkUtil.info(message, "<#"+message.getChannel().getIdLong()+"> was already in the list");
+		SharkUtil.error(message, "Invalid role");
 	}
 
 }

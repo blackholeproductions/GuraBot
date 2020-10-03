@@ -39,7 +39,7 @@ public class XpToggleMode extends Subcommand {
 				.put("mode", args[0])
 				.build());
 		
-		SharkUtil.info(message, "Updated to " + args[0] + " mode");
+		SharkUtil.success(message, "Updated to " + args[0] + " mode");
 	}
 
 }

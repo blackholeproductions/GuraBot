@@ -27,6 +27,8 @@ import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.celestialgaze.GuraBot.util.DelayedRunnable;
 import net.celestialgaze.GuraBot.util.RunnableListener;
 import net.celestialgaze.GuraBot.util.SharkUtil;
+import net.celestialgaze.GuraBot.util.XPUtil;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
@@ -76,6 +78,7 @@ public class Commands {
 		addCommand(new Say());
 		addCommand(new Avatar());
 		addCommand(new ModuleCmd());
+		addCommand(new UserInfo());
 		
 		// Modules
 		addModule(new CommandModule(ModuleType.CUSTOM_COMMANDS,
@@ -99,7 +102,7 @@ public class Commands {
 							SubDocBuilder sdbSettings = new DocBuilder(si.getModuleDocument("xp")).getSubDoc("settings");
 							SubDocBuilder sdbToggle = sdbSettings.getSubDoc("toggle");
 							
-							String type = sdbToggle.get("mode", "blacklist");
+							String type = sdbToggle.get("mode", "whitelist");
 							List<String> greylist = sdbToggle.get("list", new ArrayList<String>());
 							if (greylist.size() > 0) {
 								if (greylist.contains(Long.toString(event.getChannel().getIdLong()))) {
@@ -109,8 +112,21 @@ public class Commands {
 								}
 							}
 							
+							Document rolesDoc = sdbSettings.getSubDoc("roles").buildThis();
+							long currentXP = si.getXP(userId);
+							int random = 20+new Random().nextInt(5);
+							if (XPUtil.getLevel(currentXP) < XPUtil.getLevel(currentXP + random)) {
+								rolesDoc.forEach((level, roleId) -> {
+									if (XPUtil.getLevel(currentXP) > Integer.parseInt(level) && !event.getMember().getRoles().contains(roleId)) {
+										try {
+										if (event.getGuild().getRoleById((String) roleId) == null) {
+											event.getGuild().addRoleToMember(userId, event.getGuild().getRoleById((String) roleId));
+										}
+									}
+								});
+							}
 							// Add XP and cooldown
-							si.addXP(userId, 20+new Random().nextInt(5)); // Add xp
+							si.setXP(userId, currentXP+random); // Add xp
 							cooldowns.add(userId);
 							new DelayedRunnable(new Runnable() {
 

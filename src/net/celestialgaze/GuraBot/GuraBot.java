@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
+import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -49,6 +50,7 @@ public class GuraBot extends ListenerAdapter {
 	public static final String SETTINGS = DATA_FOLDER + "bot\\settings.json";
 	public static final Color DEFAULT_COLOR = new Color(179, 217, 255);
 	public static final String REGEX_WHITESPACE = "\\s+";
+	public static SelfUser selfUser = jda.getSelfUser();
 	public static String version = "0.0.0";
 	public static Date startDate;
 	public static void main(String[] args) {
