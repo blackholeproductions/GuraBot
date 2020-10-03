@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 
 public class SharkUtil {
 	public static final int DEFAULT_RANDOM_SEED = 403126880;
@@ -86,33 +87,73 @@ public class SharkUtil {
 	        seconds % 60);
 	    return seconds < 0 ? "-" + positive : positive;
 	}
+	
 	public static Member getMember(Message message, String[] args, int start) {
 		Guild guild = message.getGuild();
 		Member member = null;
 		String input = "";
-		if (args.length > start) {
-			input = SharkUtil.toString(args, " ");
+		for (int i = start; i < args.length; i++) {
+			input += args[i] + " ";
 		}
+		input = input.strip();
 		// Try to get by ID
 		try {
-			member = guild.getMemberById(Long.parseLong(input));
+			member = guild.getMemberById(input);
 		} catch (Exception e) {
 			// Try to get by mention
 			if (input.startsWith("<@!") && input.endsWith(">")) {
-				Long id = Long.parseLong(input.split("<@!")[1].split(">")[0]);
+				String id = input.split("<@!")[1].split(">")[0];
 				if (guild.getMemberById(id) != null) {
 					return guild.getMemberById(id);
 				}
 			}
+			// Try to get by name
+			try {
+				if (guild.getMembersByName(input, true).size() > 0) {
+					return guild.getMembersByName(input, true).get(0);
+				}
+			} catch (Exception e3) {}
+			try {
+				// Try to get by user#discrim
+				if (guild.getMemberByTag(input) != null) {
+					return guild.getMemberByTag(input);
+				}
+			} catch (Exception e2) {}
 		}
-		try {
-			// Try to get by user#discrim
-			if (guild.getMemberByTag(input) != null) {
-				return guild.getMemberByTag(input);
-			}
-		} catch (Exception e) {}
 		return member;
 	}
+	
+	public static Role getRole(Message message, String[] args, int start) {
+		Guild guild = message.getGuild();
+		Role role = null;
+		String input = "";
+		for (int i = start; i < args.length; i++) {
+			input += args[i] + " ";
+		}
+		input = input.strip();
+		SharkUtil.info(message, input);
+		// Try to get by ID
+		try {
+			role = guild.getRoleById(input);
+		} catch (Exception e) {
+			// Try to get by mention
+			if (input.startsWith("<@&") && input.endsWith(">")) {
+				String id = input.split("<@&")[1].split(">")[0];
+				if (guild.getRoleById(id) != null) {
+					return guild.getRoleById(id);
+				}
+			}
+			try {
+				// Try to get by name
+				if (guild.getRolesByName(input, true).size() > 0) {
+					role = guild.getRolesByName(input, true).get(0);
+				}
+			} catch (Exception e2) {}
+		}
+		message.getChannel().sendMessage(Boolean.toString(role == null)).queue();
+		return role;
+	}
+	
 	public static void sendHelpMenu(Message message, IPageCommand helpCmd) {
 		sendHelpMenu(message, helpCmd, null);
 	}

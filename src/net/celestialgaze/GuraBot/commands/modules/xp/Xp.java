@@ -1,10 +1,13 @@
 package net.celestialgaze.GuraBot.commands.modules.xp;
 
+import org.bson.Document;
+
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
 import net.celestialgaze.GuraBot.commands.modules.xp.leaderboard.XpLeaderboard;
+import net.celestialgaze.GuraBot.commands.modules.xp.roles.XpRoles;
 import net.celestialgaze.GuraBot.commands.modules.xp.toggle.XpToggle;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.util.SharkUtil;
@@ -22,6 +25,7 @@ public class Xp extends HelpCommand {
 				.setDescription("Get the XP you have earned")
 				.setUsage("<user>")
 				.setCategory("XP")
+				.setCooldown(5.0)
 				.setUsablePrivate(false)
 				.verify(),
 				"XP");
@@ -31,9 +35,11 @@ public class Xp extends HelpCommand {
 	public void init() {
 		XpHelp help = new XpHelp(this);
 		XpToggle toggle = new XpToggle(this);
+		XpRoles roles = new XpRoles(this);
 		XpLeaderboard leaderboard = new XpLeaderboard(this);
 		subcommands.put(help.getName(), help);
 		subcommands.put(toggle.getName(), toggle);
+		subcommands.put(roles.getName(), roles);
 		subcommands.put(leaderboard.getName(), leaderboard);
 		for (Command cmd : subcommands.values()) {
 			commands.put(cmd.getName(), cmd);
@@ -50,13 +56,18 @@ public class Xp extends HelpCommand {
 			user = member.getUser();
 		}
 		ServerInfo si = ServerInfo.getServerInfo(message.getGuild().getIdLong());
+		Document xpDoc = si.getModuleDocument("xp");
+		long experience = si.getXP(user.getIdLong(), xpDoc);
+		int level = XPUtil.getLevel(experience);
+		String roleId = si.getHighestRole(message.getGuild(), level, xpDoc);
 		EmbedBuilder eb = new EmbedBuilder()
 				.setAuthor(message.getGuild().getName(), null, message.getGuild().getIconUrl())
 				.setTitle(user.getName())
 				.setColor(GuraBot.DEFAULT_COLOR)
 				.setThumbnail(user.getEffectiveAvatarUrl())
-				.addField("XP", ""+si.getXP(user.getIdLong()), true)
-				.addField("Level", ""+XPUtil.getLevel(si.getXP(user.getIdLong())), true);
+				.addField("XP", ""+experience, true)
+				.addField("Level", ""+level+
+						(!roleId.isEmpty() ? " <@&" + roleId + ">" :""), true);
 
 		message.getChannel().sendMessage(eb.build()).queue();
 	}

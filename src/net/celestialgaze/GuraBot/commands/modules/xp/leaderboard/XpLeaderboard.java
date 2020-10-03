@@ -12,6 +12,7 @@ public class XpLeaderboard extends SubHelpCommand {
 				.setDescription("Commands to manage a dedicated auto-updating leaderboard message")
 				.setPermission(Permission.MANAGE_SERVER)
 				.setUsablePrivate(false)
+				.setCooldown(5.0)
 				.verify(),
 				"XP Leaderboard", 
 				parent);

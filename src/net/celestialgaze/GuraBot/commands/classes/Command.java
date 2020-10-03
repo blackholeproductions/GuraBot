@@ -18,8 +18,8 @@ import net.celestialgaze.GuraBot.util.SharkUtil;
 public abstract class Command implements ICommand {
 	public static final String DEFAULT_CATEGORY = "Uncategorized";
 	protected String name; // The name of the command
-	protected String usage; // Usage that appears in the help menu
-	protected String description; // Description that appears in the help menu
+	protected String usage = ""; // Usage that appears in the help menu
+	protected String description = ""; // Description that appears in the help menu
 	protected String category = DEFAULT_CATEGORY; // Category that the command belongs to
 	protected CommandModule module = null;
 	protected Map<String, Command> subcommands = new HashMap<String, Command>(); // Maps command name to the command in question

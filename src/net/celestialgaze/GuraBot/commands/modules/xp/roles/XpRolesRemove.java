@@ -1,7 +1,4 @@
-package net.celestialgaze.GuraBot.commands.modules.xp.toggle;
-
-import java.util.ArrayList;
-import java.util.List;
+package net.celestialgaze.GuraBot.commands.modules.xp.roles;
 
 import org.bson.Document;
 
@@ -15,12 +12,13 @@ import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 
-public class XpToggleAdd extends Subcommand {
+public class XpRolesRemove extends Subcommand {
 
-	public XpToggleAdd(Command parent) {
+	public XpRolesRemove(Command parent) {
 		super(new CommandOptions()
-				.setName("add")
-				.setDescription("Adds the channel you run this command in to the list of channels black/whitelisted")
+				.setName("remove")
+				.setDescription("Remove a role")
+				.setUsage("<level>")
 				.setUsablePrivate(false)
 				.setPermission(Permission.MANAGE_SERVER)
 				.verify(), parent);
@@ -32,17 +30,25 @@ public class XpToggleAdd extends Subcommand {
 		Document xpDoc = si.getModuleDocument("xp");
 		SubDocBuilder sdb = new DocBuilder(xpDoc)
 				.getSubDoc("settings")
-				.getSubDoc("toggle");
-		
-		List<String> greylist = sdb.get("list", new ArrayList<String>());
-		String channelStrID = Long.toString(message.getChannel().getIdLong());
-		if (!greylist.contains(channelStrID)) {
-			greylist.add(channelStrID);
-			si.updateModuleDocument("xp", sdb.put("list", greylist).build());
-			SharkUtil.success(message, "Added <#"+message.getChannel().getIdLong()+"> to list");
+				.getSubDoc("roles");
+		int level = 0;
+		if (args.length != 1) {
+			SharkUtil.error(message, "Please specify a level");
+			return;
+		} else {
+			try {
+				level = Integer.parseInt(args[0]);
+			} catch (Exception e) {
+				SharkUtil.error(message, "Invalid level");
+				return;
+			}
+		}
+		if (sdb.has(Integer.toString(level))) {
+			si.updateModuleDocument("xp", sdb.remove(Integer.toString(level)).build());
+			SharkUtil.success(message, "Removed role at level " + level);
 			return;
 		}
-		SharkUtil.info(message, "<#"+message.getChannel().getIdLong()+"> was already in the list");
+		SharkUtil.info(message, "No role at level " + level);
 	}
 
 }
