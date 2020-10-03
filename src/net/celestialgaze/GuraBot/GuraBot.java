@@ -50,13 +50,13 @@ public class GuraBot extends ListenerAdapter {
 	public static final String SETTINGS = DATA_FOLDER + "bot\\settings.json";
 	public static final Color DEFAULT_COLOR = new Color(179, 217, 255);
 	public static final String REGEX_WHITESPACE = "\\s+";
-	public static SelfUser selfUser = jda.getSelfUser();
+	public static SelfUser selfUser;
 	public static String version = "0.0.0";
 	public static Date startDate;
 	public static void main(String[] args) {
 		System.out.println("Main function");
 		try {
-			mongoClient = MongoClients.create("mongodb://192.168.0.4:27017");
+			mongoClient = MongoClients.create("mongodb://localhost:27017");
 			db = mongoClient.getDatabase("gura");
 			servers = db.getCollection("servers");
 			users = db.getCollection("users");
@@ -73,6 +73,7 @@ public class GuraBot extends ListenerAdapter {
 					.setActivity(Activity.playing("a"))
 					.build();
 			jda.addEventListener(new GuraBot());
+			selfUser = jda.getSelfUser();
 		} catch (LoginException e) {
 			e.printStackTrace();
 		}

@@ -99,7 +99,8 @@ public class Commands {
 							ServerInfo si = ServerInfo.getServerInfo(event.getGuild().getIdLong());
 							
 							// Return if channel has disabled xp
-							SubDocBuilder sdbSettings = new DocBuilder(si.getModuleDocument("xp")).getSubDoc("settings");
+							Document xpDoc = si.getModuleDocument("xp");
+							SubDocBuilder sdbSettings = new DocBuilder(xpDoc).getSubDoc("settings");
 							SubDocBuilder sdbToggle = sdbSettings.getSubDoc("toggle");
 							
 							String type = sdbToggle.get("mode", "whitelist");
@@ -112,21 +113,41 @@ public class Commands {
 								}
 							}
 							
-							Document rolesDoc = sdbSettings.getSubDoc("roles").buildThis();
-							long currentXP = si.getXP(userId);
+							Document rolesDoc = sdbSettings.get("roles", new Document());
+							long currentXP = si.getXP(userId, xpDoc);
 							int random = 20+new Random().nextInt(5);
+							List<String> badRoles = new ArrayList<String>();
 							if (XPUtil.getLevel(currentXP) < XPUtil.getLevel(currentXP + random)) {
+								event.getChannel().sendMessage(event.getAuthor().getName() + " is now Level " + XPUtil.getLevel(currentXP + random)).queue();
 								rolesDoc.forEach((level, roleId) -> {
-									if (XPUtil.getLevel(currentXP) > Integer.parseInt(level) && !event.getMember().getRoles().contains(roleId)) {
-										try {
-										if (event.getGuild().getRoleById((String) roleId) == null) {
-											event.getGuild().addRoleToMember(userId, event.getGuild().getRoleById((String) roleId));
+									if (XPUtil.getLevel(currentXP + random) >= Integer.parseInt(level) && !event.getMember().getRoles().contains(roleId)) {
+										if (event.getGuild().getRoleById((String) roleId) != null) {
+											try {
+												event.getGuild().addRoleToMember(userId, event.getGuild().getRoleById((String) roleId)).queue();
+											} catch (Exception e) {
+												String roleName = event.getGuild().getRoleById((String) roleId).getName();
+												SharkUtil.sendOwner(event.getGuild(), "Hello! I don't seem to have permissions " +
+													"to add " + roleName + " to " + event.getAuthor().getAsTag() + ". My role might " +
+													"not be above " + roleName + " in the hierarchy, or I don't have enough permission.");
+											}
+										} else {
+											badRoles.add(level);
+											SharkUtil.sendOwner(event.getGuild(), "Hello! I was unable to find a role " +
+													"with role ID " + roleId + " that you set for level " + level + ". I'm " +
+													"gonna remove it, just thought I'd give you a heads up in case this " +
+													"was an accident.");
 										}
 									}
 								});
 							}
+							if (badRoles.size() > 0) {
+								badRoles.forEach((level) -> {
+									rolesDoc.remove(level);
+								});
+								si.updateModuleDocument("xp", sdbSettings.put("roles", rolesDoc).build());
+							}
 							// Add XP and cooldown
-							si.setXP(userId, currentXP+random); // Add xp
+							si.addXP(userId, random); // Add xp
 							cooldowns.add(userId);
 							new DelayedRunnable(new Runnable() {
 
