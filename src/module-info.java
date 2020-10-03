@@ -6,5 +6,4 @@ module GuraBot {
 	requires org.mongodb.driver.core;
 	requires org.mongodb.bson;
 	requires jdk.net;
-	requires java.scripting;
 }

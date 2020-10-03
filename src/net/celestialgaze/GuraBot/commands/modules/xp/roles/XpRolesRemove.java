@@ -1,8 +1,5 @@
 package net.celestialgaze.GuraBot.commands.modules.xp.roles;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bson.Document;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
@@ -14,7 +11,6 @@ import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
 
 public class XpRolesRemove extends Subcommand {
 

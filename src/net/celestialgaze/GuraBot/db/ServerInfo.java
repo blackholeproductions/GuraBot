@@ -69,8 +69,6 @@ public class ServerInfo {
 		if (cachedProperties.containsKey(name)) {
 			return (T) cachedProperties.get(name);
 		} else {
-	        System.out.println("getProperty(" + property.toString().toLowerCase() + ")");
-	        new Throwable().printStackTrace(System.out);
 			T object = (T) getDocument().get(name);
 			cachedProperties.put(name, object);
 			return object;

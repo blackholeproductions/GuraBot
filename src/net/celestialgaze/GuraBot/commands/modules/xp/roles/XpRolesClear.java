@@ -1,6 +1,5 @@
 package net.celestialgaze.GuraBot.commands.modules.xp.roles;
 
-import java.util.ArrayList;
 import org.bson.Document;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
