@@ -18,6 +18,7 @@ public class Ping extends Command {
 				.setName("ping")
 				.setDescription("Pings me and gives you the latency")
 				.setCategory("Bot Info")
+				.setCooldown(5.0)
 				.verify());
 	}
 
