@@ -78,6 +78,7 @@ public class Commands {
 		addCommand(new UserInfo());
 		addCommand(new Roles());
 		addCommand(new RoleInfo());
+		addCommand(new Benchmark());
 		
 		// Modules
 		addModule(new CommandModule(ModuleType.CUSTOM_COMMANDS,
