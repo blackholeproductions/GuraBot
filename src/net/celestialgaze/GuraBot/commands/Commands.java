@@ -113,7 +113,7 @@ public class Commands {
 							}
 							
 							Document rolesDoc = sdbSettings.get("roles", new Document());
-							long currentXP = si.getXP(userId, xpDoc);
+							int currentXP = si.getXP(userId, xpDoc);
 							int random = 20+new Random().nextInt(5);
 							List<String> badRoles = new ArrayList<String>();
 							if (XPUtil.getLevel(currentXP) < XPUtil.getLevel(currentXP + random)) {

@@ -50,7 +50,7 @@ public class GuraBot extends ListenerAdapter {
 	public static final String SETTINGS = DATA_FOLDER + "bot\\settings.json";
 	public static final Color DEFAULT_COLOR = new Color(179, 217, 255);
 	public static final String REGEX_WHITESPACE = "\\s+";
-	public static final String IP = "localhost";
+	public static final String IP = "192.168.0.4";
 	public static SelfUser selfUser;
 	public static String version = "0.0.0";
 	public static Date startDate;

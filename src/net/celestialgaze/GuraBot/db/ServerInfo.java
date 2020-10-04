@@ -1,23 +1,14 @@
 package net.celestialgaze.GuraBot.db;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
-import net.celestialgaze.GuraBot.util.SharkUtil;
-import net.celestialgaze.GuraBot.util.XPUtil;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 
 public class ServerInfo {
 	public static Map<Long, ServerInfo> serverInfos = new HashMap<Long, ServerInfo>();
@@ -81,38 +72,38 @@ public class ServerInfo {
 	public String getPrefix() {
 		return getProperty(ServerProperty.PREFIX, Commands.defaultPrefix);
 	}
-	private void setXP(long userId, long value, Document xpDoc) {
+	private void setXP(long userId, int value, Document xpDoc) {
 			updateModuleDocument("xp",
 				new DocBuilder(xpDoc)
 					.getSubDoc("experience")
 					.put(Long.toString(userId), value)
 					.build());
 	}
-	public void setXP(long userId, long value) {
+	public void setXP(long userId, int value) {
 		setXP(userId, value, getModuleDocument("xp"));
 	}
-	public void addXP(long userId, long value) {
+	public void addXP(long userId, int value) {
 		Document xpDoc = getModuleDocument("xp");
 		setXP(userId, getXP(userId, xpDoc)+value, xpDoc);
 	}
-	public long getXP(long userId) {
+	public int getXP(long userId) {
 		return getXP(userId, getModuleDocument("xp"));
 	}
-	public long getXP(long userId, Document xpDoc) {
+	public int getXP(long userId, Document xpDoc) {
 		return new DocBuilder(xpDoc)
 				.getSubDoc("experience")
-				.get(Long.toString(userId), Long.parseLong("0"));
+				.get(Long.toString(userId), Integer.parseInt("0"));
 	}
-	public Map<String, Long> getXpMap() {
+	public Map<String, Integer> getXpMap() {
 		return getXpMap(getModuleDocument("xp"));
 	}
-	public Map<String, Long> getXpMap(Document xpDoc) {
-		Map<String, Long> result = new HashMap<>();
+	public Map<String, Integer> getXpMap(Document xpDoc) {
+		Map<String, Integer> result = new HashMap<>();
 		Document expDoc = new DocBuilder(xpDoc)
 				.getSubDoc("experience")
 				.buildThis();
 		expDoc.forEach((key, value) -> {
-			result.put((String)key, (Long)value);
+			result.put((String)key, (int)value);
 		});
 		return result;
 	}

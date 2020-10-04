@@ -93,13 +93,13 @@ public class SharkUtil {
 		Member member = null;
 		String input = "";
 		for (int i = start; i < args.length; i++) {
-			input += args[i] + " ";
+			input += args[i] + (i == args.length - 1 ? "" : " ");
 		}
-		input = input.strip();
 		// Try to get by ID
 		try {
 			member = guild.getMemberById(input);
-		} catch (Exception e) {
+		} catch (Exception e) {}
+		if (member == null) {
 			// Try to get by mention
 			if (input.startsWith("<@!") && input.endsWith(">")) {
 				String id = input.split("<@!")[1].split(">")[0];

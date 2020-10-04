@@ -81,31 +81,34 @@ public class XPUtil {
 				.setTitle("Leaderboard (Page " + page + ")")
 				.setColor(GuraBot.DEFAULT_COLOR);
 		ServerInfo si = ServerInfo.getServerInfo(guild.getIdLong());
-		Map<String, Long> m = si.getXpMap(xpDoc);
+		Map<String, Integer> m = si.getXpMap(xpDoc);
 		ArrayList<String> mKeys = new ArrayList<>(m.keySet());
-		Map<Member, Long> sorted = new LinkedHashMap<Member, Long>();
+		Map<Member, Integer> sorted = new LinkedHashMap<Member, Integer>();
 		// Sort by XP
 		m.entrySet()
 		  .stream()
 		  .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+		  .filter(entry -> {
+			  Member member = guild.getMemberById(entry.getKey());
+			  if (member != null && (!member.getUser().isBot() || bots)) {
+				  return true;
+			  }
+			  return false;
+		  })
 		  .forEach(entry -> {
 			 sorted.put(guild.getMemberById(entry.getKey()), entry.getValue()); 
 		  });
-		List<Entry<Member, Long>> entries = new ArrayList<>(sorted.entrySet());
+		List<Entry<Member, Integer>> entries = new ArrayList<>(sorted.entrySet());
 		String description = "";
-		int position = startPosition;
 		for (int i = startPosition; i < sorted.size(); i++) {
 			Member member = entries.get(i).getKey();
-			  if (position >= startPosition && position < page*pageSize) {
-				  if (member != null && (!member.getUser().isBot() || bots)) {
-					  position++;
+			  if (i >= startPosition && i < page*pageSize) {
 					  int level = XPUtil.getLevel(entries.get(i).getValue());
 						String roleId = XPUtil.getHighestRole(guild, level, xpDoc);
-						if (position == 1 && entries.get(i) != null) eb.setThumbnail(entries.get(i).getKey().getUser().getEffectiveAvatarUrl());
-						description += (position == 1 ? "**" : "") + (position) + ". " + entries.get(i).getKey().getAsMention() + " - " +
-								entries.get(i).getValue() + " xp (Level " + level + ")" + (position == 1 ? "**" : "") +
+						if (i == 0 && entries.get(i) != null) eb.setThumbnail(entries.get(i).getKey().getUser().getEffectiveAvatarUrl());
+						description += (i == 0 ? "**" : "") + (i+1) + ". " + entries.get(i).getKey().getAsMention() + " - " +
+								entries.get(i).getValue() + " xp (Level " + level + ")" + (i == 0 ? "**" : "") +
 						" " + (!roleId.isEmpty() ? "<@&" + roleId + ">" : "") + "\n";
-				  }
 			  }
 		}
 		eb.setDescription(description);

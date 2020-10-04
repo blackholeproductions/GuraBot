@@ -1,15 +1,7 @@
 package net.celestialgaze.GuraBot.commands.modules.xp;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.bson.Document;
 
-import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.db.ServerInfo;
@@ -18,8 +10,6 @@ import net.celestialgaze.GuraBot.util.PageMessage;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.celestialgaze.GuraBot.util.XPUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
 public class Leaderboard extends Command {
