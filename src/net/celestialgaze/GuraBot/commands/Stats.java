@@ -35,6 +35,7 @@ public class Stats extends Command {
 				.add("Commands Run", Integer.toString(BotInfo.getIntStat(BotStat.COMMANDS_RUN)))
 				.add("Errors", Integer.toString(BotInfo.getIntStat(BotStat.ERRORS)))
 				.add("Times Started", Integer.toString(BotInfo.getIntStat(BotStat.STARTS)))
+				.add("Pings", Integer.toString(BotInfo.getIntStat(BotStat.PINGS)))
 				.build();
 		
 		message.getChannel().sendMessage(new EmbedBuilder()

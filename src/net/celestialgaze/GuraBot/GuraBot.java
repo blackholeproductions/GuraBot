@@ -41,7 +41,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class GuraBot extends ListenerAdapter {
 	public static JDA jda;
-	private static MongoClient mongoClient;
+	public static MongoClient mongoClient;
 	public static MongoDatabase db;
 	public static MongoCollection<Document> servers;
 	public static MongoCollection<Document> users;
