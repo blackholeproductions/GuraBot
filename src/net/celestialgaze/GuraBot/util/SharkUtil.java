@@ -2,6 +2,7 @@ package net.celestialgaze.GuraBot.util;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import net.celestialgaze.GuraBot.GuraBot;
@@ -168,4 +169,11 @@ public class SharkUtil {
 			pm.update();
 		});
 	}
+
+    public static int min(int... numbers) {
+        return Arrays.stream(numbers)
+          .min().orElse(Integer.MAX_VALUE);
+    }
+    
+
 }
