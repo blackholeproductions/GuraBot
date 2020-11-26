@@ -34,7 +34,7 @@ public class Benchmark extends Command {
 					.append("wpm", 1)
 					.append("name", "query for wpm"));
 			GuraBot.db.getCollection("test").listIndexes().forEach((doc) -> {
-				message.getChannel().sendMessage(new HashMap<String, Object>(doc.entrySet()));
+				//message.getChannel().sendMessage(new HashMap<String, Object>(doc.entrySet()));
 			});
 		});
 		/*

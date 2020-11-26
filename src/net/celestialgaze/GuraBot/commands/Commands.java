@@ -83,6 +83,7 @@ public class Commands {
 		addCommand(new Roles());
 		addCommand(new RoleInfo());
 		addCommand(new Benchmark());
+		addCommand(new Test());
 		
 		// Modules
 		addModule(new CommandModule(ModuleType.CUSTOM_COMMANDS,

@@ -17,13 +17,14 @@ public class DelayedRunnable {
 	* @param time  the at which to execute.
 	*/
 	public DelayedRunnable execute(long time) {
+		isDone = false;
 		endTime = time;
 		timer.schedule(new TimerTask() {
 
 			@Override
 			public void run() {
 				runnable.run();
-				timer.cancel();
+				timer.purge();
 				isDone = true;
 			}
 			
