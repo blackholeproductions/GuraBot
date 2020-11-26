@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -156,5 +157,11 @@ public class GuraBot extends ListenerAdapter {
 			SharkUtil.error(event.getChannel(), error);
 			BotInfo.addIntStat(BotStat.ERRORS);
 		}
+	}
+	
+	@Override
+	public void onGuildJoin(GuildJoinEvent event) {
+		System.out.println("Joined " + event.getGuild().getName());
+		Commands.updateGuildCommands(event.getGuild().getIdLong());
 	}
 }
