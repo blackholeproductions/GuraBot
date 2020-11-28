@@ -83,7 +83,8 @@ public class Commands {
 		addCommand(new Roles());
 		addCommand(new RoleInfo());
 		addCommand(new Benchmark());
-		addCommand(new Test());
+		addCommand(new SnailRace());
+		addCommand(new AI());
 		
 		// Modules
 		addModule(new CommandModule(ModuleType.CUSTOM_COMMANDS,

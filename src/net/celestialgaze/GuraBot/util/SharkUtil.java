@@ -78,17 +78,29 @@ public class SharkUtil {
 		random.setSeed(Math.toIntExact(Math.round((noise.eval(x, y)*Integer.MAX_VALUE))));
 		return random.nextDouble();
 	}
+	/**
+	 * 
+	 * @param milliseconds 
+	 * @return a human-readable duration in a format like 0d 00h 00m 00.000s
+	 */
 	public static String formatDuration(long milliseconds) {
-		long seconds = milliseconds / 1000;
-	    String positive = String.format(
-	        "%dd%02dh%02dm%02ds",
-	        seconds / 86400,
-	        (seconds % 86400) / 3600,
-	        (seconds % 3600) / 60,
-	        seconds % 60);
-	    return seconds < 0 ? "-" + positive : positive;
+		long totalSeconds = milliseconds / 1000;
+		long d = totalSeconds / 86400;
+		int h = (int) ((totalSeconds % 86400) / 3600);
+		int m = (int) ((totalSeconds % 3600) / 60);
+		int s = (int) (totalSeconds % 60);
+		int ms = (int) (milliseconds % 1000);
+		
+	    return (d > 0 ? d + "d " : "") + (h > 0 ? h + "h " : "") + (m > 0 ? m + "m " : "") + 
+	    		((d == 0 && m == 0 && m == 0) || s > 0 || ms > 0 ? s + (ms > 0 ? "." + String.format("%03d", ms) : "") + "s": "");
 	}
 	
+	/**
+	 * @param message
+	 * @param args
+	 * @param start Where the user string starts (args[start] should net the first argument)
+	 * @return The member in question, or null if none was found.
+	 */
 	public static Member getMember(Message message, String[] args, int start) {
 		Guild guild = message.getGuild();
 		Member member = null;
@@ -122,6 +134,54 @@ public class SharkUtil {
 			} catch (Exception e2) {}
 		}
 		return member;
+	}
+	
+	/**
+	 * @param str String to parse
+	 * @return true if can parse to int, false otherwise
+	 */
+	public static boolean canParseInt(String str) {
+		try {
+			Integer.parseInt(str);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	/**
+	 * @param str String to parse
+	 * @return the parsed integer, returns 0 if invalid
+	 */
+	public static int parseInt(String str) {
+		try {
+			return Integer.parseInt(str);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+	
+	/**
+	 * @param str String to parse
+	 * @return true if can parse to double, false otherwise
+	 */
+	public static boolean canParseDouble(String str) {
+		try {
+			Double.parseDouble(str);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	/**
+	 * @param str String to parse
+	 * @return the parsed double, returns 0 if invalid
+	 */
+	public static double parseDouble(String str) {
+		try {
+			return Double.parseDouble(str);
+		} catch (Exception e) {
+			return 0.0;
+		}
 	}
 	
 	public static Role getRole(Message message, String[] args, int start) {
