@@ -234,6 +234,7 @@ public class Commands {
 					// User is replying to typing test
 					if (TypeTest.tests.containsKey(event.getAuthor().getIdLong())) {
 						Message message = event.getMessage();
+						if (message.getContentDisplay().startsWith(ServerInfo.getServerInfo(message.getGuild().getIdLong()).getPrefix() + "type")) return; // Fix intermittent bug with immediate response
 						long targetId = TypeTest.tests.get(event.getAuthor().getIdLong());
 						String content = TypeTest.contents.get(targetId);
 						long startTime = TypeTest.times.get(targetId);
@@ -255,7 +256,7 @@ public class Commands {
 								.build()).queue();
 						
 						// If eligible, add to leaderboard
-						if (content.split(" ").length >= 100) { // Test was at least 100 words
+						if (content.split(" ").length >= 100 && accuracy > 80) { // Test was at least 100 words, with acc above 80%
 							ServerInfo si = ServerInfo.getServerInfo(event.getGuild().getIdLong());
 							Document typingDoc = si.getModuleDocument("typing");
 							SubDocBuilder scoresDoc = new DocBuilder(typingDoc)
