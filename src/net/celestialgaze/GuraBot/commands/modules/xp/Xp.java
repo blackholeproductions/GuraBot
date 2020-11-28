@@ -50,7 +50,7 @@ public class Xp extends HelpCommand {
 
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
-		Member member = SharkUtil.getMember(message, args, 0);
+		Member member = SharkUtil.getMember(message.getGuild(), args, 0);
 		User user = null;
 		if (member == null) {
 			user = message.getAuthor();

@@ -96,13 +96,12 @@ public class SharkUtil {
 	}
 	
 	/**
-	 * @param message
+	 * @param guild Guild to search
 	 * @param args
 	 * @param start Where the user string starts (args[start] should net the first argument)
 	 * @return The member in question, or null if none was found.
 	 */
-	public static Member getMember(Message message, String[] args, int start) {
-		Guild guild = message.getGuild();
+	public static Member getMember(Guild guild, String[] args, int start) {
 		Member member = null;
 		String input = "";
 		for (int i = start; i < args.length; i++) {

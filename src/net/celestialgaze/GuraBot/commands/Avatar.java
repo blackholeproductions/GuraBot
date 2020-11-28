@@ -8,7 +8,9 @@ import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 
 public class Avatar extends Command {
@@ -19,7 +21,6 @@ public class Avatar extends Command {
 				.setDescription("Gets the avatar of a user")
 				.setUsage("<user>")
 				.setCategory("Utility")
-				.setUsablePrivate(false)
 				.verify());
 	}
 
@@ -33,9 +34,17 @@ public class Avatar extends Command {
 				.setTimestamp(Instant.now());
 		User user = null;
 		if (message.getChannelType().equals(ChannelType.PRIVATE)) {
-			user = message.getAuthor();
+			PrivateChannel channel = (PrivateChannel) message.getChannel();
+			for (Guild g : channel.getUser().getMutualGuilds()) {
+				if (user != null) {
+					break;
+				} else {
+					if (SharkUtil.getMember(g, args, 0) != null) user = SharkUtil.getMember(g, args, 0).getUser();
+				}
+			}
+			if (user == null) user = message.getAuthor();
 		} else {
-			user = (SharkUtil.getMember(message, args, 0) != null ? SharkUtil.getMember(message, args, 0).getUser() : message.getAuthor());
+			user = (SharkUtil.getMember(message.getGuild(), args, 0) != null ? SharkUtil.getMember(message.getGuild(), args, 0).getUser() : message.getAuthor());
 		}
 		eb.setImage(user.getEffectiveAvatarUrl() + "?size=2048")
 		  .setTitle(user.getAsTag());

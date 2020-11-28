@@ -30,7 +30,7 @@ public class XpGive extends Subcommand {
 				SharkUtil.error(message, "You have provided an invalid xp amount");
 				return;
 			}
-			Member member = SharkUtil.getMember(message, args, 1);
+			Member member = SharkUtil.getMember(message.getGuild(), args, 1);
 			if (member != null) {
 				ServerInfo si = ServerInfo.getServerInfo(message.getGuild().getIdLong());
 				si.addXP(member.getIdLong(), amount);

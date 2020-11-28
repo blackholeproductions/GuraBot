@@ -32,6 +32,10 @@ public class TypeTest extends Subcommand {
 
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
+		if (tests.containsKey(message.getAuthor().getIdLong())) {
+			SharkUtil.error(message, "You have an ongoing typing test.");
+			return;
+		}
 		int amount = 100;
 		if (args.length == 1) {
 			try {
@@ -67,6 +71,7 @@ public class TypeTest extends Subcommand {
 								 .replace("I", "Ι")
 								 .replace("l", "I");
 		final String finalContent = content;
+		
 		message.getChannel().sendMessage(filtered).queue(response -> {
 			tests.put(message.getAuthor().getIdLong(), response.getIdLong());
 			contents.put(response.getIdLong(), finalContent);

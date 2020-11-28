@@ -35,7 +35,7 @@ public class UserInfo extends Command {
 		if (message.getChannelType().equals(ChannelType.PRIVATE)) {
 			user = message.getAuthor();
 		} else {
-			user = (SharkUtil.getMember(message, args, 0) != null ? SharkUtil.getMember(message, args, 0).getUser() : message.getAuthor());
+			user = (SharkUtil.getMember(message.getGuild(), args, 0) != null ? SharkUtil.getMember(message.getGuild(), args, 0).getUser() : message.getAuthor());
 		}
 		String description = new BulletListBuilder()
 				.add("**ID**", user.getId())
