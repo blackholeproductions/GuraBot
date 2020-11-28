@@ -29,7 +29,7 @@ public class CommandInterpreter {
 			}
 			if (rootCommand.startsWith(prefix)) {
 				return prefix;
-			}	
+			}
 		}
 		return null;
 	}
@@ -78,7 +78,7 @@ public class CommandInterpreter {
 		String prefix = getPrefix(message);
 		String rootCommandName = args[0].toLowerCase().substring(prefix.length());
 		
-		int indexCommandsEnd = 0; // The index where commands end. indexCommandsEnd+1 would be the index of the first argument.
+		int indexCommandsEnd = 1; // The index where commands end. indexCommandsEnd would be the index of the first argument.
 		Command commandToRun = null;
 		// First check if this command is a guild command.
 		if (message.getChannelType().equals(ChannelType.TEXT) && 
@@ -98,12 +98,12 @@ public class CommandInterpreter {
 			if (commandToRun != null)
 			// Loop through each argument to find indexCommandsEnd, and the command to run
 			for (int i = 0; i < args.length; i++) {
+				indexCommandsEnd = i+1; // Set the index
 				// Look ahead one argument and check if it is a valid subcommand of the current command.
 				if (i+1 >= args.length) break; // If there is no next argument, exit the loop now
-				if (commandToRun.getSubcommands().containsKey(args[i+1])) { // Is subcommand
-					commandToRun = commandToRun.getSubcommands().get(args[i+1]); // Set command to run to subcommand
+				if (commandToRun.getSubcommands().containsKey(args[i+1].toLowerCase())) { // Is subcommand
+					commandToRun = commandToRun.getSubcommands().get(args[i+1].toLowerCase()); // Set command to run to subcommand
 				} else { // Next argument is not a subcommand
-					indexCommandsEnd = i; // Set the index
 					break; // Exit loop
 				}
 			}
@@ -111,9 +111,9 @@ public class CommandInterpreter {
 		if (commandToRun != null) {
 			// Strip args of all commands
 			String[] argsCopy = args;
-			args = new String[args.length-(indexCommandsEnd+1)];
+			args = new String[args.length-(indexCommandsEnd)];
 			for (int i = 0; i < args.length; i++) {
-				args[i] = argsCopy[i+(indexCommandsEnd+1)];
+				args[i] = argsCopy[i+(indexCommandsEnd)];
 			}
 			
 			// Extract all modifiers from args into modifiers array

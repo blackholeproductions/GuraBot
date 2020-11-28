@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -50,7 +51,7 @@ public class GuraBot extends ListenerAdapter {
 	public static final String SETTINGS = DATA_FOLDER + "bot\\settings.json";
 	public static final Color DEFAULT_COLOR = new Color(179, 217, 255);
 	public static final String REGEX_WHITESPACE = "\\s+";
-	public static final String IP = "192.168.0.4";
+	public static final String IP = "192.168.0.7";
 	public static SelfUser selfUser;
 	public static String version = "0.0.0";
 	public static Date startDate;
@@ -156,5 +157,11 @@ public class GuraBot extends ListenerAdapter {
 			SharkUtil.error(event.getChannel(), error);
 			BotInfo.addIntStat(BotStat.ERRORS);
 		}
+	}
+	
+	@Override
+	public void onGuildJoin(GuildJoinEvent event) {
+		System.out.println("Joined " + event.getGuild().getName());
+		Commands.updateGuildCommands(event.getGuild().getIdLong());
 	}
 }
