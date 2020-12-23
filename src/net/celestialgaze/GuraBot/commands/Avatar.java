@@ -8,6 +8,7 @@ import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
@@ -31,15 +32,32 @@ public class Avatar extends Command {
 		EmbedBuilder eb = new EmbedBuilder()
 				.setColor(GuraBot.DEFAULT_COLOR)
 				.setTimestamp(Instant.now());
-		User user = null;
-		if (message.getChannelType().equals(ChannelType.PRIVATE)) {
-			user = message.getAuthor();
-		} else {
-			user = (SharkUtil.getMember(message, args, 0) != null ? SharkUtil.getMember(message, args, 0).getUser() : message.getAuthor());
-		}
-		eb.setImage(user.getEffectiveAvatarUrl() + "?size=2048")
-		  .setTitle(user.getAsTag());
-		message.getChannel().sendMessage(eb.build()).queue();
+		message.getChannel().sendMessage(new EmbedBuilder().setTitle("Retrieving avatar...").build()).queue(success -> {
+
+			User user = null;
+			if (args.length == 0) {
+				user = message.getAuthor();
+			} else {
+				if (message.getChannelType().equals(ChannelType.PRIVATE)) {
+					user = SharkUtil.getUser(args, 0);
+				} else {
+					// First search the guild for the user, then search user cache
+					Member member = SharkUtil.getMember(message, args, 0);
+					if (member != null) user = member.getUser();
+					if (user == null) {
+						user = SharkUtil.getUser(args, 0);
+					}
+				}
+				if (user == null) {
+					success.editMessage(new EmbedBuilder().setTitle("Unable to determine user.").build()).queue();
+					return;
+				}
+			}
+			
+			eb.setImage(user.getEffectiveAvatarUrl() + "?size=2048")
+			  .setTitle(user.getAsTag());
+			success.editMessage(eb.build()).queue();
+		});
 	}
 
 }

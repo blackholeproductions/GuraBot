@@ -85,7 +85,7 @@ public class Commands {
 		addCommand(new Benchmark());
 		addCommand(new SnailRace());
 		addCommand(new AI());
-		
+		addCommand(new TestCommand());
 		// Modules
 		addModule(new CommandModule(ModuleType.CUSTOM_COMMANDS,
 			new SimpleCmdCreator()
@@ -167,12 +167,42 @@ public class Commands {
 						SubDocBuilder sdbLeaderboard = sdbSettings.getSubDoc("leaderboard");
 						if (sdbLeaderboard.has("message") && sdbLeaderboard.has("channel")
 								&& !leaderboardCooldowns.contains(event.getGuild().getIdLong())) {
+							
+							// Check for missing channel
+							if (event.getGuild()
+									.getTextChannelById(sdbLeaderboard.get("channel", (long)0)) == null) {
+								SharkUtil.sendOwner(event.getGuild(), 
+					        			"Hey! I wasn't able to find the leaderboard message's channel, so I've reset it. " + 
+					        			"Make sure to set it again if this wasn't intentional.");
+								si.updateModuleDocument("xp", sdbLeaderboard.remove("message").remove("channel").build());
+								return;
+							}
+							
+							// Check for missing message
+							if (event.getGuild()
+									.getTextChannelById(sdbLeaderboard.get("channel", (long)0))
+									.retrieveMessageById(sdbLeaderboard.get("message", (long)0)) == null) {
+								SharkUtil.sendOwner(event.getGuild(), 
+					        			"Hey! I wasn't able to find the leaderboard message, so I've reset it. " + 
+					        			"Make sure to set it again if this wasn't intentional.");
+								si.updateModuleDocument("xp", sdbLeaderboard.remove("message").remove("channel").build());
+								return;
+							}
+							
+							// Attempt to update leaderboard
 							event.getGuild()
 								.getTextChannelById(sdbLeaderboard.get("channel", (long)0))
 								.retrieveMessageById(sdbLeaderboard.get("message", (long)0))
 								.queue(message -> {
 									long guildId = message.getGuild().getIdLong();
-									message.editMessage(XPUtil.getLeaderboard(message.getGuild(), 1, xpDoc).setTimestamp(Instant.now()).build()).queue();
+									try {
+										message.editMessage(XPUtil.getLeaderboard(message.getGuild(), 1, xpDoc).setTimestamp(Instant.now()).build()).queue();
+									} catch (Exception e) {
+										SharkUtil.sendOwner(event.getGuild(), 
+							        			"Had an error updating your leaderboard. Please check that I have enough permissions. I've reset it " +
+												"so you'll have to set it again.");
+										si.updateModuleDocument("xp", sdbLeaderboard.remove("message").remove("channel").build());
+									}
 									leaderboardCooldowns.add(guildId);
 									new DelayedRunnable(new Runnable() {
 										@Override
@@ -181,26 +211,6 @@ public class Commands {
 										}
 										
 									}).execute(System.currentTimeMillis()+(30*1000)); // Remove after 30 seconds
-								}, failure -> {
-									if (failure instanceof ErrorResponseException) {
-								        ErrorResponseException ex = (ErrorResponseException) failure;
-							        	si.updateModuleDocument("xp", sdbLeaderboard.remove("message").remove("channel").build());
-								        if (ex.getErrorResponse() == ErrorResponse.UNKNOWN_MESSAGE) {
-								        	SharkUtil.sendOwner(event.getGuild(), 
-								        			"Hey! I wasn't able to find the leaderboard message, so I've reset it. " + 
-								        			"Make sure to set it again if this wasn't intentional.");
-								        } else if (ex.getErrorResponse() == ErrorResponse.MISSING_PERMISSIONS ||
-								        		ex.getErrorResponse() == ErrorResponse.MISSING_ACCESS) {
-								        	SharkUtil.sendOwner(event.getGuild(), 
-								        			"Hey! I don't have permission to edit the leaderboard message, so I've reset it. " + 
-								        			"Make sure to set it again if this wasn't intentional, and that I get " +
-								        			"permission this time.");
-								        } else if (ex.getErrorResponse() == ErrorResponse.UNKNOWN_CHANNEL) {
-								        	SharkUtil.sendOwner(event.getGuild(), 
-								        			"Hey! I wasn't able to find the leaderboard message's channel, so I've reset it. " + 
-								        			"Make sure to set it again if this wasn't intentional.");
-								        }
-								    }
 								});
 						}
 					}

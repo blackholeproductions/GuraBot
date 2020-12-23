@@ -101,14 +101,13 @@ public class XPUtil {
 		List<Entry<Member, Integer>> entries = new ArrayList<>(sorted.entrySet());
 		String description = "";
 		for (int i = startPosition; i < sorted.size(); i++) {
-			Member member = entries.get(i).getKey();
 			  if (i >= startPosition && i < page*pageSize) {
-					  int level = XPUtil.getLevel(entries.get(i).getValue());
-						String roleId = XPUtil.getHighestRole(guild, level, xpDoc);
-						if (i == 0 && entries.get(i) != null) eb.setThumbnail(entries.get(i).getKey().getUser().getEffectiveAvatarUrl());
-						description += (i == 0 ? "**" : "") + (i+1) + ". " + entries.get(i).getKey().getAsMention() + " - " +
-								entries.get(i).getValue() + " xp (Level " + level + ")" + (i == 0 ? "**" : "") +
-						" " + (!roleId.isEmpty() ? "<@&" + roleId + ">" : "") + "\n";
+				  int level = XPUtil.getLevel(entries.get(i).getValue());
+				  String roleId = XPUtil.getHighestRole(guild, level, xpDoc);
+				  if (i == 0 && entries.get(i) != null) eb.setThumbnail(entries.get(i).getKey().getUser().getEffectiveAvatarUrl());
+				  description += (i == 0 ? "**" : "") + (i+1) + ". " + entries.get(i).getKey().getAsMention() + " - " +
+						  entries.get(i).getValue() + " xp (Level " + level + ")" + (i == 0 ? "**" : "") +
+						  " " + (!roleId.isEmpty() ? "<@&" + roleId + ">" : "") + "\n";
 			  }
 		}
 		eb.setDescription(description);

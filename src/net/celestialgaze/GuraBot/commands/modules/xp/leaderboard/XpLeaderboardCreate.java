@@ -37,7 +37,7 @@ public class XpLeaderboardCreate extends Subcommand {
 			sdb.put("channel", response.getChannel().getIdLong());
 			sdb.put("message", response.getIdLong());
 			si.updateModuleDocument("xp", sdb.build());
-			response.editMessage(XPUtil.getLeaderboard(message.getGuild(), 0, xpDoc).setTimestamp(Instant.now()).build()).queue();
+			response.editMessage(XPUtil.getLeaderboard(message.getGuild(), 1, xpDoc).setTimestamp(Instant.now()).build()).queue();
 		});
 	}
 

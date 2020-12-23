@@ -8,6 +8,7 @@ import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
 import net.celestialgaze.GuraBot.commands.modules.xp.leaderboard.XpLeaderboard;
 import net.celestialgaze.GuraBot.commands.modules.xp.roles.XpRoles;
+import net.celestialgaze.GuraBot.commands.modules.xp.settings.XpSettings;
 import net.celestialgaze.GuraBot.commands.modules.xp.toggle.XpToggle;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.util.SharkUtil;
@@ -38,11 +39,13 @@ public class Xp extends HelpCommand {
 		XpRoles roles = new XpRoles(this);
 		XpLeaderboard leaderboard = new XpLeaderboard(this);
 		XpGive give = new XpGive(this);
+		XpSettings settings = new XpSettings(this);
 		subcommands.put(help.getName(), help);
 		subcommands.put(toggle.getName(), toggle);
 		subcommands.put(roles.getName(), roles);
 		subcommands.put(leaderboard.getName(), leaderboard);
 		subcommands.put(give.getName(), give);
+		subcommands.put(settings.getName(), settings);
 		for (Command cmd : subcommands.values()) {
 			commands.put(cmd.getName(), cmd);
 		}

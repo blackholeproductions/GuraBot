@@ -3,6 +3,7 @@ package net.celestialgaze.GuraBot.util;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import net.celestialgaze.GuraBot.GuraBot;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 
 public class SharkUtil {
 	public static final int DEFAULT_RANDOM_SEED = 403126880;
@@ -117,23 +119,52 @@ public class SharkUtil {
 			if (input.startsWith("<@!") && input.endsWith(">")) {
 				String id = input.split("<@!")[1].split(">")[0];
 				if (guild.getMemberById(id) != null) {
-					return guild.getMemberById(id);
+					member = guild.getMemberById(id);
+					if (member != null) return member;
 				}
 			}
 			// Try to get by name
 			try {
 				if (guild.getMembersByName(input, true).size() > 0) {
-					return guild.getMembersByName(input, true).get(0);
+					member = guild.getMembersByName(input, true).get(0);
+					if (member != null) return member;
 				}
 			} catch (Exception e3) {}
 			try {
 				// Try to get by user#discrim
 				if (guild.getMemberByTag(input) != null) {
-					return guild.getMemberByTag(input);
+					member = guild.getMemberByTag(input);
+					if (member != null) return member;
 				}
 			} catch (Exception e2) {}
 		}
 		return member;
+	}
+	
+	public static User getUser(String[] args, int start) {
+		User user = null;
+		String input = "";
+		for (int i = start; i < args.length; i++) {
+			input += args[i] + (i == args.length - 1 ? "" : " ");
+		}
+		// Try to get user by tag
+		try {
+			user = GuraBot.jda.getUserByTag(input);
+			if (user != null) return user;
+		} catch (Exception e) {}
+		// Try to get user by mention
+		if (input.startsWith("<@!") && input.endsWith(">")) {
+			String id = input.split("<@!")[1].split(">")[0];
+			try {
+				user = GuraBot.jda.getUserById(id);
+				if (user != null) return user;
+			} catch(Exception e) {}
+		}
+		// Try to get user by name
+		List<User> possibleUsers = GuraBot.jda.getUsersByName(input, true);
+		if (possibleUsers.size() > 0) user = GuraBot.jda.getUsersByName(input, true).get(0);
+		
+		return user;
 	}
 	
 	/**
