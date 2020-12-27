@@ -1,18 +1,20 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
 public enum ModuleType {
-	CUSTOM_COMMANDS("Custom Commands", "Server", "Allows you to add custom commands"),
-	XP("XP", "Server", "Adds an XP system"),
-	TYPING("Typing", "Typing", "Test and improve your WPM");
+	CUSTOM_COMMANDS("Custom Commands", "Server", "Allows you to add custom commands", "custom_commands"),
+	XP("XP", "Server", "Adds an XP system", "xp"),
+	TYPING("Typing", "Typing", "Test and improve your WPM", "typing");
 	
 	String name;
 	String category;
 	String description;
+	String techName;
 	
-	ModuleType(String name, String category, String description) {
+	ModuleType(String name, String category, String description, String techName) {
 		this.name = name;
 		this.category = category;
 		this.description = description;
+		this.techName = techName;
 	}
 	
 	public String getModName() {
@@ -23,5 +25,8 @@ public enum ModuleType {
 	}
 	public String getDescription() {
 		return description;
+	}
+	public String getTechName() {
+		return techName;
 	}
 }

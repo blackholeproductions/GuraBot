@@ -8,6 +8,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
+import net.celestialgaze.GuraBot.commands.classes.ModuleType;
 import net.dv8tion.jda.api.entities.Guild;
 
 public class ServerInfo {
@@ -80,14 +81,14 @@ public class ServerInfo {
 					.build());
 	}
 	public void setXP(long userId, int value) {
-		setXP(userId, value, getModuleDocument("xp"));
+		setXP(userId, value, getModuleDocument(ModuleType.XP.getTechName()));
 	}
 	public void addXP(long userId, int value) {
-		Document xpDoc = getModuleDocument("xp");
+		Document xpDoc = getModuleDocument(ModuleType.XP.getTechName());
 		setXP(userId, getXP(userId, xpDoc)+value, xpDoc);
 	}
 	public int getXP(long userId) {
-		return getXP(userId, getModuleDocument("xp"));
+		return getXP(userId, getModuleDocument(ModuleType.XP.getTechName()));
 	}
 	public int getXP(long userId, Document xpDoc) {
 		return new DocBuilder(xpDoc)
@@ -95,7 +96,7 @@ public class ServerInfo {
 				.get(Long.toString(userId), Integer.parseInt("0"));
 	}
 	public Map<String, Integer> getXpMap() {
-		return getXpMap(getModuleDocument("xp"));
+		return getXpMap(getModuleDocument(ModuleType.XP.getTechName()));
 	}
 	public Map<String, Integer> getXpMap(Document xpDoc) {
 		Map<String, Integer> result = new HashMap<>();

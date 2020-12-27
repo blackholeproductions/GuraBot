@@ -7,14 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import net.celestialgaze.GuraBot.GuraBot;
+import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.ServerProperty;
+import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.celestialgaze.GuraBot.util.RunnableListener;
 
-public class CommandModule {
-	private ModuleType type;
-	private RunnableListener listener;
-	private Map<String, Command> commands = new HashMap<String, Command>();
+public abstract class CommandModule {
+	protected ModuleType type;
+	protected Map<String, Command> commands = new HashMap<String, Command>();
 	public CommandModule(ModuleType type, Command... commands) {
 		this.type = type;
 		for (Command command : commands) {
@@ -27,14 +28,9 @@ public class CommandModule {
 		Map<String, Boolean> m = si.getProperty(ServerProperty.MODULES, new LinkedHashMap<String, Boolean>());
 		return m.getOrDefault(type.getModName(), false);
 	}
-	public CommandModule(ModuleType type, RunnableListener listener, Command... commands) {
-		this.type = type;
-		this.listener = listener;
-		GuraBot.jda.addEventListener(this.listener);
-		for(Command command : commands) {
-			command.setModule(this);
-			this.commands.put(command.getName(), command);
-		}
+	
+	public void init() {
+		GuraBot.jda.addEventListener(getListener());
 	}
 	
 	public Map<String, Command> getCommands() {
@@ -72,4 +68,21 @@ public class CommandModule {
 		m.put(getName(), true);
 		si.setProperty(ServerProperty.MODULES, m);
 	}
+	public DocBuilder getModuleDocument(long guild) {
+		ServerInfo si = ServerInfo.getServerInfo(guild);
+		return new DocBuilder(si.getModuleDocument(type.getTechName()));
+	}
+	public SubDocBuilder getSettings(long guild) {
+		return getModuleDocument(guild).getSubDoc("settings");
+	}
+	
+	public <T> T getSetting(long guild, String setting, T defaultValue) {
+		return getSettings(guild).get(setting, defaultValue);
+	}
+	
+	public void setSetting(long guild, String setting, Object value) {
+		getSettings(guild).put(setting, value);
+	}
+	
+	public abstract RunnableListener getListener();
 }

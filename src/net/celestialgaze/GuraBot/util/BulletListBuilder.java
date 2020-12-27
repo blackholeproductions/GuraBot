@@ -14,7 +14,7 @@ public class BulletListBuilder {
 		return add(title, s, ": ");
 	}
 	public BulletListBuilder add(String title, String s, String seperator) {
-		sb.append((formatted ? "**• " + title + seperator + "** " : "• " + title + seperator) + s + "\n");
+		sb.append((formatted ? "**‣ " + title + seperator + "** " : "‣ " + title + seperator) + s + "\n");
 		return this;
 	}
 	public BulletListBuilder newline() {

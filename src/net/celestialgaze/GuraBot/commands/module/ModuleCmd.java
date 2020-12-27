@@ -24,10 +24,11 @@ public class ModuleCmd extends HelpCommand {
 		ModuleList list = new ModuleList(this);
 		ModuleEnable enable = new ModuleEnable(this);
 		ModuleDisable disable = new ModuleDisable(this);
+		ModuleSettings settings = new ModuleSettings(this);
 		subcommands.put(list.getName(), list);
 		subcommands.put(enable.getName(), enable);
 		subcommands.put(disable.getName(), disable);
-		
+		subcommands.put(settings.getName(), settings);
 	}
 
 }
