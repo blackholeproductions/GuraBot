@@ -244,6 +244,19 @@ public class SharkUtil {
 		return role;
 	}
 	
+	public static long getIdFromMention(String mention) {
+		if (mention.startsWith("<@")) {
+			try {
+				return Long.parseLong(mention.split("<@")[1].substring(1).split(">")[0]); // Covers user mentions and role mentions
+			} catch (Exception e) {}
+		} else if (mention.startsWith("<#")) {
+			try {
+				return Long.parseLong(mention.split("<#")[1].split(">")[0]); // Covers channel mentions
+			} catch (Exception e) {}
+		}
+		return (long)0;
+	}
+	
 	public static void sendHelpMenu(Message message, IPageCommand helpCmd) {
 		sendHelpMenu(message, helpCmd, null);
 	}

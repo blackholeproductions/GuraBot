@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
+import net.celestialgaze.GuraBot.util.ImageBuilder;
 import net.celestialgaze.GuraBot.util.OpenSimplexNoise;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -61,21 +62,16 @@ public class Noise extends Command {
 				image.setRGB(i, j, rgb);
 			}
 		}
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
-			ImageIO.write(image, "png", baos);
-			baos.flush();
+			message.getChannel().sendFile(new ImageBuilder(image).build().toByteArray(), "noise.png").embed(new EmbedBuilder()
+					.setImage("attachment://noise.png")
+					.setColor(0x010101 * (int) ((noise.eval(x/FEATURE_SIZE, y/FEATURE_SIZE, z)+1)*127.5))
+					.setDescription("Value for " + x + ", " + y + ", " + z + ": " + noise.eval(x/FEATURE_SIZE, y/FEATURE_SIZE, z))
+					.build()).queue();
 		} catch (IOException e) {
 			e.printStackTrace();
-			SharkUtil.error(message, "Something strange happened (" + e.getClass().getSimpleName() + " " +
-					e.getMessage() + ") while rendering image :(");
-			return;
+			SharkUtil.error(message, "Something went wrong while trying to generate the image!");
 		}
-		message.getChannel().sendFile(baos.toByteArray(), "noise.png").embed(new EmbedBuilder()
-				.setImage("attachment://noise.png")
-				.setColor(0x010101 * (int) ((noise.eval(x/FEATURE_SIZE, y/FEATURE_SIZE, z)+1)*127.5))
-				.setDescription("Value for " + x + ", " + y + ", " + z + ": " + noise.eval(x/FEATURE_SIZE, y/FEATURE_SIZE, z))
-				.build()).queue();
 	}
 	private int toInt(double val) throws ArithmeticException {
 		return Math.toIntExact(Math.round(val));

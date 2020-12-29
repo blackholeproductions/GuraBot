@@ -19,4 +19,10 @@ public class SimpleCommandModule extends CommandModule {
 			
 		};
 	}
+
+	@Override
+	public void setupSettings() {
+		// TODO Auto-generated method stub
+		
+	}
 }

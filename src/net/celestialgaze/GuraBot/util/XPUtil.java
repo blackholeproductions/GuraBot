@@ -82,7 +82,6 @@ public class XPUtil {
 				.setColor(GuraBot.DEFAULT_COLOR);
 		ServerInfo si = ServerInfo.getServerInfo(guild.getIdLong());
 		Map<String, Integer> m = si.getXpMap(xpDoc);
-		ArrayList<String> mKeys = new ArrayList<>(m.keySet());
 		Map<Member, Integer> sorted = new LinkedHashMap<Member, Integer>();
 		// Sort by XP
 		m.entrySet()

@@ -6,10 +6,12 @@ public abstract class Subcommand extends Command implements ISubcommand {
 	public Subcommand(Pair<CommandOptions, Boolean> pair, Command parent) {
 		super(pair);
 		this.parent = parent;
+		this.needBotAdmin = parent.needBotAdmin;
+		this.permission = parent.permission;
 	}
 
 	protected Command parent;
-
+	
 	public Command getParent() {
 		return parent;
 	}

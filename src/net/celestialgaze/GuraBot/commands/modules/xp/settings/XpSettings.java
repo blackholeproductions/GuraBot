@@ -24,5 +24,8 @@ public class XpSettings extends SubHelpCommand {
 	public void init() {
 		XpSettingsList list = new XpSettingsList(this);
 		subcommands.put(list.getName(), list);
+		XpSettingsEdit edit = new XpSettingsEdit(this);
+		subcommands.put(edit.getName(), edit);
+		
 	}
 }

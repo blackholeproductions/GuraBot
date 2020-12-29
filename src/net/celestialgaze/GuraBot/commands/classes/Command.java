@@ -157,6 +157,9 @@ public abstract class Command implements ICommand {
 	}
 	public void setModule(CommandModule module) {
 		this.module = module;
+		subcommands.forEach((name, subcommand) -> {
+			subcommand.setModule(module);
+		});
 	}
 	
 	public Map<String, Command> getSubcommands() {

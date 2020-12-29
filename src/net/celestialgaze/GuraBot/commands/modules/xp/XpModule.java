@@ -18,6 +18,7 @@ import net.celestialgaze.GuraBot.util.RunnableListener;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.celestialgaze.GuraBot.util.XPUtil;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -60,7 +61,33 @@ public class XpModule extends CommandModule {
 						int random = 20+new Random().nextInt(5);
 						List<String> badRoles = new ArrayList<String>();
 						if (XPUtil.getLevel(currentXP) < XPUtil.getLevel(currentXP + random)) {
-							event.getChannel().sendMessage(event.getAuthor().getName() + " is now Level " + XPUtil.getLevel(currentXP + random)).queue();
+							// Send message if user has leveled up
+							String levelUpMessage = (getSetting(event.getGuild().getIdLong(), "mentionUserOnLevelUp", false) ? event.getAuthor().getAsMention() : event.getAuthor().getName()) 
+									+ " is now Level " + XPUtil.getLevel(currentXP + random);
+							if (getSetting(event.getGuild().getIdLong(), "levelUpMessagesChannel", (long)0) != 0) { // If levelup channel is set
+								// Try to get the channel
+								try {
+									TextChannel channel = event.getGuild().getTextChannelById(getSetting(event.getGuild().getIdLong(), "levelUpMessagesChannel", (long)0));
+									if (channel != null) {
+										try {
+											channel.sendMessage(levelUpMessage).queue();
+										} catch (Exception e) {
+											resetSetting(event.getGuild(), "levelUpMessagesChannel");
+										}
+									} else {
+										resetSetting(event.getGuild(), "levelUpMessagesChannel");
+										event.getChannel().sendMessage(levelUpMessage).queue();
+									}
+								} catch (Exception e) {
+									resetSetting(event.getGuild(), "levelUpMessagesChannel");
+									event.getChannel().sendMessage(levelUpMessage).queue();
+								}
+							} else {
+								event.getChannel().sendMessage(levelUpMessage).queue();
+							}
+							
+							
+							// Give roles
 							rolesDoc.forEach((level, roleId) -> {
 								if (XPUtil.getLevel(currentXP + random) >= Integer.parseInt(level) && !event.getMember().getRoles().contains(roleId)) {
 									if (event.getGuild().getRoleById((String) roleId) != null) {
@@ -167,5 +194,11 @@ public class XpModule extends CommandModule {
 				}
 			}
 		};
+	}
+
+	@Override
+	public void setupSettings() {
+		settings.addIdSetting("levelUpMessagesChannel");
+		settings.addBooleanSetting("mentionUserOnLevelUp", false);
 	}
 }

@@ -19,14 +19,6 @@ public class ServerInfo {
 		return new ServerInfo(id);
 	}
 	public Document cachedProperties = new Document();
-	public Document getDocument() {
-		Document result = GuraBot.servers.find(documentFilter).first();
-		if (result == null) {
-			GuraBot.servers.insertOne(new Document().append("id", id));
-			result = new Document().append("id", id);
-		}
-		return result;
-	}
 	long id;
 	Bson documentFilter;
 	
@@ -37,6 +29,14 @@ public class ServerInfo {
 		serverInfos.put(this.id, this);
 	}
 	
+	public Document getDocument() {
+		Document result = GuraBot.servers.find(documentFilter).first();
+		if (result == null) {
+			GuraBot.servers.insertOne(new Document().append("id", id));
+			result = new Document().append("id", id);
+		}
+		return result;
+	}
 	public void setProperty(ServerProperty property, Object value) {
         Bson updateOperation = Updates.set(property.toString().toLowerCase(), value);
         GuraBot.servers.updateOne(documentFilter, updateOperation);

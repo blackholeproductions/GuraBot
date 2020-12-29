@@ -82,4 +82,10 @@ public class TypingModule extends CommandModule {
 			}
 		};
 	}
+
+	@Override
+	public void setupSettings() {
+		// TODO Auto-generated method stub
+		
+	}
 }
