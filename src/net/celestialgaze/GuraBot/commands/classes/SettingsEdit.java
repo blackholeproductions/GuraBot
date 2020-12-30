@@ -1,15 +1,10 @@
-package net.celestialgaze.GuraBot.commands.modules.xp.settings;
+package net.celestialgaze.GuraBot.commands.classes;
 
-import net.celestialgaze.GuraBot.commands.classes.Command;
-import net.celestialgaze.GuraBot.commands.classes.CommandModuleSetting;
-import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
-import net.celestialgaze.GuraBot.commands.classes.Subcommand;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.entities.Message;
 
-public class XpSettingsEdit extends Subcommand {
-
-	public XpSettingsEdit(Command parent) {
+public class SettingsEdit extends Subcommand {
+	public SettingsEdit(Command parent) {
 		super(new CommandOptions()
 				.setName("edit")
 				.setDescription("Edits a setting")

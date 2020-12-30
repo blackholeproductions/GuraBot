@@ -37,7 +37,7 @@ public abstract class CommandModuleSetting<T> {
 		return value;
 	}
 	
-	protected void set(Guild guild, T newValue) {
+	public void set(Guild guild, T newValue) {
 		setSetting(guild, name, newValue);
 	}
 	

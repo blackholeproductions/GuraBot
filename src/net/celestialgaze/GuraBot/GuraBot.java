@@ -17,6 +17,9 @@ import com.mongodb.client.model.Filters;
 
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.CommandInterpreter;
+import net.celestialgaze.GuraBot.commands.classes.CommandModule;
+import net.celestialgaze.GuraBot.commands.classes.ModuleType;
+import net.celestialgaze.GuraBot.commands.modules.counting.CountingModule;
 import net.celestialgaze.GuraBot.db.BotInfo;
 import net.celestialgaze.GuraBot.db.BotStat;
 import net.celestialgaze.GuraBot.json.JSON;
@@ -99,6 +102,14 @@ public class GuraBot extends ListenerAdapter {
 					event.getAuthor().getAsTag() + ": " +
 					message.getContentDisplay());
 		}
+		
+		// Disable commands in counting channel
+		if (CommandModule.isEnabled(ModuleType.COUNTING, event.getGuild().getIdLong())) { // counting module is enabled
+			if (event.getChannel().getIdLong() == CountingModule.instance.channel.get(event.getGuild())) { // message was sent in counting channel
+				return;
+			}
+		}
+		
 		// Run any commands and log when successful
 		try {
 			if (CommandInterpreter.readExecute(message)) {

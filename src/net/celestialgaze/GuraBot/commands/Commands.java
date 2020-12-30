@@ -16,8 +16,13 @@ import net.celestialgaze.GuraBot.commands.classes.ModuleType;
 import net.celestialgaze.GuraBot.commands.classes.SimpleCommand;
 import net.celestialgaze.GuraBot.commands.classes.SimpleCommandModule;
 import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
+import net.celestialgaze.GuraBot.commands.modules.counting.Counting;
+import net.celestialgaze.GuraBot.commands.modules.counting.CountingModule;
+import net.celestialgaze.GuraBot.commands.modules.counting.CountingSetChannel;
+import net.celestialgaze.GuraBot.commands.modules.moderation.Ban;
 import net.celestialgaze.GuraBot.commands.modules.moderation.Kick;
 import net.celestialgaze.GuraBot.commands.modules.moderation.ModerationModule;
+import net.celestialgaze.GuraBot.commands.modules.moderation.Purge;
 import net.celestialgaze.GuraBot.commands.modules.scc.CommandCreator;
 import net.celestialgaze.GuraBot.commands.modules.typing.TypeCmd;
 import net.celestialgaze.GuraBot.commands.modules.typing.TypingModule;
@@ -27,7 +32,6 @@ import net.celestialgaze.GuraBot.commands.modules.xp.Leaderboard;
 import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.ServerProperty;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 public class Commands {
 	public static String defaultPrefix = "a!";
@@ -94,8 +98,15 @@ public class Commands {
 		));
 		
 		addModule(new ModerationModule(
-			new Kick()
+			new Kick(),
+			new Ban(),
+			new Purge()
 		));
+		
+		addModule(new CountingModule(
+			new Counting()
+		));
+		
 		// Load commands from global commands document
 		Document cmdsDoc = GuraBot.bot.find(Filters.eq("name", "commands")).first();
 		cmdsDoc.forEach((key, value) -> {

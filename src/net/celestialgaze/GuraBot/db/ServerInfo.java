@@ -9,6 +9,7 @@ import com.mongodb.client.model.Updates;
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.Commands;
 import net.celestialgaze.GuraBot.commands.classes.ModuleType;
+import net.celestialgaze.GuraBot.commands.modules.xp.XpModule;
 import net.dv8tion.jda.api.entities.Guild;
 
 public class ServerInfo {
@@ -74,6 +75,8 @@ public class ServerInfo {
 		return getProperty(ServerProperty.PREFIX, Commands.defaultPrefix);
 	}
 	private void setXP(long userId, int value, Document xpDoc) {
+		if (value < 0) value = 0;
+		if (value > XpModule.instance.xpLimit.get(guild)) value = XpModule.instance.xpLimit.get(guild);
 			updateModuleDocument("xp",
 				new DocBuilder(xpDoc)
 					.getSubDoc("experience")

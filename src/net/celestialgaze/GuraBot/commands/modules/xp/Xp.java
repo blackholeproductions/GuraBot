@@ -131,13 +131,15 @@ public class Xp extends HelpCommand {
 			imgG2.drawString(user.getName(), 375, 142);
 		Font smallFont = new Font("MS UI Gothic", Font.BOLD, 47);
 			imgG2.setFont(smallFont);
-			ImageUtil.drawString(
-				message.getGuild().getName(),
-				440, 73, imgG2, Alignment.LEFT, new Color(member.getColorRaw()).darker()
-			);
-			imgG2.setStroke(new BasicStroke(2));
-			imgG2.drawImage(guildIcon, 375, 32, 56, 56, null);
-			imgG2.drawOval(375, 32, 56, 56);
+			if (XpModule.instance.showServerInRankCard.get(message.getGuild())) {
+				ImageUtil.drawString(
+					message.getGuild().getName(),
+					440, 73, imgG2, Alignment.LEFT, new Color(member.getColorRaw()).darker()
+				);
+				imgG2.setStroke(new BasicStroke(2));
+				imgG2.drawImage(guildIcon, 375, 32, 56, 56, null);
+				imgG2.drawOval(375, 32, 56, 56);
+			}
 			ImageUtil.drawString(
 				"Level " + level + (!role.getId().contentEquals(message.getGuild().getPublicRole().getId()) ? " (" + role.getName() + ")" : ""),
 				1155, 145, imgG2, Alignment.RIGHT, new Color(role.getColorRaw())

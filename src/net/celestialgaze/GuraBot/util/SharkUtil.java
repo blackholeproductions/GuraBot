@@ -53,6 +53,9 @@ public class SharkUtil {
 				.setDescription(success)
 				.build()).queue();	
 	}
+	public static void debug(String message) {
+		info(GuraBot.jda.getGuildById("720792335088353301").getDefaultChannel(), message);
+	}
 	public static void sendOwner(Guild guild, String info) {
 		guild.getOwner().getUser().openPrivateChannel().queue(channel -> {
 			SharkUtil.info(channel, info);

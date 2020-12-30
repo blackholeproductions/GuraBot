@@ -7,14 +7,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
-public class Kick extends ConfirmationCommand {
-
-	public Kick() {
+public class Ban extends ConfirmationCommand {
+	public Ban() {
 		super(new CommandOptions()
-				.setName("kick")
-				.setDescription("Kicks the specified user")
-				.setUsage("<user> \"reason\"")
-				.setPermission(Permission.KICK_MEMBERS)
+				.setName("ban")
+				.setDescription("Bans the specified user and purges messages from the specified days (default 0)")
+				.setUsage("<user> \"reason\" <days>")
+				.setPermission(Permission.BAN_MEMBERS)
 				.setUsablePrivate(false)
 				.setCategory("Server")
 				.verify());
@@ -22,24 +21,30 @@ public class Kick extends ConfirmationCommand {
 
 	@Override
 	public void confirmed(Message message, String[] args, String[] modifiers) {
-		String[] split = SharkUtil.toString(args, " ").split("\"");
+		String[] quotes = SharkUtil.toString(args, " ").split("\"");
 		String userString = "";
-		String reasonString = "No reason given";
-		if (split.length > 0) {
-			userString = split[0].strip();
+		String reasonString = "";
+		int days = 0;
+		
+		if (quotes.length > 0) {
+			userString = quotes[0].strip();
 		}
-		if (split.length > 1) {
-			reasonString = split[1].strip();
+		if (quotes.length > 2) {
+			reasonString = quotes[1].strip();
+			if (SharkUtil.canParseInt(quotes[2].strip())) {
+				days = SharkUtil.parseInt(quotes[2].strip());
+			}
 		}
+		
 		Member member = SharkUtil.getMember(message, userString.split(" "), 0);
 		
 		if (member != null) {
 			try {
-				member.kick(reasonString).queue(success -> {
-					SharkUtil.success(message, "Successfully kicked `" + member.getUser().getAsTag() + "`!");
+				member.ban(days, reasonString).queue(success -> {
+					SharkUtil.success(message, "Successfully banned `" + member.getUser().getAsTag() + "`!");
 				});
 			} catch (Exception e) {
-				SharkUtil.error(message, "Unable to kick member. Do I have enough permission?");
+				SharkUtil.error(message, "Unable to ban member. Do I have enough permission?");
 				return;
 			}
 		} else {
@@ -49,7 +54,6 @@ public class Kick extends ConfirmationCommand {
 
 	@Override
 	public String confirmationMessage(Message message, String[] args, String[] modifiers) {
-		return "Are you sure you wish to kick " + SharkUtil.toString(args, " ") + "?";
+		return "Are you sure you wish to ban " + SharkUtil.toString(args, " ") + "?";
 	}
-
 }

@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot.commands.modules.xp.settings;
+package net.celestialgaze.GuraBot.commands.modules.counting.settings;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
@@ -7,19 +7,14 @@ import net.celestialgaze.GuraBot.commands.classes.SettingsList;
 import net.celestialgaze.GuraBot.commands.classes.SubHelpCommand;
 import net.dv8tion.jda.api.Permission;
 
-public class XpSettings extends SubHelpCommand {
-	public XpSettings(Command parent) {
-		super(new CommandOptions()
-				.setName("settings")
-				.setDescription("Manage settings of the XP module")
+public class CountingSettings extends SubHelpCommand {
+
+	public CountingSettings(Command parent) {
+		super(new CommandOptions("settings", "Manage the settings for the counting module")
 				.setPermission(Permission.MANAGE_SERVER)
-				.setUsablePrivate(false)
-				.verify(),
-				"XP Settings", 
-				parent);
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
+				.setUsage("<subcommand>")
+				.verify(), 
+				"Counting Settings", parent);
 	}
 
 	@Override
@@ -28,6 +23,6 @@ public class XpSettings extends SubHelpCommand {
 		subcommands.put(list.getName(), list);
 		SettingsEdit edit = new SettingsEdit(this);
 		subcommands.put(edit.getName(), edit);
-		
 	}
+
 }

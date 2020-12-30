@@ -3,7 +3,8 @@ package net.celestialgaze.GuraBot.commands.classes;
 public enum ModuleType {
 	CUSTOM_COMMANDS("Custom Commands", "Server", "Allows you to add custom commands", "custom_commands"),
 	XP("XP", "Server", "Adds an XP system", "xp"),
-	TYPING("Typing", "Typing", "Test and improve your WPM", "typing"),
+	TYPING("Typing", "Fun", "Test and improve your WPM", "typing"),
+	COUNTING("Counting", "Fun", "Count as high as you can in a dedicated counting channel!", "counting"),
 	MODERATION("Moderation", "Server", "Commands to help with moderation of your server", "moderation");
 	String name;
 	String category;

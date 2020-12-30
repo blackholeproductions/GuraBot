@@ -13,6 +13,8 @@ import net.celestialgaze.GuraBot.commands.classes.CommandModuleSetting;
 import net.celestialgaze.GuraBot.commands.classes.ModuleType;
 import net.celestialgaze.GuraBot.commands.classes.settings.BooleanSetting;
 import net.celestialgaze.GuraBot.commands.classes.settings.ChannelIDSetting;
+import net.celestialgaze.GuraBot.commands.classes.settings.PositiveIntegerSetting;
+import net.celestialgaze.GuraBot.commands.modules.counting.CountingModule;
 import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.SubDocBuilder;
@@ -27,8 +29,10 @@ import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class XpModule extends CommandModule {
+	public static XpModule instance;
 	public XpModule(Command... commands) {
 		super(ModuleType.XP, commands);
+		instance = this;
 	}
 
 	public RunnableListener getListener() {
@@ -43,6 +47,19 @@ public class XpModule extends CommandModule {
 					Guild guild = event.getGuild();
 					if (!CommandModule.isEnabled(ModuleType.XP, guild.getIdLong())) return; // If not enabled or not in guild, don't run 
 					Long userId = event.getAuthor().getIdLong();
+					
+					// Counting module hook
+					if (CommandModule.isEnabled(ModuleType.COUNTING, guild.getIdLong())) { // counting module is enabled
+						if (CountingModule.instance.isValidCount(event.getMessage())) { // message is valid counting message
+							int xpToGive = CountingModule.instance.xpAwarded.get(guild); // Get amount of xp to give from config
+							if (xpToGive > 0) {
+								ServerInfo si = ServerInfo.getServerInfo(guild.getIdLong());
+								si.addXP(userId, xpToGive); // Add xp
+							}
+							return; // Don't do anything else with xp
+						}
+					}
+					
 					if (!cooldowns.contains(userId)) { // If user isn't on cooldown
 						ServerInfo si = ServerInfo.getServerInfo(guild.getIdLong());
 						
@@ -63,11 +80,11 @@ public class XpModule extends CommandModule {
 						
 						Document rolesDoc = sdbSettings.get("roles", new Document());
 						int currentXP = si.getXP(userId, xpDoc);
-						int random = 20+new Random().nextInt(5);
+						int random = xpGain.get(guild)+new Random().nextInt(xpRandomGain.get(guild));
 						List<String> badRoles = new ArrayList<String>();
 						if (XPUtil.getLevel(currentXP) < XPUtil.getLevel(currentXP + random)) {
 							// Send message if user has leveled up
-							String levelUpMessage = mentionUserOnLevelUp.get(guild) ? event.getAuthor().getAsMention() : event.getAuthor().getName() 
+							String levelUpMessage = (mentionUserOnLevelUp.get(guild) ? event.getAuthor().getAsMention() : event.getAuthor().getName())
 									+ " is now Level " + XPUtil.getLevel(currentXP + random);
 							if (levelUpMessagesChannel.get(guild) != 0) { // If levelup channel is set
 								// Try to get the channel
@@ -201,11 +218,24 @@ public class XpModule extends CommandModule {
 
 	ChannelIDSetting levelUpMessagesChannel; 
 	BooleanSetting mentionUserOnLevelUp; 
+	public BooleanSetting showServerInRankCard; 
+	PositiveIntegerSetting xpGain;
+	PositiveIntegerSetting xpRandomGain;
+	public PositiveIntegerSetting xpLimit;
 	@Override
 	public void setupSettings() {
 		levelUpMessagesChannel = new ChannelIDSetting(this, "levelUpMessagesChannel", 0);
 		mentionUserOnLevelUp = new BooleanSetting(this, "mentionUserOnLevelUp", false);
+		showServerInRankCard = new BooleanSetting(this, "showServerInRankCard", true);
+		xpGain = new PositiveIntegerSetting(this, "xpGain", 20);
+		xpRandomGain = new PositiveIntegerSetting(this, "xpRandomGain", 5);
+		xpLimit = new PositiveIntegerSetting(this, "xpLimit", Integer.MAX_VALUE);
+		
 		this.addSetting(levelUpMessagesChannel);
 		this.addSetting(mentionUserOnLevelUp);
+		this.addSetting(showServerInRankCard);
+		this.addSetting(xpGain);
+		this.addSetting(xpRandomGain);
+		this.addSetting(xpLimit);
 	}
 }
