@@ -1,7 +1,5 @@
 package net.celestialgaze.GuraBot.commands;
 
-import org.bson.Document;
-
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;

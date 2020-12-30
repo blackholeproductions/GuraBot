@@ -1,6 +1,8 @@
 package net.celestialgaze.GuraBot.util;
 
 import java.awt.Color;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -96,6 +98,14 @@ public class SharkUtil {
 	    return (d > 0 ? d + "d " : "") + (h > 0 ? h + "h " : "") + (m > 0 ? m + "m " : "") + 
 	    		((d == 0 && m == 0 && m == 0) || s > 0 || ms > 0 ? s + (ms > 0 ? "." + String.format("%03d", ms) : "") + "s": "");
 	}
+	/**
+	 * 
+	 * @param date 
+	 * @return a human-readable date in a format like Thu, 28 Apr 2016 01:47:31 GMT
+	 */
+	public static String formatDate(OffsetDateTime date) {
+		return date.format(DateTimeFormatter.RFC_1123_DATE_TIME);
+	}
 	
 	/**
 	 * @param message
@@ -140,7 +150,11 @@ public class SharkUtil {
 		}
 		return member;
 	}
-	
+	/**
+	 * @param args Text to interpret
+	 * @param start argument to start at
+	 * @return user or null if none found
+	 */
 	public static User getUser(String[] args, int start) {
 		User user = null;
 		String input = "";

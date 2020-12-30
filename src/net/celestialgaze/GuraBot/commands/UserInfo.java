@@ -39,7 +39,7 @@ public class UserInfo extends Command {
 		}
 		String description = new BulletListBuilder()
 				.add("**ID**", user.getId())
-				.add("**Account Created**", user.getTimeCreated().toString().replace("T", " ").replace("Z", ""))
+				.add("**Account Created**", SharkUtil.formatDate(user.getTimeCreated()))
 				.build();
 		eb.setThumbnail(user.getEffectiveAvatarUrl() + "?size=2048")
 		  .setTitle(user.getAsTag())

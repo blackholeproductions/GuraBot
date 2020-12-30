@@ -1,8 +1,5 @@
 package net.celestialgaze.GuraBot.commands.modules.xp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bson.Document;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
@@ -13,7 +10,6 @@ import net.celestialgaze.GuraBot.util.PageMessage;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.celestialgaze.GuraBot.util.XPUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
 public class Leaderboard extends Command {
@@ -36,6 +32,8 @@ public class Leaderboard extends Command {
 	protected void run(Message message, String[] args, String[] modifiers) {
 		int page = 1;
 		boolean bots = false;
+		boolean left = false;
+		boolean usernames = false;
 		// if page specified, try to set page
 		if (args.length == 1) {
 			try {
@@ -44,9 +42,13 @@ public class Leaderboard extends Command {
 				SharkUtil.error(message, args[0] + " is not a valid page number");
 			}
 		}
-		if (modifiers.length == 1) {
-			if (modifiers[0].equalsIgnoreCase("show-bots")) {
+		for (String modifier : modifiers) {
+			if (modifier.equalsIgnoreCase("show-bots")) {
 				bots = true;
+			} else if (modifier.equalsIgnoreCase("show-left")) {
+				left = true;
+			} else if (modifier.equalsIgnoreCase("usernames")) {
+				usernames = true;
 			}
 		}
 		ServerInfo si = ServerInfo.getServerInfo(message.getGuild().getIdLong());
@@ -54,35 +56,27 @@ public class Leaderboard extends Command {
 		// workaround
 		final int pageSize = 10;
 		final boolean botsFinal = Boolean.valueOf(bots);
+		final boolean leftFinal = Boolean.valueOf(left);
+		final boolean usernamesFinal = Boolean.valueOf(usernames);
 		final int pageFinal = Integer.valueOf(page);
 		message.getChannel().sendMessage(new EmbedBuilder().setTitle("Waiting...").build()).queue(response -> {
 			PageMessage pm = new PageMessage(response, message.getAuthor().getIdLong(), new ArgRunnable<Integer>(pageFinal) {
 
 				@Override
 				public void run() {
-					response.editMessage(XPUtil.getLeaderboard(message.getGuild(), getArg(), xpDoc, botsFinal).build()).queue();
+					response.editMessage(XPUtil.getLeaderboard(message.getGuild(), getArg(), xpDoc, botsFinal, usernamesFinal, leftFinal).build()).queue();
 				}
 				
-			}, 1, getMaxSize(si.getXpMap(xpDoc).size(), pageSize));
-			if (!botsFinal) {
-				List<Integer> list = new ArrayList<Integer>();
-				si.getXpMap(xpDoc).values()
-					.stream()
-					.filter((id) -> {
-						Member member = message.getGuild().getMemberById(id);
-						if (member != null && member.getUser().isBot()) {
-							return true;
-						}
-						return false;
-					}).forEach((id) -> {
-						list.add(id);
-					});
-				pm.setMaxSize(getMaxSize(list.size(), pageSize));
-			}
+			}, 1, getMaxSize(si.getXpMap(xpDoc, botsFinal, leftFinal).size(), pageSize));
 			pm.update();
 		});
 	}
 	private int getMaxSize(int size, int pageSize) {
-		return Math.toIntExact(Math.round(Math.ceil(((size+0.0)/(pageSize+0.0)))));
+		System.out.println(Math.toIntExact(Math.round(Math.ceil(((size-1.0)/(pageSize+0.0))))));
+		System.out.println((size-0.0)/(pageSize+0.0));
+		System.out.println(size);
+		System.out.println(pageSize);
+		
+		return Math.toIntExact(Math.round(Math.ceil(((size-0.0)/(pageSize+0.0)))));
 	}
 }

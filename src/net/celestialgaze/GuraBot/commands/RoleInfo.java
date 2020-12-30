@@ -29,7 +29,7 @@ public class RoleInfo extends Command {
 		if (role != null) {
 			BulletListBuilder blb = new BulletListBuilder()
 					.add("**ID**", role.getId())
-					.add("**Created at**", role.getTimeCreated().toString().replace("Z", "").replace("T", " "));
+					.add("**Created at**", SharkUtil.formatDate(role.getTimeCreated()));
 			String permissions = "";
 			for(Permission permission : role.getPermissions()) {
 				permissions += permission.getName() + ", ";

@@ -95,16 +95,37 @@ public class ServerInfo {
 				.getSubDoc("experience")
 				.get(Long.toString(userId), Integer.parseInt("0"));
 	}
-	public Map<String, Integer> getXpMap() {
-		return getXpMap(getModuleDocument(ModuleType.XP.getTechName()));
+	public Map<String, Integer> getRawXpMap() {
+		return getRawXpMap(getModuleDocument(ModuleType.XP.getTechName()));
 	}
-	public Map<String, Integer> getXpMap(Document xpDoc) {
+	public Map<String, Integer> getRawXpMap(Document xpDoc) {
 		Map<String, Integer> result = new HashMap<>();
 		Document expDoc = new DocBuilder(xpDoc)
 				.getSubDoc("experience")
 				.buildThis();
 		expDoc.forEach((key, value) -> {
 			result.put((String)key, (int)value);
+		});
+		return result;
+	}
+	public Map<String, Integer> getXpMap() {
+		return getXpMap(getModuleDocument(ModuleType.XP.getTechName()));
+	}
+	public Map<String, Integer> getXpMap(Document xpDoc) {
+		return getXpMap(xpDoc, false, false);
+	}
+	public Map<String, Integer> getXpMap(Document xpDoc, boolean includeBots) {
+		return getXpMap(xpDoc, includeBots, false);
+	}
+	public Map<String, Integer> getXpMap(Document xpDoc, boolean includeBots, boolean includeLeftMembers) {
+		Map<String, Integer> result = new HashMap<>();
+		Document expDoc = new DocBuilder(xpDoc)
+				.getSubDoc("experience")
+				.buildThis();
+		expDoc.forEach((key, value) -> {
+			if ((includeLeftMembers || guild.getMemberById(key) != null) &&
+				(includeBots || (guild.getMemberById(key) != null && !guild.getMemberById(key).getUser().isBot())))
+					result.put((String)key, (int)value);
 		});
 		return result;
 	}

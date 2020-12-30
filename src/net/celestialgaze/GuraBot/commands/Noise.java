@@ -1,14 +1,11 @@
 package net.celestialgaze.GuraBot.commands;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
-import net.celestialgaze.GuraBot.util.ImageBuilder;
+import net.celestialgaze.GuraBot.util.ImageUtil;
 import net.celestialgaze.GuraBot.util.OpenSimplexNoise;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -63,7 +60,7 @@ public class Noise extends Command {
 			}
 		}
 		try {
-			message.getChannel().sendFile(new ImageBuilder(image).build().toByteArray(), "noise.png").embed(new EmbedBuilder()
+			message.getChannel().sendFile(ImageUtil.toBaos(image).toByteArray(), "noise.png").embed(new EmbedBuilder()
 					.setImage("attachment://noise.png")
 					.setColor(0x010101 * (int) ((noise.eval(x/FEATURE_SIZE, y/FEATURE_SIZE, z)+1)*127.5))
 					.setDescription("Value for " + x + ", " + y + ", " + z + ": " + noise.eval(x/FEATURE_SIZE, y/FEATURE_SIZE, z))

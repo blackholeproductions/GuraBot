@@ -21,6 +21,7 @@ import net.celestialgaze.GuraBot.commands.modules.typing.TypingModule;
 import net.celestialgaze.GuraBot.commands.modules.xp.Xp;
 import net.celestialgaze.GuraBot.commands.modules.xp.XpModule;
 import net.celestialgaze.GuraBot.commands.modules.xp.Leaderboard;
+import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.ServerProperty;
 
@@ -116,9 +117,9 @@ public class Commands {
 		Map<String, Command> guildMap = guildCommands.get(id);
 		guildMap.clear();
 		ServerInfo si = ServerInfo.getServerInfo(id);
-		Document doc = si.getProperty(ServerProperty.COMMANDS, new Document());
-		doc.forEach((commandName, properties) -> {
-			Document propertiesDoc = (Document) properties;
+		DocBuilder doc = new DocBuilder(si.getProperty(ServerProperty.COMMANDS, new Document()));
+		doc.build().forEach((commandName, properties) -> {
+			Document propertiesDoc = doc.getSubDoc(commandName).buildThis();
 			guildMap.put(commandName, new SimpleCommand(new CommandOptions()
 					.setName(commandName)
 					.setDescription((String) propertiesDoc.get("description"))

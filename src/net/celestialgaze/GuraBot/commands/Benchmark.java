@@ -1,15 +1,5 @@
 package net.celestialgaze.GuraBot.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.print.Doc;
-
-import org.bson.Document;
-
-import com.mongodb.client.model.Indexes;
-
-import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.db.ServerInfo;
