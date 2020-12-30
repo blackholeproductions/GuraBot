@@ -28,15 +28,22 @@ public class Ping extends Command {
 		long time = System.currentTimeMillis();
 		message.getChannel().sendMessage(SharkUtil.WAITING_EMBED)
 		.queue(response -> {
-			long time2 = System.currentTimeMillis();
-			BotInfo.addIntStat(BotStat.PINGS);
-			long time3 = System.currentTimeMillis();
 			response.editMessage(new EmbedBuilder()
 					.setTitle("Pong!")
 					.setDescription("Latency is " + (System.currentTimeMillis() - time) + "ms (" + GuraBot.jda.getGatewayPing() + "ms gateway)\n" +
-					"Database ping: " + (time3-time2) + "ms")
+					"Waiting for database...")
 					.setColor(GuraBot.DEFAULT_COLOR)
-					.build()).queue();
+					.build()).queue(again -> {
+						long time2 = System.currentTimeMillis();
+						BotInfo.addIntStat(BotStat.PINGS);
+						long time3 = System.currentTimeMillis();
+						response.editMessage(new EmbedBuilder()
+								.setTitle("Pong!")
+								.setDescription("Latency is " + (System.currentTimeMillis() - time) + "ms (" + GuraBot.jda.getGatewayPing() + "ms gateway)\n" +
+								"Database ping: " + (time3-time2) + "ms")
+								.setColor(GuraBot.DEFAULT_COLOR)
+								.build()).queue();
+					});
 		});
 	}
 

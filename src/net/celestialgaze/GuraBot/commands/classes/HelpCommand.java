@@ -31,6 +31,9 @@ public abstract class HelpCommand extends Command implements IPageCommand {
 		}
 		this.helpMenuName = helpMenuName;
 		init();
+		for (Command cmd : subcommands.values()) {
+			commands.put(cmd.getName(), cmd);
+		}
 	}
 
 	protected Map<String, Command> commands = new HashMap<String, Command>();

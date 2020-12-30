@@ -48,6 +48,9 @@ public class SnailRace extends Command {
 		} else if (speedMultiplier < 0.5) {
 			SharkUtil.error(message, "Oh come on, they're slow enough.");
 			return;
+		} else if (speedMultiplier > 1000) {
+			SharkUtil.error(message, "Okay, that's just too fast now.");
+			return;
 		} else if (channelsRunning.contains(message.getChannel().getIdLong())) {
 			SharkUtil.error(message, "Wait for the other snails to finish racing!");
 			return;

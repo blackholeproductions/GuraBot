@@ -16,9 +16,6 @@ public class ReactRole extends HelpCommand {
 				.setCategory("Server")
 				.setUsablePrivate(false)
 				.verify(), "Reaction Role");
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
 	}
 
 	@Override

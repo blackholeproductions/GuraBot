@@ -13,9 +13,6 @@ public class TypeCmd extends HelpCommand {
 				.setCategory("Typing")
 				.verify(),
 				"Typing");
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
 	}
 
 	@Override

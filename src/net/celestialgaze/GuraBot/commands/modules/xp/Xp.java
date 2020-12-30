@@ -63,9 +63,6 @@ public class Xp extends HelpCommand {
 		subcommands.put(give.getName(), give);
 		subcommands.put(settings.getName(), settings);
 		subcommands.put(legacy.getName(), legacy);
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
 	}
 
 	@Override

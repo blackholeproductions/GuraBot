@@ -10,11 +10,11 @@ public class CommandOptions {
 	protected String category = "Default";
 	protected CommandModule module;
 	Permission permission;
-	protected boolean usablePrivately;
+	protected boolean usablePrivately = true;
 	protected boolean usablePrivatelySet = false;
-	protected boolean needBotAdmin;
+	protected boolean needBotAdmin = false;
 	protected boolean needBotAdminSet = false;
-	protected double cooldownDuration;
+	protected double cooldownDuration = 0.5;
 	
 	public CommandOptions() {
 		this.name = "hahahaha_cel_forgot_to_put_a_name_for_the_command_what_an_IDIOT";

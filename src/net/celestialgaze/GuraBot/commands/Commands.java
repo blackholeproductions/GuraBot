@@ -2,6 +2,7 @@ package net.celestialgaze.GuraBot.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.bson.Document;
@@ -17,7 +18,7 @@ import net.celestialgaze.GuraBot.commands.classes.SimpleCommandModule;
 import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
 import net.celestialgaze.GuraBot.commands.modules.moderation.Kick;
 import net.celestialgaze.GuraBot.commands.modules.moderation.ModerationModule;
-import net.celestialgaze.GuraBot.commands.modules.scc.SimpleCmdCreator;
+import net.celestialgaze.GuraBot.commands.modules.scc.CommandCreator;
 import net.celestialgaze.GuraBot.commands.modules.typing.TypeCmd;
 import net.celestialgaze.GuraBot.commands.modules.typing.TypingModule;
 import net.celestialgaze.GuraBot.commands.modules.xp.Xp;
@@ -77,7 +78,7 @@ public class Commands {
 		addCommand(new TestCommand());
 		// Modules
 		addModule(new SimpleCommandModule(ModuleType.CUSTOM_COMMANDS,
-			new SimpleCmdCreator()
+			new CommandCreator()
 		));
 		
 		addModule(new XpModule(
@@ -122,16 +123,19 @@ public class Commands {
 		Map<String, Command> guildMap = guildCommands.get(id);
 		guildMap.clear();
 		ServerInfo si = ServerInfo.getServerInfo(id);
-		DocBuilder doc = new DocBuilder(si.getProperty(ServerProperty.COMMANDS, new Document()));
-		doc.build().forEach((commandName, properties) -> {
-			Document propertiesDoc = doc.getSubDoc(commandName).buildThis();
-			guildMap.put(commandName, new SimpleCommand(new CommandOptions()
-					.setName(commandName)
-					.setDescription((String) propertiesDoc.get("description"))
-					.setCategory("Server Commands")
-					.verify(),
-					(String) propertiesDoc.get("response")));
-		});
+		if (si.getProperty(ServerProperty.COMMANDS, new Document()) instanceof Document) {
+			DocBuilder doc = new DocBuilder(si.getProperty(ServerProperty.COMMANDS, new Document()));
+			doc.build().forEach((commandName, properties) -> {
+				Document propertiesDoc = doc.getSubDoc(commandName).buildThis();
+				guildMap.put(commandName, new SimpleCommand(new CommandOptions()
+						.setName(commandName)
+						.setDescription((String) propertiesDoc.get("description"))
+						.setCategory("Server Commands")
+						.verify(),
+						(String) propertiesDoc.getOrDefault("response", "Error retrieving simple command text")));
+			});
+		}
+		
 	}
 	
 }

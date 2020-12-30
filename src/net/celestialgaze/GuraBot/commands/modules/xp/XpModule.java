@@ -39,8 +39,8 @@ public class XpModule extends CommandModule {
 			public void run() {
 				if (currentEvent instanceof MessageReceivedEvent) {
 					MessageReceivedEvent event = (MessageReceivedEvent) currentEvent;
-					Guild guild = event.getGuild();
 					if (!event.getChannelType().equals(ChannelType.TEXT)) return;
+					Guild guild = event.getGuild();
 					if (!CommandModule.isEnabled(ModuleType.XP, guild.getIdLong())) return; // If not enabled or not in guild, don't run 
 					Long userId = event.getAuthor().getIdLong();
 					if (!cooldowns.contains(userId)) { // If user isn't on cooldown

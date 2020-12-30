@@ -12,9 +12,6 @@ public class ModuleCmd extends HelpCommand {
 				.setCategory("Server")
 				.verify(),
 				"Module");
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
 	}
 
 	@Override
