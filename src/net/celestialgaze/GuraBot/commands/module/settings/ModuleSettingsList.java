@@ -17,9 +17,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class ModuleSettingsList extends Subcommand {
 
 	public ModuleSettingsList(Command parent) {
-		super(new CommandOptions()
-				.setName("list")
-				.setDescription("Gets a list of all settings for the module")
+		super(new CommandOptions("list", "Gets a list of all settings for the module")
 				.setUsage("\"Module Name\"")
 				.setUsablePrivate(false)
 				.setNeedAdmin(true)

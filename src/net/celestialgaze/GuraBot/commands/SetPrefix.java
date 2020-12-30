@@ -5,6 +5,7 @@ import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.ServerProperty;
 import net.celestialgaze.GuraBot.util.SharkUtil;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 
 public class SetPrefix extends Command {
@@ -14,6 +15,7 @@ public class SetPrefix extends Command {
 				.setDescription("Sets the prefix of your server")
 				.setUsage("<prefix>")
 				.setCategory("Server")
+				.setPermission(Permission.MANAGE_SERVER)
 				.setUsablePrivate(false)
 				.verify());
 	}

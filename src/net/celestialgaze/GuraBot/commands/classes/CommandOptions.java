@@ -8,16 +8,22 @@ public class CommandOptions {
 	protected String description;
 	protected String usage = "";
 	protected String category = "Default";
-	protected CommandModule module = null;
-	Permission permission = null;
-	protected boolean usablePrivately = true;
-	protected boolean needBotAdmin = false;
-	protected double cooldownDuration = 0.5;
+	protected CommandModule module;
+	Permission permission;
+	protected boolean usablePrivately;
+	protected boolean usablePrivatelySet = false;
+	protected boolean needBotAdmin;
+	protected boolean needBotAdminSet = false;
+	protected double cooldownDuration;
 	
 	public CommandOptions() {
-		
+		this.name = "hahahaha_cel_forgot_to_put_a_name_for_the_command_what_an_IDIOT";
+		this.description = "No description";
 	}
-	
+	public CommandOptions(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
 	public CommandOptions setName(String name) {
 		this.name = name;
 		return this;
@@ -32,6 +38,7 @@ public class CommandOptions {
 	}
 	public CommandOptions setUsablePrivate(boolean bool) {
 		this.usablePrivately = bool;
+		this.usablePrivatelySet = true;
 		return this;
 	}
 	public CommandOptions setPermission(Permission permission) {
@@ -40,6 +47,7 @@ public class CommandOptions {
 	}
 	public CommandOptions setNeedAdmin(boolean bool) {
 		this.needBotAdmin = bool;
+		this.needBotAdminSet = true;
 		return this;
 	}
 	public CommandOptions setCooldown(double cooldown) {

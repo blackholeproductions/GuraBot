@@ -35,15 +35,15 @@ public abstract class Command implements ICommand {
 	public Command(Pair<CommandOptions, Boolean> pair, boolean initialize) {
 		preInit(pair, initialize);
 	}
-	private void preInit(Pair<CommandOptions, Boolean> pair, boolean initialize) {
+	protected void preInit(Pair<CommandOptions, Boolean> pair, boolean initialize) {
 		if (!pair.getRight()) {
 			System.err.println(name + " command was initialized incorrectly");
 			return;
 		}
 		CommandOptions options = pair.getLeft();
 		this.name = options.name;
-		this.usage = options.usage;
 		this.description = options.description;
+		this.usage = options.usage;
 		this.category = options.category;
 		this.permission = options.permission;
 		this.usablePrivately = options.usablePrivately;

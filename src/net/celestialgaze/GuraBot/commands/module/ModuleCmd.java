@@ -7,9 +7,7 @@ import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
 public class ModuleCmd extends HelpCommand {
 
 	public ModuleCmd() {
-		super(new CommandOptions()
-				.setName("module")
-				.setDescription("Manage your server's modules")
+		super(new CommandOptions("module", "Manage your server's modules")
 				.setUsablePrivate(false)
 				.setCategory("Server")
 				.verify(),

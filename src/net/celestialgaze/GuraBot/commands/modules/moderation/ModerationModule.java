@@ -7,7 +7,7 @@ import net.celestialgaze.GuraBot.util.RunnableListener;
 
 public class ModerationModule extends CommandModule {
 
-	public ModerationModule(Command[] commands) {
+	public ModerationModule(Command... commands) {
 		super(ModuleType.MODERATION, commands);
 	}
 

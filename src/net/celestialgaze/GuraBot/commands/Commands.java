@@ -15,6 +15,8 @@ import net.celestialgaze.GuraBot.commands.classes.ModuleType;
 import net.celestialgaze.GuraBot.commands.classes.SimpleCommand;
 import net.celestialgaze.GuraBot.commands.classes.SimpleCommandModule;
 import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
+import net.celestialgaze.GuraBot.commands.modules.moderation.Kick;
+import net.celestialgaze.GuraBot.commands.modules.moderation.ModerationModule;
 import net.celestialgaze.GuraBot.commands.modules.scc.SimpleCmdCreator;
 import net.celestialgaze.GuraBot.commands.modules.typing.TypeCmd;
 import net.celestialgaze.GuraBot.commands.modules.typing.TypingModule;
@@ -87,6 +89,9 @@ public class Commands {
 			new TypeCmd()
 		));
 		
+		addModule(new ModerationModule(
+			new Kick()
+		));
 		// Load commands from global commands document
 		Document cmdsDoc = GuraBot.bot.find(Filters.eq("name", "commands")).first();
 		cmdsDoc.forEach((key, value) -> {
