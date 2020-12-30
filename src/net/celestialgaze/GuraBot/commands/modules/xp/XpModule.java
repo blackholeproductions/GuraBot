@@ -9,7 +9,10 @@ import org.bson.Document;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandModule;
+import net.celestialgaze.GuraBot.commands.classes.CommandModuleSetting;
 import net.celestialgaze.GuraBot.commands.classes.ModuleType;
+import net.celestialgaze.GuraBot.commands.classes.settings.BooleanSetting;
+import net.celestialgaze.GuraBot.commands.classes.settings.ChannelIDSetting;
 import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.SubDocBuilder;
@@ -18,6 +21,7 @@ import net.celestialgaze.GuraBot.util.RunnableListener;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.celestialgaze.GuraBot.util.XPUtil;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -35,11 +39,12 @@ public class XpModule extends CommandModule {
 			public void run() {
 				if (currentEvent instanceof MessageReceivedEvent) {
 					MessageReceivedEvent event = (MessageReceivedEvent) currentEvent;
+					Guild guild = event.getGuild();
 					if (!event.getChannelType().equals(ChannelType.TEXT)) return;
-					if (!CommandModule.isEnabled(ModuleType.XP, event.getGuild().getIdLong())) return; // If not enabled or not in guild, don't run 
+					if (!CommandModule.isEnabled(ModuleType.XP, guild.getIdLong())) return; // If not enabled or not in guild, don't run 
 					Long userId = event.getAuthor().getIdLong();
 					if (!cooldowns.contains(userId)) { // If user isn't on cooldown
-						ServerInfo si = ServerInfo.getServerInfo(event.getGuild().getIdLong());
+						ServerInfo si = ServerInfo.getServerInfo(guild.getIdLong());
 						
 						// Return if channel has disabled xp
 						Document xpDoc = si.getModuleDocument(ModuleType.XP.getTechName());
@@ -62,24 +67,24 @@ public class XpModule extends CommandModule {
 						List<String> badRoles = new ArrayList<String>();
 						if (XPUtil.getLevel(currentXP) < XPUtil.getLevel(currentXP + random)) {
 							// Send message if user has leveled up
-							String levelUpMessage = (getSetting(event.getGuild().getIdLong(), "mentionUserOnLevelUp", false) ? event.getAuthor().getAsMention() : event.getAuthor().getName()) 
+							String levelUpMessage = mentionUserOnLevelUp.get(guild) ? event.getAuthor().getAsMention() : event.getAuthor().getName() 
 									+ " is now Level " + XPUtil.getLevel(currentXP + random);
-							if (getSetting(event.getGuild().getIdLong(), "levelUpMessagesChannel", (long)0) != 0) { // If levelup channel is set
+							if (levelUpMessagesChannel.get(guild) != 0) { // If levelup channel is set
 								// Try to get the channel
 								try {
-									TextChannel channel = event.getGuild().getTextChannelById(getSetting(event.getGuild().getIdLong(), "levelUpMessagesChannel", (long)0));
+									TextChannel channel = guild.getTextChannelById(levelUpMessagesChannel.get(guild));
 									if (channel != null) {
 										try {
 											channel.sendMessage(levelUpMessage).queue();
 										} catch (Exception e) {
-											resetSetting(event.getGuild(), "levelUpMessagesChannel");
+											levelUpMessagesChannel.restore(guild, true);
 										}
 									} else {
-										resetSetting(event.getGuild(), "levelUpMessagesChannel");
+										levelUpMessagesChannel.restore(guild, true);
 										event.getChannel().sendMessage(levelUpMessage).queue();
 									}
 								} catch (Exception e) {
-									resetSetting(event.getGuild(), "levelUpMessagesChannel");
+									levelUpMessagesChannel.restore(guild, true);
 									event.getChannel().sendMessage(levelUpMessage).queue();
 								}
 							} else {
@@ -90,18 +95,18 @@ public class XpModule extends CommandModule {
 							// Give roles
 							rolesDoc.forEach((level, roleId) -> {
 								if (XPUtil.getLevel(currentXP + random) >= Integer.parseInt(level) && !event.getMember().getRoles().contains(roleId)) {
-									if (event.getGuild().getRoleById((String) roleId) != null) {
+									if (guild.getRoleById((String) roleId) != null) {
 										try {
-											event.getGuild().addRoleToMember(userId, event.getGuild().getRoleById((String) roleId)).queue();
+											guild.addRoleToMember(userId, guild.getRoleById((String) roleId)).queue();
 										} catch (Exception e) {
-											String roleName = event.getGuild().getRoleById((String) roleId).getName();
-											SharkUtil.sendOwner(event.getGuild(), "Hello! I don't seem to have permissions " +
+											String roleName = guild.getRoleById((String) roleId).getName();
+											SharkUtil.sendOwner(guild, "Hello! I don't seem to have permissions " +
 												"to add " + roleName + " to " + event.getAuthor().getAsTag() + ". My role might " +
 												"not be above " + roleName + " in the hierarchy, or I don't have enough permission.");
 										}
 									} else {
 										badRoles.add(level);
-										SharkUtil.sendOwner(event.getGuild(), "Hello! I was unable to find a role " +
+										SharkUtil.sendOwner(guild, "Hello! I was unable to find a role " +
 												"with role ID " + roleId + " that you set for level " + level + ". I'm " +
 												"gonna remove it, just thought I'd give you a heads up in case this " +
 												"was an accident.");
@@ -129,12 +134,11 @@ public class XpModule extends CommandModule {
 						// If the server has a leaderboard message, update it if it is not on cooldown
 						SubDocBuilder sdbLeaderboard = sdbSettings.getSubDoc("leaderboard");
 						if (sdbLeaderboard.has("message") && sdbLeaderboard.has("channel")
-								&& !leaderboardCooldowns.contains(event.getGuild().getIdLong())) {
+								&& !leaderboardCooldowns.contains(guild.getIdLong())) {
 							
 							// Check for missing channel
-							if (event.getGuild()
-									.getTextChannelById(sdbLeaderboard.get("channel", (long)0)) == null) {
-								SharkUtil.sendOwner(event.getGuild(), 
+							if (guild.getTextChannelById(sdbLeaderboard.get("channel", (long)0)) == null) {
+								SharkUtil.sendOwner(guild, 
 					        			"Hey! I wasn't able to find the leaderboard message's channel, so I've reset it. " + 
 					        			"Make sure to set it again if this wasn't intentional.");
 								si.updateModuleDocument(ModuleType.XP.getTechName(), sdbLeaderboard.remove("message").remove("channel").build());
@@ -142,10 +146,9 @@ public class XpModule extends CommandModule {
 							}
 							
 							// Check for missing message
-							if (event.getGuild()
-									.getTextChannelById(sdbLeaderboard.get("channel", (long)0))
-									.retrieveMessageById(sdbLeaderboard.get("message", (long)0)) == null) {
-								SharkUtil.sendOwner(event.getGuild(), 
+							if (guild.getTextChannelById(sdbLeaderboard.get("channel", (long)0))
+									 .retrieveMessageById(sdbLeaderboard.get("message", (long)0)) == null) {
+								SharkUtil.sendOwner(guild, 
 					        			"Hey! I wasn't able to find the leaderboard message, so I've reset it. " + 
 					        			"Make sure to set it again if this wasn't intentional.");
 								si.updateModuleDocument(ModuleType.XP.getTechName(), sdbLeaderboard.remove("message").remove("channel").build());
@@ -153,7 +156,7 @@ public class XpModule extends CommandModule {
 							}
 							
 							// Attempt to update leaderboard
-							event.getGuild()
+							guild
 								.getTextChannelById(sdbLeaderboard.get("channel", (long)0))
 								.retrieveMessageById(sdbLeaderboard.get("message", (long)0))
 								.queue(message -> {
@@ -161,7 +164,7 @@ public class XpModule extends CommandModule {
 									try {
 										message.editMessage(XPUtil.getLeaderboard(message.getGuild(), 1, xpDoc).setTimestamp(Instant.now()).build()).queue();
 									} catch (Exception e) {
-										SharkUtil.sendOwner(event.getGuild(), 
+										SharkUtil.sendOwner(guild, 
 							        			"Had an error updating your leaderboard. Please check that I have enough permissions. I've reset it " +
 												"so you'll have to set it again.");
 										si.updateModuleDocument(ModuleType.XP.getTechName(), sdbLeaderboard.remove("message").remove("channel").build());
@@ -196,9 +199,13 @@ public class XpModule extends CommandModule {
 		};
 	}
 
+	ChannelIDSetting levelUpMessagesChannel; 
+	BooleanSetting mentionUserOnLevelUp; 
 	@Override
 	public void setupSettings() {
-		settings.addIdSetting("levelUpMessagesChannel");
-		settings.addBooleanSetting("mentionUserOnLevelUp", false);
+		levelUpMessagesChannel = new ChannelIDSetting(this, "levelUpMessagesChannel", 0);
+		mentionUserOnLevelUp = new BooleanSetting(this, "mentionUserOnLevelUp", false);
+		this.addSetting(levelUpMessagesChannel);
+		this.addSetting(mentionUserOnLevelUp);
 	}
 }

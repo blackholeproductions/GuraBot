@@ -51,7 +51,7 @@ public class TypingModule extends CommandModule {
 								.build()).queue();
 						
 						// If eligible, add to leaderboard
-						if (content.split(" ").length >= 100) { // Test was at least 100 words
+						if (content.split(" ").length >= 100 && accuracy >= 50) { // Test was at least 100 words, and got accuracy of above 50%
 							ServerInfo si = ServerInfo.getServerInfo(event.getGuild().getIdLong());
 							Document typingDoc = si.getModuleDocument(type.getTechName());
 							SubDocBuilder scoresDoc = new DocBuilder(typingDoc)

@@ -1,6 +1,7 @@
 package net.celestialgaze.GuraBot.commands.modules.xp.settings;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
+import net.celestialgaze.GuraBot.commands.classes.CommandModuleSetting;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.Subcommand;
 import net.celestialgaze.GuraBot.util.SharkUtil;
@@ -19,10 +20,14 @@ public class XpSettingsEdit extends Subcommand {
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
 		if (args.length >= 2) {
-			if (module.settings.setSetting(message.getGuild().getIdLong(), args[0], args[1])) {
-				SharkUtil.success(message, "Successfully set " + args[0] + " to " + args[1]);
-			} else {
-				SharkUtil.error(message, "Either an invalid setting or an invalid value for the setting was provided.");
+			if (module.hasSetting(args[0])) {
+				CommandModuleSetting<?> setting = module.getSetting(args[0]);
+				String input = SharkUtil.toString(args, " ", 1);
+				if (setting.trySet(message.getGuild(), input)) {
+					SharkUtil.success(message, "Successfully set " + args[0] + " to " + args[1]);
+				} else {
+					SharkUtil.error(message, setting.getInvalidInputMessage(message.getGuild(), input));
+				}
 			}
 		} else {
 			SharkUtil.error(message, "You need to specify a setting and a value to set it to.");

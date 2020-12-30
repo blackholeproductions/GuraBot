@@ -59,11 +59,13 @@ public class SharkUtil {
 		}, failure -> {});
 	}
 	public static String toString(String[] array, String split) {
+		return toString(array, split, 0);
+	}
+	public static String toString(String[] array, String split, int start) {
 		String str = "";
-		int i = 0;
-		for (String s : array) {
+		for (int i = start; i < array.length; i++) {
+			String s = array[i];
 			str += s + (i < array.length - 1 ? split : "");
-			i++;
 		}
 		return str.trim();
 	}
@@ -257,7 +259,10 @@ public class SharkUtil {
 		}
 		return role;
 	}
-	
+	/**
+	 * @param mention Mention to get ID from
+	 * @return the id of the mention, 0 if invalid
+	 */
 	public static long getIdFromMention(String mention) {
 		if (mention.startsWith("<@")) {
 			try {

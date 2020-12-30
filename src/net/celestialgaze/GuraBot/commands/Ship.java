@@ -77,7 +77,7 @@ public class Ship extends Command {
 	private String format(String[] args, String percentString) {
 		String enclosing1 = (!user(args[0]) ? "`" : "");
 		String enclosing2 = (!user(args[1]) ? "`" : "");
-		return (enclosing1 + args[0] + enclosing1 + " ❤︎ " + enclosing2 + args[1] + enclosing2 +": **" + percentString + "%**");
+		return (enclosing1 + args[0] + enclosing1 + " ♡ " + enclosing2 + args[1] + enclosing2 +": **" + percentString + "%**");
 	}
 	
 	private boolean user(String str) {

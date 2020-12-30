@@ -16,7 +16,7 @@ public class XpSettingsList extends Subcommand {
 
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
-		message.getChannel().sendMessage(module.settings.getSettingsList(message.getGuild().getIdLong())).queue();
+		message.getChannel().sendMessage(module.getSettingsList(message.getGuild())).queue();
 	}
 
 }
