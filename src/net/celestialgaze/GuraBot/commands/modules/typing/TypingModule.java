@@ -6,18 +6,22 @@ import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandModule;
 import net.celestialgaze.GuraBot.commands.classes.ModuleType;
+import net.celestialgaze.GuraBot.commands.classes.settings.ChannelIDSetting;
 import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.SubDocBuilder;
 import net.celestialgaze.GuraBot.util.RunnableListener;
 import net.celestialgaze.GuraBot.util.SharkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class TypingModule extends CommandModule {
+	public static TypingModule instance;
 	public TypingModule(Command... commands) {
 		super(ModuleType.TYPING, commands);
+		instance = this;
 	}
 
 	public RunnableListener getListener() {
@@ -28,7 +32,7 @@ public class TypingModule extends CommandModule {
 					MessageReceivedEvent event = (MessageReceivedEvent) currentEvent;
 					
 					// User is replying to typing test
-					if (TypeTest.tests.containsKey(event.getAuthor().getIdLong())) {
+					if (TypeTest.tests.containsKey(event.getAuthor().getIdLong()) && isInCorrectChannel(event.getMessage())) {
 						Message message = event.getMessage();
 						long targetId = TypeTest.tests.get(event.getAuthor().getIdLong());
 						String content = TypeTest.contents.get(targetId);
@@ -83,9 +87,21 @@ public class TypingModule extends CommandModule {
 		};
 	}
 
+	public static boolean isInCorrectChannel(Message message) {
+		if (TypingModule.instance.restrictToChannel.get(message.getGuild()) != 0) {
+			if (message.getChannel().getIdLong() == instance.restrictToChannel.get(message.getGuild())) {
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
+	
+	ChannelIDSetting restrictToChannel;
+	
 	@Override
 	public void setupSettings() {
-		// TODO Auto-generated method stub
-		
+		restrictToChannel = new ChannelIDSetting(this, "restrictToChannel", 0, true);
+		this.addSetting(restrictToChannel);
 	}
 }

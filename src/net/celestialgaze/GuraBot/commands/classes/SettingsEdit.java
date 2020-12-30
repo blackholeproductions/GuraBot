@@ -27,6 +27,8 @@ public class SettingsEdit extends Subcommand {
 				} else {
 					SharkUtil.error(message, setting.getInvalidInputMessage(message.getGuild(), input));
 				}
+			} else {
+				SharkUtil.error(message, "Invalid setting `" + args[0] + "`");
 			}
 		} else {
 			SharkUtil.error(message, "You need to specify a setting and a value to set it to.");

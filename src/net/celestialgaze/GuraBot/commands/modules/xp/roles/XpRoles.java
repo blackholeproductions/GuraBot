@@ -15,20 +15,17 @@ public class XpRoles extends SubHelpCommand {
 				.verify(),
 				"XP Roles", 
 				parent);
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		XpRolesAdd add = new XpRolesAdd(this);
 		XpRolesRemove remove = new XpRolesRemove(this);
 		XpRolesList list = new XpRolesList(this);
 		XpRolesClear clear = new XpRolesClear(this);
-		subcommands.put(add.getName(), add);
-		subcommands.put(remove.getName(), remove);
-		subcommands.put(list.getName(), list);
-		subcommands.put(clear.getName(), clear);
+		addSubcommand(add);
+		addSubcommand(remove);
+		addSubcommand(list);
+		addSubcommand(clear);
 	}
 }

@@ -2,6 +2,7 @@ package net.celestialgaze.GuraBot.commands.modules.economy;
 
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
+import net.celestialgaze.GuraBot.commands.classes.SettingsCmd;
 import net.dv8tion.jda.api.Permission;
 
 public class Economy extends HelpCommand {
@@ -14,11 +15,11 @@ public class Economy extends HelpCommand {
 	}
 
 	@Override
-	public void init() {
-		EconomySettings settings = new EconomySettings(this);
+	public void commandInit() {
+		SettingsCmd settings = new SettingsCmd(module, this);
 		EcoGive give = new EcoGive(this);
-		subcommands.put(settings.getName(), settings);
-		subcommands.put(give.getName(), give);
+		addSubcommand(settings);
+		addSubcommand(give);
 		
 	}
 

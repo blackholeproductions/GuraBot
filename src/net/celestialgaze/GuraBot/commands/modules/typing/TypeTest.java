@@ -32,6 +32,10 @@ public class TypeTest extends Subcommand {
 
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
+		if (!TypingModule.isInCorrectChannel(message)) {
+			SharkUtil.error(message, "Sorry, typing tests are restricted to " + TypingModule.instance.restrictToChannel.displayCurrent(message.getGuild()));
+			return;
+		}
 		int amount = 100;
 		if (args.length == 1) {
 			try {

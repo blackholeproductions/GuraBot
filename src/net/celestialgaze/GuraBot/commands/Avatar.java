@@ -39,13 +39,13 @@ public class Avatar extends Command {
 				user = message.getAuthor();
 			} else {
 				if (message.getChannelType().equals(ChannelType.PRIVATE)) {
-					user = SharkUtil.getUser(args, 0);
+					user = SharkUtil.getUser(message, args, 0);
 				} else {
 					// First search the guild for the user, then search user cache
 					Member member = SharkUtil.getMember(message, args, 0);
 					if (member != null) user = member.getUser();
 					if (user == null) {
-						user = SharkUtil.getUser(args, 0);
+						user = SharkUtil.getUser(message, args, 0);
 					}
 				}
 				if (user == null) {

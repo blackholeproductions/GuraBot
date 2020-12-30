@@ -22,7 +22,7 @@ public abstract class Command implements ICommand {
 	protected String description = ""; // Description that appears in the help menu
 	protected String category = DEFAULT_CATEGORY; // Category that the command belongs to
 	protected CommandModule module = null;
-	protected Map<String, Command> subcommands = new HashMap<String, Command>(); // Maps command name to the command in question
+	private Map<String, Command> subcommands = new HashMap<String, Command>(); // Maps command name to the command in question
 	Permission permission = null; // The required permission for this command. null is none needed
 	protected boolean usablePrivately = true; // Whether this command is usable within DMs
 	protected boolean needBotAdmin = false; // Whether the user requires bot admin to run this command

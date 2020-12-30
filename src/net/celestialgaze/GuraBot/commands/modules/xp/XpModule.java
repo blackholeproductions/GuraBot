@@ -96,6 +96,11 @@ public class XpModule extends CommandModule {
 										} catch (Exception e) {
 											levelUpMessagesChannel.restore(guild, true);
 										}
+									} else if (levelUpMessagesChannel.get(guild) == 1) {
+										final String newlevelUpMessage = "You're now Level " + XPUtil.getLevel(currentXP + random) + " in " + event.getGuild().getName() + "!";
+										event.getAuthor().openPrivateChannel().queue(dm -> {
+											dm.sendMessage(newlevelUpMessage).queue();
+										});
 									} else {
 										levelUpMessagesChannel.restore(guild, true);
 										event.getChannel().sendMessage(levelUpMessage).queue();

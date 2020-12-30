@@ -2,7 +2,6 @@ package net.celestialgaze.GuraBot.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.bson.Document;
@@ -18,11 +17,10 @@ import net.celestialgaze.GuraBot.commands.classes.SimpleCommandModule;
 import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
 import net.celestialgaze.GuraBot.commands.modules.counting.Counting;
 import net.celestialgaze.GuraBot.commands.modules.counting.CountingModule;
-import net.celestialgaze.GuraBot.commands.modules.counting.CountingSetChannel;
 import net.celestialgaze.GuraBot.commands.modules.economy.Balance;
+import net.celestialgaze.GuraBot.commands.modules.economy.Daily;
 import net.celestialgaze.GuraBot.commands.modules.economy.Economy;
 import net.celestialgaze.GuraBot.commands.modules.economy.EconomyModule;
-import net.celestialgaze.GuraBot.commands.modules.economy.EconomySettings;
 import net.celestialgaze.GuraBot.commands.modules.moderation.Ban;
 import net.celestialgaze.GuraBot.commands.modules.moderation.Kick;
 import net.celestialgaze.GuraBot.commands.modules.moderation.ModerationModule;
@@ -113,7 +111,8 @@ public class Commands {
 		
 		addModule(new EconomyModule(
 			new Balance(),
-			new Economy()
+			new Economy(),
+			new Daily()
 		));
 		
 		// Load commands from global commands document

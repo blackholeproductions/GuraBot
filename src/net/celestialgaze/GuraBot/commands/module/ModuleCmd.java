@@ -2,6 +2,7 @@ package net.celestialgaze.GuraBot.commands.module;
 
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
+import net.celestialgaze.GuraBot.commands.module.settings.ModuleSettings;
 
 public class ModuleCmd extends HelpCommand {
 
@@ -14,13 +15,15 @@ public class ModuleCmd extends HelpCommand {
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		ModuleList list = new ModuleList(this);
 		ModuleEnable enable = new ModuleEnable(this);
 		ModuleDisable disable = new ModuleDisable(this);
-		subcommands.put(list.getName(), list);
-		subcommands.put(enable.getName(), enable);
-		subcommands.put(disable.getName(), disable);
+		ModuleSettings settings = new ModuleSettings(this);
+		addSubcommand(list);
+		addSubcommand(enable);
+		addSubcommand(disable);
+		addSubcommand(settings);
 	}
 
 }

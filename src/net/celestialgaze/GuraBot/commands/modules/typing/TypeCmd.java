@@ -2,6 +2,7 @@ package net.celestialgaze.GuraBot.commands.modules.typing;
 
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
+import net.celestialgaze.GuraBot.commands.classes.SettingsCmd;
 
 public class TypeCmd extends HelpCommand {
 
@@ -15,11 +16,13 @@ public class TypeCmd extends HelpCommand {
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		TypeTest test = new TypeTest(this);
 		TypeLeaderboard leaderboard = new TypeLeaderboard(this);
-		subcommands.put(test.getName(), test);
-		subcommands.put(leaderboard.getName(), leaderboard);
+		SettingsCmd settings = new SettingsCmd(module, this);
+		addSubcommand(test);
+		addSubcommand(leaderboard);
+		addSubcommand(settings);
 	}
 
 }

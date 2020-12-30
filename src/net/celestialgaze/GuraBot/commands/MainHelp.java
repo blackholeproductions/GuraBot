@@ -25,7 +25,7 @@ public class MainHelp extends HelpCommand {
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		for (HashMap<String, Command> category : Commands.rootCommandsCategorized.values()) {
 			for(Command command : category.values()) {
 				commands.put(command.getName(), command);

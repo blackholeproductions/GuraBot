@@ -25,21 +25,27 @@ public abstract class HelpCommand extends Command implements IPageCommand {
 	public HelpCommand(Pair<CommandOptions, Boolean> pair, String helpMenuName) {
 		super(pair, false);
 		if (commands != null) {
-			for (Command cmd : commands.values()) {
+			for (ICommand cmd : commands.values()) {
 				this.commands.put(cmd.getName(), cmd);
 			}
 		}
 		this.helpMenuName = helpMenuName;
-		init();
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
 	}
 
-	protected Map<String, Command> commands = new HashMap<String, Command>();
+	protected Map<String, ICommand> commands = new HashMap<String, ICommand>();
 	protected String helpMenuName = "";
 	
-	public abstract void init();
+	@Override
+	public void init() {
+		commandInit();
+	}
+	
+	public void addSubcommand(ISubcommand cmd) {
+		cmd.setModule(module);
+		commands.put(cmd.getName(), cmd);
+	}
+	
+	public abstract void commandInit();
 
 	public EmbedBuilder createEmbed(Message userMessage, Message messageToEdit, int page) {
 		return createEmbed(userMessage, messageToEdit, page, null);
@@ -59,8 +65,8 @@ public abstract class HelpCommand extends Command implements IPageCommand {
 		}
 		
 		// Remove all commands that can't be run
-		Map<String, Command> newCommands = new HashMap<String, Command>(commands); // copy so we don't get ConcurrentModificationException
-		for (Command command : commands.values()) {
+		Map<String, ICommand> newCommands = new HashMap<String, ICommand>(commands); // copy so we don't get ConcurrentModificationException
+		for (ICommand command : commands.values()) {
 			if (!command.canRun(userMessage, true, false)) {
 				newCommands.remove(command.getName());
 			}
@@ -76,21 +82,21 @@ public abstract class HelpCommand extends Command implements IPageCommand {
 				.setColor(GuraBot.DEFAULT_COLOR);
 
 		// Sort the commands into their categories
-		Map<String, Command> commandsSorted = new LinkedHashMap<String, Command>();
+		Map<String, ICommand> commandsSorted = new LinkedHashMap<String, ICommand>();
 		commands
 		  .entrySet()
 		  .stream()
 		  .sorted((e1, e2) -> e1.getValue().getCategory().compareTo(e2.getValue().getCategory()))
 		  .forEach(entry -> commandsSorted.put(entry.getKey(), entry.getValue()));
 		
-		List<Command> commandValues = new ArrayList<>(commandsSorted.values());
+		List<ICommand> commandValues = new ArrayList<>(commandsSorted.values());
 
 		// Make bullet lists for each categories
 		Map<String, BulletListBuilder> categoryStrings = new LinkedHashMap<String, BulletListBuilder>();
 		for (int i = 0; i < commandsSorted.size(); i++) {
 			if (i < startPosition) continue;
 			if (i > startPosition+pageSize-1) break;
-			Command command = commandValues.get(i);
+			ICommand command = commandValues.get(i);
 			if (!categoryStrings.containsKey(command.getCategory())) {
 				categoryStrings.put(command.getCategory(), new BulletListBuilder());
 			}

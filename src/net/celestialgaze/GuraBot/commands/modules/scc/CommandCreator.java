@@ -15,11 +15,11 @@ public class CommandCreator extends HelpCommand {
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		CcCreate create = new CcCreate(this);
 		CcDelete delete = new CcDelete(this);
-		subcommands.put(create.getName(), create);
-		subcommands.put(delete.getName(), delete);
+		addSubcommand(create);
+		addSubcommand(delete);
 		
 	}
 

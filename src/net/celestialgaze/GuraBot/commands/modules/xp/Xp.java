@@ -19,6 +19,7 @@ import org.bson.Document;
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
+import net.celestialgaze.GuraBot.commands.classes.SettingsCmd;
 import net.celestialgaze.GuraBot.commands.modules.xp.leaderboard.XpLeaderboard;
 import net.celestialgaze.GuraBot.commands.modules.xp.roles.XpRoles;
 import net.celestialgaze.GuraBot.commands.modules.xp.toggle.XpToggle;
@@ -47,21 +48,21 @@ public class Xp extends HelpCommand {
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		XpHelp help = new XpHelp(this);
 		XpToggle toggle = new XpToggle(this);
 		XpRoles roles = new XpRoles(this);
 		XpLeaderboard leaderboard = new XpLeaderboard(this);
 		XpGive give = new XpGive(this);
-		XpSettings settings = new XpSettings(this);
+		SettingsCmd settings = new SettingsCmd(module, this);
 		XpLegacy legacy = new XpLegacy(this);
-		subcommands.put(help.getName(), help);
-		subcommands.put(toggle.getName(), toggle);
-		subcommands.put(roles.getName(), roles);
-		subcommands.put(leaderboard.getName(), leaderboard);
-		subcommands.put(give.getName(), give);
-		subcommands.put(settings.getName(), settings);
-		subcommands.put(legacy.getName(), legacy);
+		addSubcommand(help);
+		addSubcommand(toggle);
+		addSubcommand(roles);
+		addSubcommand(leaderboard);
+		addSubcommand(give);
+		addSubcommand(settings);
+		addSubcommand(legacy);
 	}
 
 	@Override

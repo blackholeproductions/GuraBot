@@ -19,9 +19,9 @@ public class ReactRole extends HelpCommand {
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		ReactRoleGroup group = new ReactRoleGroup(this);
-		subcommands.put(group.getName(), group);
+		addSubcommand(group);
 	}
 
 }

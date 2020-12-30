@@ -15,22 +15,19 @@ public class XpToggle extends SubHelpCommand {
 				.verify(),
 				"XP Toggle", 
 				parent);
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		XpToggleMode mode = new XpToggleMode(this);
 		XpToggleAdd add = new XpToggleAdd(this);
 		XpToggleRemove remove = new XpToggleRemove(this);
 		XpToggleList list = new XpToggleList(this);
 		XpToggleClear clear = new XpToggleClear(this);
-		subcommands.put(mode.getName(), mode);
-		subcommands.put(add.getName(), add);
-		subcommands.put(remove.getName(), remove);
-		subcommands.put(list.getName(), list);
-		subcommands.put(clear.getName(), clear);
+		addSubcommand(mode);
+		addSubcommand(add);
+		addSubcommand(remove);
+		addSubcommand(list);
+		addSubcommand(clear);
 	}
 }

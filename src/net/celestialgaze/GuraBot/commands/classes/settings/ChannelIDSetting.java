@@ -14,7 +14,7 @@ public class ChannelIDSetting extends CommandModuleSetting<Long> {
 
 	@Override
 	public boolean validate(Guild guild, Long newValue) {
-		return guild.getTextChannelById(newValue) != null || newValue == 0;
+		return guild.getTextChannelById(newValue) != null || newValue == 0 || newValue == 1;
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class ChannelIDSetting extends CommandModuleSetting<Long> {
 
 	@Override
 	protected String display(Guild guild, Long value) {
-		return (value == 0 ? "None selected" : "<#"+value+">");
+		return (value == 0 ? "`None selected`" : (value == 1 ? "`DM`" : "<#"+value+">"));
 	}
 
 	@Override
@@ -34,13 +34,22 @@ public class ChannelIDSetting extends CommandModuleSetting<Long> {
 		if (channel != null) {
 			this.set(guild, channel.getIdLong());
 			return true;
-		}
+		} else if (input.equalsIgnoreCase("dm")) {
+			this.set(guild, (long)1);
+			return true;
+		} else if (input.equalsIgnoreCase("none")) {
+			this.set(guild, (long)0);
+			return true;
+		} else if (input.equalsIgnoreCase("0")) {
+			this.set(guild, (long)0);
+			return true;
+		} 
 		return false;
 	}
 
 	@Override
 	public String getInvalidInputMessage(Guild guild, String invalidInput) {
-		return "Input must be a mention or an ID of an existing text channel.";
+		return "Input must be a mention or an ID of an existing text channel, `dm` for the user's DM channel, or `none`/`0` for no channel";
 	}
 
 }

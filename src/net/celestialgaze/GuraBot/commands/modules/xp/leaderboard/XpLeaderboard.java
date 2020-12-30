@@ -16,16 +16,13 @@ public class XpLeaderboard extends SubHelpCommand {
 				.verify(),
 				"XP Leaderboard", 
 				parent);
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		XpLeaderboardCreate create = new XpLeaderboardCreate(this);
 		XpLeaderboardGet get = new XpLeaderboardGet(this);
-		subcommands.put(create.getName(), create);
-		subcommands.put(get.getName(), get);
+		addSubcommand(create);
+		addSubcommand(get);
 	}
 }

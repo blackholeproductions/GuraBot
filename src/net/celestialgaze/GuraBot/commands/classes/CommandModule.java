@@ -1,10 +1,12 @@
 package net.celestialgaze.GuraBot.commands.classes;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import net.celestialgaze.GuraBot.GuraBot;
 import net.celestialgaze.GuraBot.commands.classes.settings.BooleanSetting;
@@ -18,14 +20,17 @@ import net.dv8tion.jda.api.entities.Guild;
 public abstract class CommandModule {
 	protected ModuleType type;
 	protected Map<String, Command> commands = new HashMap<String, Command>();
-	public Map<String, CommandModuleSetting<?>> settings = new HashMap<String, CommandModuleSetting<?>>();
+	public Map<String, CommandModuleSetting<?>> settings = new TreeMap<String, CommandModuleSetting<?>>();
+	public static Map<ModuleType, CommandModule> map = new HashMap<ModuleType, CommandModule>();
 	
 	public CommandModule(ModuleType type, Command... commands) {
 		this.type = type;
 		for (Command command : commands) {
 			command.setModule(this);
+			command.init();
 			this.commands.put(command.getName(), command);
 		}
+		map.put(type, this);
 		init();
 	}
 	
@@ -38,6 +43,7 @@ public abstract class CommandModule {
 	public void init() {
 		GuraBot.jda.addEventListener(getListener());
 		setupSettings();
+		onStart();
 	}
 	
 	public Map<String, Command> getCommands() {
@@ -94,25 +100,27 @@ public abstract class CommandModule {
 	}
 	
 	public String getSettingsList(Guild guild) {
-		String s = "";
-		for (CommandModuleSetting<?> setting : settings.values()) {
-			if (setting.editable) s += setting.getName() + ": " + setting.displayCurrent(guild) + "\n";
-		}
-		return s;
+		StringBuilder sb = new StringBuilder();
+		settings.entrySet().stream().forEachOrdered(entry -> {
+			CommandModuleSetting<?> setting = entry.getValue();
+			if (setting.editable) sb.append(setting.getName() + ": " + setting.displayCurrent(guild) + "\n");
+		});
+		if (sb.toString().isEmpty()) sb.append("No settings found");
+		return sb.toString();
 	}
 	
 	protected void addSetting(CommandModuleSetting<?> setting) {
-		settings.put(setting.getName(), setting);
+		settings.put(setting.getName().toLowerCase(), setting);
 	}
 	
 	public boolean hasSetting(String settingName) {
-		return settings.containsKey(settingName);
+		return settings.containsKey(settingName.toLowerCase());
 	}
 	
 	public CommandModuleSetting<?> getSetting(String settingName) {
-		return settings.get(settingName);
+		return settings.get(settingName.toLowerCase());
 	}
-	
+	public void onStart() {}
 	public abstract RunnableListener getListener();
 	public abstract void setupSettings();
 }

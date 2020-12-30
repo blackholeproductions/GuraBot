@@ -54,7 +54,7 @@ public class SharkUtil {
 				.build()).queue();	
 	}
 	public static void debug(String message) {
-		info(GuraBot.jda.getGuildById("720792335088353301").getDefaultChannel(), message);
+		info(GuraBot.jda.getGuildById("720792335088353301").getSystemChannel(), message);
 	}
 	public static void sendOwner(Guild guild, String info) {
 		guild.getOwner().getUser().openPrivateChannel().queue(channel -> {
@@ -131,12 +131,8 @@ public class SharkUtil {
 		} catch (Exception e) {}
 		if (member == null) {
 			// Try to get by mention
-			if (input.startsWith("<@!") && input.endsWith(">")) {
-				String id = input.split("<@!")[1].split(">")[0];
-				if (guild.getMemberById(id) != null) {
-					member = guild.getMemberById(id);
-					if (member != null) return member;
-				}
+			if (message.getMentionedMembers().size() > 0) {
+				message.getMentionedMembers().get(0);
 			}
 			// Try to get by name
 			try {
@@ -167,7 +163,7 @@ public class SharkUtil {
 	 * @param start argument to start at
 	 * @return user or null if none found
 	 */
-	public static User getUser(String[] args, int start) {
+	public static User getUser(Message message, String[] args, int start) {
 		User user = null;
 		String input = "";
 		for (int i = start; i < args.length; i++) {
@@ -178,13 +174,9 @@ public class SharkUtil {
 			user = GuraBot.jda.getUserByTag(input);
 			if (user != null) return user;
 		} catch (Exception e) {}
-		// Try to get user by mention
-		if (input.startsWith("<@!") && input.endsWith(">")) {
-			String id = input.split("<@!")[1].split(">")[0];
-			try {
-				user = GuraBot.jda.getUserById(id);
-				if (user != null) return user;
-			} catch(Exception e) {}
+		// Try to get by mention
+		if (message.getMentionedUsers().size() > 0) {
+			return message.getMentionedUsers().get(0);
 		}
 		// Try to get user by name
 		List<User> possibleUsers = GuraBot.jda.getUsersByName(input, true);
@@ -279,11 +271,8 @@ public class SharkUtil {
 			role = guild.getRoleById(input);
 		} catch (Exception e) {
 			// Try to get by mention
-			if (input.startsWith("<@&") && input.endsWith(">")) {
-				String id = input.split("<@&")[1].split(">")[0];
-				if (guild.getRoleById(id) != null) {
-					return guild.getRoleById(id);
-				}
+			if (message.getMentionedRoles().size() > 0) {
+				return message.getMentionedRoles().get(0);
 			}
 			try {
 				// Try to get by name

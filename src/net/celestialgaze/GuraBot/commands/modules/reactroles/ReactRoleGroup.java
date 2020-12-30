@@ -16,13 +16,10 @@ public class ReactRoleGroup extends SubHelpCommand {
 				.setPermission(Permission.MANAGE_SERVER)
 				.setUsablePrivate(false)
 				.verify(), "Reaction Role Group", parent);
-		for (Command cmd : subcommands.values()) {
-			commands.put(cmd.getName(), cmd);
-		}
 	}
 
 	@Override
-	public void init() {
+	public void commandInit() {
 		
 	}
 
