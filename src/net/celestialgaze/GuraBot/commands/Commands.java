@@ -27,6 +27,7 @@ import net.celestialgaze.GuraBot.commands.modules.xp.Leaderboard;
 import net.celestialgaze.GuraBot.db.DocBuilder;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.db.ServerProperty;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 public class Commands {
 	public static String defaultPrefix = "a!";
@@ -76,6 +77,8 @@ public class Commands {
 		addCommand(new SnailRace());
 		addCommand(new AI());
 		addCommand(new TestCommand());
+		addCommand(new SimpleCommand(new CommandOptions("github", "Gets a link to the bot's github").verify(), "https://github.com/celestialgaze3/GuraBot"));
+		
 		// Modules
 		addModule(new SimpleCommandModule(ModuleType.CUSTOM_COMMANDS,
 			new CommandCreator()

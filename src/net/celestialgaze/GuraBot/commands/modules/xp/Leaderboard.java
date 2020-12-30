@@ -18,6 +18,7 @@ public class Leaderboard extends Command {
 		super(new CommandOptions()
 				.setName("leaderboard")
 				.setDescription("Gets the XP leaderboard for this server")
+				.setUsage("<page> (--show-bots, --show-missing, --usernames, --show-me, --show-rank-XX)")
 				.setUsablePrivate(false)
 				.setCategory("XP")
 				.setCooldown(5)
@@ -31,6 +32,7 @@ public class Leaderboard extends Command {
 	@Override
 	protected void run(Message message, String[] args, String[] modifiers) {
 		int page = 1;
+		final int pageSize = 10;
 		boolean bots = false;
 		boolean left = false;
 		boolean usernames = false;
@@ -38,23 +40,29 @@ public class Leaderboard extends Command {
 		if (args.length == 1) {
 			try {
 			    page = Integer.parseInt(args[0]);
-			} catch (NumberFormatException e) {
+			} catch (Exception e) {
 				SharkUtil.error(message, args[0] + " is not a valid page number");
 			}
 		}
 		for (String modifier : modifiers) {
 			if (modifier.equalsIgnoreCase("show-bots")) {
 				bots = true;
-			} else if (modifier.equalsIgnoreCase("show-left")) {
+			} else if (modifier.equalsIgnoreCase("show-missing")) {
 				left = true;
 			} else if (modifier.equalsIgnoreCase("usernames")) {
 				usernames = true;
+			} else if (modifier.startsWith("show-rank-")) {
+				if (SharkUtil.canParseInt(modifier.substring(10))) {
+					page = (SharkUtil.parseInt(modifier.substring(10)) + 9) / pageSize;
+				}
+			} else if (modifier.equalsIgnoreCase("show-me")) {
+				page = (XPUtil.getRank(message.getGuild(), message.getMember()) + 9) / pageSize;
 			}
 		}
+		if (page < 1) page = 1;
 		ServerInfo si = ServerInfo.getServerInfo(message.getGuild().getIdLong());
 		Document xpDoc = si.getModuleDocument("xp");
 		// workaround
-		final int pageSize = 10;
 		final boolean botsFinal = Boolean.valueOf(bots);
 		final boolean leftFinal = Boolean.valueOf(left);
 		final boolean usernamesFinal = Boolean.valueOf(usernames);
@@ -67,7 +75,7 @@ public class Leaderboard extends Command {
 					response.editMessage(XPUtil.getLeaderboard(message.getGuild(), getArg(), xpDoc, botsFinal, usernamesFinal, leftFinal).build()).queue();
 				}
 				
-			}, 1, getMaxSize(si.getXpMap(xpDoc, botsFinal, leftFinal).size(), pageSize));
+			}, pageFinal, getMaxSize(si.getXpMap(xpDoc, botsFinal, leftFinal).size(), pageSize));
 			pm.update();
 		});
 	}

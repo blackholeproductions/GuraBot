@@ -26,8 +26,13 @@ public class CcDelete extends Subcommand {
 		DocBuilder cmdsDoc = new DocBuilder(si.getProperty(ServerProperty.COMMANDS, new Document()));
 		String name = SharkUtil.toString(args, " ");
 		
+		if (!cmdsDoc.has(name)) {
+			SharkUtil.error(message, "`" + name + "` was not deleted because it does not exist");
+			return;
+		}
+		
 		si.setProperty(ServerProperty.COMMANDS, cmdsDoc.remove(name).build());
 		Commands.updateGuildCommands(message.getGuild().getIdLong());
-		SharkUtil.success(message, "Successfully deleted " + name + " command");
+		SharkUtil.success(message, "Successfully deleted `" + name + "` command");
 	}
 }

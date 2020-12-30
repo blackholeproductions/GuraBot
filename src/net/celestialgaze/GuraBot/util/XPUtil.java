@@ -124,6 +124,10 @@ public class XPUtil {
 		eb.setDescription(description);
 		return eb;
 	}
+	public static int getRank(Guild guild, Member member) {
+		return getRank(guild, member, ServerInfo.getServerInfo(guild.getIdLong()).getModuleDocument("xp"));
+	}
+	
 	public static int getRank(Guild guild, Member member, Document xpDoc) {
 		ServerInfo si = ServerInfo.getServerInfo(guild.getIdLong());
 		Map<String, Integer> m = si.getXpMap(xpDoc, member.getUser().isBot());

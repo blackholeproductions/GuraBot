@@ -15,6 +15,7 @@ public class PageMessage extends InteractableMessage {
 	public PageMessage(Message message, long ownerId, ArgRunnable<Integer> runnable, int page, int maxPage) {
 		super(message, ownerId);
 		this.page = page;
+		if (page > maxPage) this.page = maxPage;
 		this.update = runnable;
 		this.maxPage = maxPage;
 		init();
