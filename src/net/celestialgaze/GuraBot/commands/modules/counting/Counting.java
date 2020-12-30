@@ -2,7 +2,6 @@ package net.celestialgaze.GuraBot.commands.modules.counting;
 
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
-import net.celestialgaze.GuraBot.commands.modules.counting.settings.CountingSettings;
 public class Counting extends HelpCommand {
 
 	public Counting() {

@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.entities.Member;
 
 public class UserIDSetting extends CommandModuleSetting<Long> {
 
-	public UserIDSetting(CommandModule module, String name, long defaultValue) {
-		super(module, name, defaultValue);
+	public UserIDSetting(CommandModule module, String name, long defaultValue, boolean editable) {
+		super(module, name, defaultValue, editable);
 	}
 
 	@Override

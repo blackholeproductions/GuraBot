@@ -145,10 +145,17 @@ public class SharkUtil {
 					if (member != null) return member;
 				}
 			} catch (Exception e3) {}
+			// Try to get by user#discrim
 			try {
-				// Try to get by user#discrim
 				if (guild.getMemberByTag(input) != null) {
 					member = guild.getMemberByTag(input);
+					if (member != null) return member;
+				}
+			} catch (Exception e2) {}
+			// Try to get by nickname
+			try {
+				if (guild.getMembersByNickname(input, true).size() > 0) {
+					member = guild.getMembersByNickname(input, true).get(0);
 					if (member != null) return member;
 				}
 			} catch (Exception e2) {}
@@ -209,6 +216,31 @@ public class SharkUtil {
 			return 0;
 		}
 	}
+	
+	/**
+	 * @param str String to parse
+	 * @return true if can parse to long, false otherwise
+	 */
+	public static boolean canParseLong(String str) {
+		try {
+			Long.parseLong(str);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	/**
+	 * @param str String to parse
+	 * @return the parsed long, returns 0 if invalid
+	 */
+	public static long parseLong(String str) {
+		try {
+			return Long.parseLong(str);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+	
 	
 	/**
 	 * @param str String to parse

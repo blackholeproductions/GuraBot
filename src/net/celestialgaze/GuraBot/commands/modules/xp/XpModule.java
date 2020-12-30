@@ -224,12 +224,12 @@ public class XpModule extends CommandModule {
 	public PositiveIntegerSetting xpLimit;
 	@Override
 	public void setupSettings() {
-		levelUpMessagesChannel = new ChannelIDSetting(this, "levelUpMessagesChannel", 0);
-		mentionUserOnLevelUp = new BooleanSetting(this, "mentionUserOnLevelUp", false);
-		showServerInRankCard = new BooleanSetting(this, "showServerInRankCard", true);
-		xpGain = new PositiveIntegerSetting(this, "xpGain", 20);
-		xpRandomGain = new PositiveIntegerSetting(this, "xpRandomGain", 5);
-		xpLimit = new PositiveIntegerSetting(this, "xpLimit", Integer.MAX_VALUE);
+		levelUpMessagesChannel = new ChannelIDSetting(this, "levelUpMessagesChannel", 0, true);
+		mentionUserOnLevelUp = new BooleanSetting(this, "mentionUserOnLevelUp", false, true);
+		showServerInRankCard = new BooleanSetting(this, "showServerInRankCard", true, true);
+		xpGain = new PositiveIntegerSetting(this, "xpGain", 20, true);
+		xpRandomGain = new PositiveIntegerSetting(this, "xpRandomGain", 5, true);
+		xpLimit = new PositiveIntegerSetting(this, "xpLimit", Integer.MAX_VALUE, true);
 		
 		this.addSetting(levelUpMessagesChannel);
 		this.addSetting(mentionUserOnLevelUp);

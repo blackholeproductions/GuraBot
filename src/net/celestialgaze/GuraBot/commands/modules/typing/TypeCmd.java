@@ -1,6 +1,5 @@
 package net.celestialgaze.GuraBot.commands.modules.typing;
 
-import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
 

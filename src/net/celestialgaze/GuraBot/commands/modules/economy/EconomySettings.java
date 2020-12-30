@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot.commands.modules.counting.settings;
+package net.celestialgaze.GuraBot.commands.modules.economy;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
@@ -7,14 +7,14 @@ import net.celestialgaze.GuraBot.commands.classes.SettingsList;
 import net.celestialgaze.GuraBot.commands.classes.SubHelpCommand;
 import net.dv8tion.jda.api.Permission;
 
-public class CountingSettings extends SubHelpCommand {
+public class EconomySettings extends SubHelpCommand {
 
-	public CountingSettings(Command parent) {
-		super(new CommandOptions("settings", "Manage the settings for the counting module")
+	public EconomySettings(Command parent) {
+		super(new CommandOptions("settings", "Manage the settings for the economy module")
 				.setPermission(Permission.MANAGE_SERVER)
 				.setUsage("<subcommand>")
 				.verify(), 
-				"Counting Settings", parent);
+				"Economy Settings", parent);
 	}
 
 	@Override

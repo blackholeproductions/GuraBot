@@ -21,7 +21,6 @@ import net.celestialgaze.GuraBot.commands.classes.CommandOptions;
 import net.celestialgaze.GuraBot.commands.classes.HelpCommand;
 import net.celestialgaze.GuraBot.commands.modules.xp.leaderboard.XpLeaderboard;
 import net.celestialgaze.GuraBot.commands.modules.xp.roles.XpRoles;
-import net.celestialgaze.GuraBot.commands.modules.xp.settings.XpSettings;
 import net.celestialgaze.GuraBot.commands.modules.xp.toggle.XpToggle;
 import net.celestialgaze.GuraBot.db.ServerInfo;
 import net.celestialgaze.GuraBot.util.ImageUtil;

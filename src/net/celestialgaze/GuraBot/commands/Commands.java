@@ -19,6 +19,10 @@ import net.celestialgaze.GuraBot.commands.module.ModuleCmd;
 import net.celestialgaze.GuraBot.commands.modules.counting.Counting;
 import net.celestialgaze.GuraBot.commands.modules.counting.CountingModule;
 import net.celestialgaze.GuraBot.commands.modules.counting.CountingSetChannel;
+import net.celestialgaze.GuraBot.commands.modules.economy.Balance;
+import net.celestialgaze.GuraBot.commands.modules.economy.Economy;
+import net.celestialgaze.GuraBot.commands.modules.economy.EconomyModule;
+import net.celestialgaze.GuraBot.commands.modules.economy.EconomySettings;
 import net.celestialgaze.GuraBot.commands.modules.moderation.Ban;
 import net.celestialgaze.GuraBot.commands.modules.moderation.Kick;
 import net.celestialgaze.GuraBot.commands.modules.moderation.ModerationModule;
@@ -105,6 +109,11 @@ public class Commands {
 		
 		addModule(new CountingModule(
 			new Counting()
+		));
+		
+		addModule(new EconomyModule(
+			new Balance(),
+			new Economy()
 		));
 		
 		// Load commands from global commands document

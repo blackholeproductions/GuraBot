@@ -1,4 +1,4 @@
-package net.celestialgaze.GuraBot.commands.modules.xp.settings;
+package net.celestialgaze.GuraBot.commands.modules.xp;
 
 import net.celestialgaze.GuraBot.commands.classes.Command;
 import net.celestialgaze.GuraBot.commands.classes.CommandOptions;

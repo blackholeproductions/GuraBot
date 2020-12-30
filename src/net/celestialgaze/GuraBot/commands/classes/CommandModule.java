@@ -96,7 +96,7 @@ public abstract class CommandModule {
 	public String getSettingsList(Guild guild) {
 		String s = "";
 		for (CommandModuleSetting<?> setting : settings.values()) {
-			s += setting.getName() + ": " + setting.displayCurrent(guild) + "\n";
+			if (setting.editable) s += setting.getName() + ": " + setting.displayCurrent(guild) + "\n";
 		}
 		return s;
 	}

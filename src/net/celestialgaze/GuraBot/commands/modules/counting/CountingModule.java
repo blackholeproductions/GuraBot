@@ -65,10 +65,10 @@ public class CountingModule extends CommandModule {
 	}
 	@Override
 	public void setupSettings() {
-		channel = new ChannelIDSetting(this, "channel", 0);
-		current = new PositiveIntegerSetting(this, "current", 0);
-		xpAwarded = new PositiveIntegerSetting(this, "xpAwarded", 0);
-		currentUser = new UserIDSetting(this, "currentUser", 0);
+		channel = new ChannelIDSetting(this, "channel", 0, true);
+		current = new PositiveIntegerSetting(this, "current", 0, false);
+		xpAwarded = new PositiveIntegerSetting(this, "xpAwarded", 0, true);
+		currentUser = new UserIDSetting(this, "currentUser", 0, false);
 		addSetting(channel);
 		addSetting(current);
 		addSetting(xpAwarded);

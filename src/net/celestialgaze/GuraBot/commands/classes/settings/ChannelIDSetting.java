@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 
 public class ChannelIDSetting extends CommandModuleSetting<Long> {
 
-	public ChannelIDSetting(CommandModule module, String name, long defaultValue) {
-		super(module, name, defaultValue);
+	public ChannelIDSetting(CommandModule module, String name, long defaultValue, boolean editable) {
+		super(module, name, defaultValue, editable);
 	}
 
 	@Override

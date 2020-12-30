@@ -18,6 +18,10 @@ public class SettingsEdit extends Subcommand {
 			if (module.hasSetting(args[0])) {
 				CommandModuleSetting<?> setting = module.getSetting(args[0]);
 				String input = SharkUtil.toString(args, " ", 1);
+				if (!setting.editable) {
+					SharkUtil.error(message, "`" + setting.getName() + "` is not editable");
+					return;
+				}
 				if (setting.trySet(message.getGuild(), input)) {
 					SharkUtil.success(message, "Successfully set " + args[0] + " to " + args[1]);
 				} else {

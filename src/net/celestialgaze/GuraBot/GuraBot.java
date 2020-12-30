@@ -1,6 +1,7 @@
 	package net.celestialgaze.GuraBot;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
@@ -50,8 +51,8 @@ public class GuraBot extends ListenerAdapter {
 	public static MongoCollection<Document> servers;
 	public static MongoCollection<Document> users;
 	public static MongoCollection<Document> bot;
-	public static final String DATA_FOLDER = System.getProperty("user.dir") + "\\data\\";
-	public static final String SETTINGS = DATA_FOLDER + "bot\\settings.json";
+	public static final File DATA_FOLDER = new File(System.getProperty("user.dir") + "/data/");
+	public static final String SETTINGS = DATA_FOLDER + "bot/settings.json";
 	public static final Color DEFAULT_COLOR = new Color(179, 217, 255);
 	public static final String REGEX_WHITESPACE = "\\s+";
 	public static final String IP = "192.168.0.10";
@@ -101,14 +102,15 @@ public class GuraBot extends ListenerAdapter {
 			System.out.println("[" + event.getGuild().getName() + " - #" + event.getChannel().getName() + "] " +
 					event.getAuthor().getAsTag() + ": " +
 					message.getContentDisplay());
-		}
-		
-		// Disable commands in counting channel
-		if (CommandModule.isEnabled(ModuleType.COUNTING, event.getGuild().getIdLong())) { // counting module is enabled
-			if (event.getChannel().getIdLong() == CountingModule.instance.channel.get(event.getGuild())) { // message was sent in counting channel
-				return;
+			// Disable commands in counting channel
+			if (CommandModule.isEnabled(ModuleType.COUNTING, event.getGuild().getIdLong())) { // counting module is enabled
+				if (event.getChannel().getIdLong() == CountingModule.instance.channel.get(event.getGuild())) { // message was sent in counting channel
+					return;
+				}
 			}
 		}
+		
+		
 		
 		// Run any commands and log when successful
 		try {

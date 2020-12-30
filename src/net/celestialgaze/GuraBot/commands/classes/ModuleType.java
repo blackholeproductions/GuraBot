@@ -5,7 +5,9 @@ public enum ModuleType {
 	XP("XP", "Server", "Adds an XP system", "xp"),
 	TYPING("Typing", "Fun", "Test and improve your WPM", "typing"),
 	COUNTING("Counting", "Fun", "Count as high as you can in a dedicated counting channel!", "counting"),
+	ECONOMY("Economy", "Fun", "Allows users to collect a balance", "economy"),
 	MODERATION("Moderation", "Server", "Commands to help with moderation of your server", "moderation");
+	
 	String name;
 	String category;
 	String description;

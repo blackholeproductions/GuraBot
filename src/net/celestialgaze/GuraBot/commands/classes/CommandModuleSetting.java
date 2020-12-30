@@ -9,10 +9,12 @@ public abstract class CommandModuleSetting<T> {
 	protected String name;
 	protected T defaultValue;
 	protected CommandModule module;
-	public CommandModuleSetting(CommandModule module, String name, T defaultValue) {
+	protected boolean editable;
+	public CommandModuleSetting(CommandModule module, String name, T defaultValue, boolean editable) {
 		this.module = module;
 		this.name = name;
 		this.defaultValue = defaultValue;
+		this.editable = editable;
 	}
 	
 	public String getName() {

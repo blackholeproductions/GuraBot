@@ -50,7 +50,7 @@ public class TypeTest extends Subcommand {
 		// perhaps xp reward for this later
 		String content = "";
 		Random rn = new Random();
-		JSONObject jo = JSON.readFile(GuraBot.DATA_FOLDER + "bot\\words.json");
+		JSONObject jo = JSON.readFile(GuraBot.DATA_FOLDER.getPath() + "\\bot\\words.json");
 		String[] words = ((String)jo.get("words")).split(",");
 		for (int i = 0; i < amount; i++) {
 			content += words[rn.nextInt(words.length-1)] + " ";

@@ -6,8 +6,8 @@ import net.dv8tion.jda.api.entities.Guild;
 
 public class BooleanSetting extends CommandModuleSetting<Boolean> {
 
-	public BooleanSetting(CommandModule module, String name, Boolean defaultValue) {
-		super(module, name, defaultValue);
+	public BooleanSetting(CommandModule module, String name, Boolean defaultValue, boolean editable) {
+		super(module, name, defaultValue, editable);
 	}
 
 	@Override

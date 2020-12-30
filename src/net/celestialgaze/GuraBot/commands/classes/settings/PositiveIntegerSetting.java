@@ -7,8 +7,8 @@ import net.dv8tion.jda.api.entities.Guild;
 
 public class PositiveIntegerSetting extends CommandModuleSetting<Integer> {
 
-	public PositiveIntegerSetting(CommandModule module, String name, Integer defaultValue) {
-		super(module, name, defaultValue);
+	public PositiveIntegerSetting(CommandModule module, String name, Integer defaultValue, boolean editable) {
+		super(module, name, defaultValue, editable);
 	}
 
 	@Override
